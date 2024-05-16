@@ -21,9 +21,10 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
 lint:
-	poetry run isort deltaver tests
-	poetry run ruff check deltaver tests --fix
-	poetry run mypy deltaver tests
+	poetry run isort ondivi tests
+	poetry run ruff check ondivi tests --fix
+	# poetry run flake8 ondivi tests
+	poetry run mypy ondivi tests --strict
 
 test:
-	poetry run pytest --cov=ondivi --cov-report=term-missing:skip-covered
+	poetry run pytest --cov=ondivi --cov-report=term-missing:skip-covered -vv

@@ -20,13 +20,12 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-import subprocess
 from pathlib import Path
 
-from ondivi.__main__ import define_changed_lines, controller
+from ondivi.__main__ import controller, define_changed_lines
 
 
-def test_define_changed_files():
+def test_define_changed_files() -> None:
     got = define_changed_lines(
         Path('tests/fixtures/diff.txt').read_text(),
     )
@@ -48,10 +47,10 @@ def test_define_changed_files():
     }
 
 
-def test_controller():
+def test_controller() -> None:
     got = controller(
         Path('tests/fixtures/diff.txt').read_text(),
-        Path('tests/fixtures/violations.txt').read_text(),
+        Path('tests/fixtures/violations.txt').read_text().splitlines(),
     )
 
     assert got == [
@@ -59,10 +58,22 @@ def test_controller():
         'src/srv/ayats/ayats_by_text_query.py:23:1: UP035 Import from `collections.abc` instead: `Sequence`',
         'src/srv/ayats/ayats_by_text_query.py:23:47: F401 [*] `typing.Generic` imported but unused',
         'src/srv/ayats/favorite_ayats_after_remove.py:23:1: UP035 Import from `collections.abc` instead: `Sequence`',
-        'src/srv/ayats/pg_ayat.py:64:30: PLR2004 Magic value used in comparison, consider replacing `4096` with a constant variable',
+        ' '.join([
+            'src/srv/ayats/pg_ayat.py:64:30: PLR2004 Magic value used in comparison,',
+            'consider replacing `4096` with a constant variable',
+        ]),
         'src/srv/ayats/pg_ayat.py:66:44: COM812 Trailing comma missing',
-        "src/tests/it/srv/ayats/test_pg_ayat.py:78:19: PLC1901 `got == ''` can be simplified to `not got` as an empty string is falsey",
+        ' '.join([
+            "src/tests/it/srv/ayats/test_pg_ayat.py:78:19: PLC1901 `got == ''` can be simplified",
+            'to `not got` as an empty string is falsey',
+        ]),
         'src/app_types/listable.py:33:20: PYI059 `Generic[]` should always be the last base class',
-        'src/tests/it/srv/ayats/test_pg_ayat.py:90:13: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument',
-        'src/tests/it/srv/ayats/test_pg_ayat.py:95:19: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument',
+        ' '.join([
+            'src/tests/it/srv/ayats/test_pg_ayat.py:90:13: PLW1514 `pathlib.Path(...).read_text`',
+            'without explicit `encoding` argument',
+        ]),
+        ' '.join([
+            'src/tests/it/srv/ayats/test_pg_ayat.py:95:19: PLW1514 `pathlib.Path(...).read_text`',
+            'without explicit `encoding` argument',
+        ]),
     ]

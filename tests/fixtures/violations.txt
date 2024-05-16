@@ -1,0 +1,28 @@
+src/app_types/listable.py:23:1: UP035 Import from `collections.abc` instead: `Sequence`
+src/app_types/listable.py:28:13: PLC0105 `TypeVar` name "ListElemT" does not reflect its covariance; consider renaming it to "ListElemT_co"
+src/srv/ayats/ayats_by_text_query.py:23:1: UP035 Import from `collections.abc` instead: `Sequence`
+src/srv/ayats/ayats_by_text_query.py:23:47: F401 [*] `typing.Generic` imported but unused
+src/srv/ayats/favorite_ayats_after_remove.py:23:1: UP035 Import from `collections.abc` instead: `Sequence`
+src/srv/ayats/pg_ayat.py:64:30: PLR2004 Magic value used in comparison, consider replacing `4096` with a constant variable
+src/srv/ayats/pg_ayat.py:66:44: COM812 Trailing comma missing
+src/tests/it/srv/ayats/test_pg_ayat.py:78:19: PLC1901 `got == ''` can be simplified to `not got` as an empty string is falsey
+src/app_types/listable.py:33:20: PYI059 `Generic[]` should always be the last base class
+src/tests/creating_test_db.py:74:29: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_change_ayat.py:39:17: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_favor_ayat.py:52:12: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_search_ayat.py:38:40: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_search_ayat.py:54:40: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_search_ayat.py:64:40: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_search_ayat.py:92:40: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_search_ayat.py:118:40: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_search_ayat.py:138:40: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_skipped_prayers.py:33:21: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_skipped_prayers.py:39:21: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_start.py:35:40: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/e2e/test_start.py:36:40: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/it/handlers/test_decrement_skipped_prayer_answer.py:39:21: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/it/handlers/test_decrement_skipped_prayer_answer.py:69:21: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/it/handlers/test_skipped_prayers_answer.py:39:21: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/it/handlers/test_skipped_prayers_answer.py:69:21: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/it/srv/ayats/test_pg_ayat.py:90:13: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument
+src/tests/it/srv/ayats/test_pg_ayat.py:95:19: PLW1514 `pathlib.Path(...).read_text` without explicit `encoding` argument

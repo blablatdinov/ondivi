@@ -20,6 +20,8 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
+from contextlib import suppress
+
 from git import Repo
 
 
@@ -52,8 +54,32 @@ def define_changed_lines(diff):
     return res
 
 
+def filter_out_violations(changed_lines, violations: list[str]):
+    res = []
+    for violation in violations.splitlines():
+        with suppress(ValueError, IndexError):
+            filename = violation.split(':')[0]
+            line = int(violation.split(':')[1])
+            if filename not in changed_lines:
+                continue
+            if line not in changed_lines[filename]:
+                continue
+        res.append(violation)
+    return res
+
+
+def controller(diff, violations):
+    changed_lines = define_changed_lines(diff)
+    return filter_out_violations(changed_lines, violations)
+
+
 def main():
-    print(input())
+    print('\n'.join(
+        controller(
+            Repo('.').git.diff('--unified=0', 'origin/master..HEAD'),
+            input(),
+        ),
+    ))
 
 
 if __name__ == '__main__':

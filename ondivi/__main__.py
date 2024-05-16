@@ -74,10 +74,18 @@ def controller(diff, violations):
 
 
 def main():
+    a = 'not empty'
+    violations = []
+    while a:
+        try:
+            a = input()
+            violations.append(a)
+        except EOFError:
+            break
     print('\n'.join(
         controller(
             Repo('.').git.diff('--unified=0', 'origin/master..HEAD'),
-            input(),
+            '\n'.join(violations),
         ),
     ))
 

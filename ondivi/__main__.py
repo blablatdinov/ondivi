@@ -20,6 +20,38 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
+from git import Repo
+
+
+def define_changed_lines(diff):
+    """Поиск измененных строк в файлах.
+
+    :return: dict
+    """
+    res = {}
+    current_file = None
+    for line in diff.splitlines():
+        if line.startswith('diff --git'):
+            current_file = line.split(' b/')[-1].strip()
+            res[current_file] = []
+        elif line.startswith('@@'):
+            line = line.split('@@')[1].strip()
+            added_lines = line.split('+')[1]
+            start_line = int(
+                added_lines.split(',')[0],
+            )
+            if ',' not in added_lines:
+                num_lines = 0
+            else:
+                num_lines = int(
+                    added_lines.split(',')[1],
+                ) - 1
+            res[current_file].extend(list(range(
+                start_line, start_line + num_lines + 1,
+            )))
+    return res
+
+
 def main():
     print(input())
 

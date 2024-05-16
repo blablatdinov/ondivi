@@ -1,0 +1,276 @@
+commit 8854b9057988a1b19edd4411b4fcf0d1427abdb5
+Author: Ilaletdinov Almaz <45946541+blablatdinov@users.noreply.github.com>
+Date:   Sat Apr 27 23:51:40 2024 +0300
+
+    Split long ayat (#849)
+
+diff --git a/src/app_types/listable.py b/src/app_types/listable.py
+index 1f303d3..0855e54 100644
+--- a/src/app_types/listable.py
++++ b/src/app_types/listable.py
+@@ -22,0 +23 @@
++from collections.abc import Sequence
+@@ -28 +29 @@ from pyeo import elegant
+-ListElemT = TypeVar('ListElemT')
++ListElemT_co = TypeVar('ListElemT_co', covariant=True)
+@@ -32 +33 @@ ListElemT = TypeVar('ListElemT')
+-class AsyncListable(Protocol[ListElemT]):
++class AsyncListable(Generic[ListElemT_co], Protocol):
+@@ -35 +36,2 @@ class AsyncListable(Protocol[ListElemT]):
+-    async def to_list(self) -> list[ListElemT]:
++    # async def to_list(self) -> list[ListElemT]:
++    async def to_list(self) -> Sequence[ListElemT_co]:
+@@ -42 +44 @@ class AsyncListable(Protocol[ListElemT]):
+-class FkAsyncListable(AsyncListable, Generic[ListElemT]):
++class FkAsyncListable(AsyncListable, Generic[ListElemT_co]):
+@@ -45 +47 @@ class FkAsyncListable(AsyncListable, Generic[ListElemT]):
+-    _origin: list[ListElemT]
++    _origin: list[ListElemT_co]
+@@ -47 +49 @@ class FkAsyncListable(AsyncListable, Generic[ListElemT]):
+-    async def to_list(self) -> list[ListElemT]:
++    async def to_list(self) -> list[ListElemT_co]:
+diff --git a/src/srv/ayats/ayat_by_id_answer.py b/src/srv/ayats/ayat_by_id_answer.py
+index 89e0323..ce5864a 100644
+--- a/src/srv/ayats/ayat_by_id_answer.py
++++ b/src/srv/ayats/ayat_by_id_answer.py
+@@ -36 +36 @@ from srv.ayats.ayat_by_id_message_answer import AyatByIdMessageAnswer
+-from srv.ayats.pg_ayat import PgAyat
++from srv.ayats.pg_ayat import PgAyat, TextLenSafeAyat
+@@ -58 +58 @@ class AyatByIdAnswer(TgAnswer):
+-        result_ayat = PgAyat.from_callback_query(CallbackQueryData(update), self._pgsql)
++        result_ayat = TextLenSafeAyat(PgAyat.from_callback_query(CallbackQueryData(update), self._pgsql))
+diff --git a/src/srv/ayats/ayat_by_sura_ayat_num_answer.py b/src/srv/ayats/ayat_by_sura_ayat_num_answer.py
+index 3762b79..ffddd54 100644
+--- a/src/srv/ayats/ayat_by_sura_ayat_num_answer.py
++++ b/src/srv/ayats/ayat_by_sura_ayat_num_answer.py
+@@ -38 +38 @@ from srv.ayats.neighbor_ayats import PgNeighborAyats
+-from srv.ayats.pg_ayat import PgAyat
++from srv.ayats.pg_ayat import PgAyat, TextLenSafeAyat
+@@ -59 +59 @@ class AyatBySuraAyatNumAnswer(TgAnswer):
+-        result_ayat = await PgAyat.by_sura_ayat_num(MessageText(update), self._pgsql)
++        result_ayat = TextLenSafeAyat(PgAyat.by_sura_ayat_num(MessageText(update), self._pgsql))
+diff --git a/src/srv/ayats/ayats_by_text_query.py b/src/srv/ayats/ayats_by_text_query.py
+index e886416..7824960 100644
+--- a/src/srv/ayats/ayats_by_text_query.py
++++ b/src/srv/ayats/ayats_by_text_query.py
+@@ -22,0 +23 @@
++from collections.abc import Sequence
+@@ -32 +33,2 @@ from app_types.stringable import SupportsStr
+-from srv.ayats.pg_ayat import PgAyat
++from srv.ayats.ayat import Ayat
++from srv.ayats.pg_ayat import PgAyat, TextLenSafeAyat
+@@ -45 +47 @@ class AyatsByTextQuery(AsyncListable):
+-    async def to_list(self) -> list[PgAyat]:
++    async def to_list(self) -> Sequence[Ayat]:
+@@ -60,3 +62,5 @@ class AyatsByTextQuery(AsyncListable):
+-            PgAyat(
+-                FkAsyncIntable(row['id']),
+-                self._pgsql,
++            TextLenSafeAyat(
++                PgAyat(
++                    FkAsyncIntable(row['id']),
++                    self._pgsql,
++                ),
+diff --git a/src/srv/ayats/change_favorite_ayat_answer.py b/src/srv/ayats/change_favorite_ayat_answer.py
+index baf6e94..aee5f7e 100644
+--- a/src/srv/ayats/change_favorite_ayat_answer.py
++++ b/src/srv/ayats/change_favorite_ayat_answer.py
+@@ -55 +55 @@ from srv.ayats.neighbor_ayats import FavoriteNeighborAyats, PgNeighborAyats, Tex
+-from srv.ayats.pg_ayat import PgAyat
++from srv.ayats.pg_ayat import PgAyat, TextLenSafeAyat
+@@ -77,4 +77,6 @@ class ChangeFavoriteAyatAnswer(TgAnswer):
+-        result_ayat = PgAyat(
+-            FkAsyncIntable(
+-                IntableRegularExpression(
+-                    str(CallbackQueryData(update)),
++        result_ayat = TextLenSafeAyat(
++            PgAyat(
++                FkAsyncIntable(
++                    IntableRegularExpression(
++                        str(CallbackQueryData(update)),
++                    ),
+@@ -81,0 +84 @@ class ChangeFavoriteAyatAnswer(TgAnswer):
++                self._pgsql,
+@@ -83 +85,0 @@ class ChangeFavoriteAyatAnswer(TgAnswer):
+-            self._pgsql,
+diff --git a/src/srv/ayats/favorite_ayats.py b/src/srv/ayats/favorite_ayats.py
+index 9398c46..08b7862 100644
+--- a/src/srv/ayats/favorite_ayats.py
++++ b/src/srv/ayats/favorite_ayats.py
+@@ -33 +33 @@ from srv.ayats.ayat import Ayat
+-from srv.ayats.pg_ayat import PgAyat
++from srv.ayats.pg_ayat import PgAyat, TextLenSafeAyat
+@@ -60 +60 @@ class FavoriteAyats(AsyncListable):
+-            PgAyat(FkAsyncIntable(row['ayat_id']), self._pgsql)
++            TextLenSafeAyat(PgAyat(FkAsyncIntable(row['ayat_id']), self._pgsql))
+diff --git a/src/srv/ayats/favorite_ayats_after_remove.py b/src/srv/ayats/favorite_ayats_after_remove.py
+index eb39269..bc91ef7 100644
+--- a/src/srv/ayats/favorite_ayats_after_remove.py
++++ b/src/srv/ayats/favorite_ayats_after_remove.py
+@@ -22,0 +23 @@
++from collections.abc import Sequence
+@@ -33 +34 @@ from srv.ayats.ayat_identifier import AyatId
+-from srv.ayats.pg_ayat import PgAyat
++from srv.ayats.pg_ayat import PgAyat, TextLenSafeAyat
+@@ -47 +48 @@ class FavoriteAyatsAfterRemove(AsyncListable):
+-    async def to_list(self) -> list[Ayat]:
++    async def to_list(self) -> Sequence[Ayat]:
+@@ -66 +67 @@ class FavoriteAyatsAfterRemove(AsyncListable):
+-                ayats.append(PgAyat.from_int(self._ayat_id, self._pgsql))
++                ayats.append(TextLenSafeAyat(PgAyat.from_int(self._ayat_id, self._pgsql)))
+@@ -68 +69 @@ class FavoriteAyatsAfterRemove(AsyncListable):
+-            ayats.append(PgAyat.from_int(row['ayat_id'], self._pgsql))
++            ayats.append(TextLenSafeAyat(PgAyat.from_int(row['ayat_id'], self._pgsql)))
+diff --git a/src/srv/ayats/favorites/user_favorite_ayats.py b/src/srv/ayats/favorites/user_favorite_ayats.py
+index 98dce8c..d0f8ae8 100644
+--- a/src/srv/ayats/favorites/user_favorite_ayats.py
++++ b/src/srv/ayats/favorites/user_favorite_ayats.py
+@@ -32 +32 @@ from srv.ayats.ayat import Ayat
+-from srv.ayats.pg_ayat import PgAyat
++from srv.ayats.pg_ayat import PgAyat, TextLenSafeAyat
+@@ -60 +60 @@ class UserFavoriteAyats(AsyncListable[Ayat]):
+-            PgAyat.from_int(row['id'], self._pgsql) for row in rows
++            TextLenSafeAyat(PgAyat.from_int(row['id'], self._pgsql)) for row in rows
+diff --git a/src/srv/ayats/neighbor_ayats.py b/src/srv/ayats/neighbor_ayats.py
+index 352714a..ea6409d 100644
+--- a/src/srv/ayats/neighbor_ayats.py
++++ b/src/srv/ayats/neighbor_ayats.py
+@@ -33 +33 @@ from srv.ayats.ayat import Ayat
+-from srv.ayats.pg_ayat import PgAyat
++from srv.ayats.pg_ayat import PgAyat, TextLenSafeAyat
+@@ -137 +137 @@ class PgNeighborAyats(NeighborAyats):
+-        return PgAyat.from_int(row[AYAT_ID], self._pgsql)
++        return TextLenSafeAyat(PgAyat.from_int(row[AYAT_ID], self._pgsql))
+@@ -154 +154 @@ class PgNeighborAyats(NeighborAyats):
+-        return PgAyat.from_int(row[AYAT_ID], self._pgsql)
++        return TextLenSafeAyat(PgAyat.from_int(row[AYAT_ID], self._pgsql))
+@@ -197 +197,3 @@ class TextSearchNeighborAyats(NeighborAyats):
+-                return PgAyat.from_int(rows[idx - 1][AYAT_ID], self._pgsql)
++                return TextLenSafeAyat(
++                    PgAyat.from_int(rows[idx - 1][AYAT_ID], self._pgsql),
++                )
+@@ -211 +213,3 @@ class TextSearchNeighborAyats(NeighborAyats):
+-                return PgAyat.from_int(rows[idx + 1][AYAT_ID], self._pgsql)
++                return TextLenSafeAyat(
++                    PgAyat.from_int(rows[idx + 1][AYAT_ID], self._pgsql),
++                )
+diff --git a/src/srv/ayats/pg_ayat.py b/src/srv/ayats/pg_ayat.py
+index 2114d61..1bc96f2 100644
+--- a/src/srv/ayats/pg_ayat.py
++++ b/src/srv/ayats/pg_ayat.py
+@@ -27,0 +28 @@ from eljson.json import Json
++from pyeo import elegant
+@@ -35 +36 @@ from srv.ayats.ayat_id_by_sura_ayat import AyatIdByPublicId, AyatIdBySuraAyatNum
+-from srv.ayats.ayat_identifier import PgAyatIdentifier
++from srv.ayats.ayat_identifier import AyatIdentifier, PgAyatIdentifier
+@@ -42,0 +44,47 @@ from srv.files.pg_file import PgFile
++@final
++@attrs.define(frozen=True)
++@elegant
++class TextLenSafeAyat(Ayat):
++    """Декоратор для обрезания текста аята.
++
++    Максимальная длина текстового сообщения: 4096
++    https://core.telegram.org/bots/api#sendmessage
++    """
++
++    _origin: Ayat
++
++    def identifier(self) -> AyatIdentifier:
++        """Идентификатор аята.
++
++        :return: AyatIdentifier
++        """
++        return self._origin.identifier()
++
++    async def to_str(self) -> AyatText:
++        """Строковое представление.
++
++        :return: AyatText
++        """
++        origin_val = await self._origin.to_str()
++        max_len_of_telegram_message = 4096
++        if len(origin_val) > max_len_of_telegram_message:
++            return '\n'.join(
++                origin_val.split('\n')[:-1],
++            ).strip()
++        return origin_val
++
++    async def audio(self) -> TgFile:
++        """Аудио файл.
++
++        :return: TgFile
++        """
++        return await self._origin.audio()
++
++    async def change(self, event_body: Json) -> None:
++        """Изменить содержимое аята.
++
++        :param event_body: Json
++        """
++        await self._origin.change(event_body)
++
++
+@@ -52 +100 @@ class PgAyat(Ayat):  # noqa: WPS214. This class contain 4 secondary ctor and 4 m
+-    async def by_sura_ayat_num(cls, sura_ayat_num: SupportsStr, database: Database) -> Ayat:
++    def by_sura_ayat_num(cls, sura_ayat_num: SupportsStr, database: Database) -> Ayat:
+diff --git a/src/tests/fixtures/2_282_ayat_rendered.txt b/src/tests/fixtures/2_282_ayat_rendered.txt
+new file mode 100644
+index 0000000..a616371
+--- /dev/null
++++ b/src/tests/fixtures/2_282_ayat_rendered.txt
+@@ -0,0 +1,6 @@
++<a href="https://umma.ru/sura-2-al-bakara-korova/#2-282">2:282)</a>
++يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا تَدَايَنْتُمْ بِدَيْنٍ إِلَى أَجَلٍ مُسَمًّى فَاكْتُبُوهُ وَلْيَكْتُبْ بَيْنَكُمْ كَاتِبٌ بِالْعَدْلِ وَلَا يَأْبَ كَاتِبٌ أَنْ يَكْتُبَ كَمَا عَلَّمَهُ اللَّهُ فَلْيَكْتُبْ وَلْيُمْلِلِ الَّذِي عَلَيْهِ الْحَقُّ وَلْيَتَّقِ اللَّهَ رَبَّهُ وَلَا يَبْخَسْ مِنْهُ شَيْئًا فَإِنْ كَانَ الَّذِي عَلَيْهِ الْحَقُّ سَفِيهًا أَوْ ضَعِيفًا أَوْ لَا يَسْتَطِيعُ أَنْ يُمِلَّ هُوَ فَلْيُمْلِلْ وَلِيُّهُ بِالْعَدْلِ وَاسْتَشْهِدُوا شَهِيدَيْنِ مِنْ رِجَالِكُمْ فَإِنْ لَمْ يَكُونَا رَجُلَيْنِ فَرَجُلٌ وَامْرَأَتَانِ مِمَّنْ تَرْضَوْنَ مِنَ الشُّهَدَاءِ أَنْ تَضِلَّ إِحْدَاهُمَا فَتُذَكِّرَ إِحْدَاهُمَا الْأُخْرَى وَلَا يَأْبَ الشُّهَدَاءُ إِذَا مَا دُعُوا وَلَا تَسْأَمُوا أَنْ تَكْتُبُوهُ صَغِيرًا أَوْ كَبِيرًا إِلَى أَجَلِهِ ذَلِكُمْ أَقْسَطُ عِنْدَ اللَّهِ وَأَقْوَمُ لِلشَّهَادَةِ وَأَدْنَى أَلَّا تَرْتَابُوا إِلَّا أَنْ تَكُونَ تِجَارَةً حَاضِرَةً تُدِيرُونَهَا بَيْنَكُمْ فَلَيْسَ عَلَيْكُمْ جُنَاحٌ أَلَّا تَكْتُبُوهَا وَأَشْهِدُوا إِذَا تَبَايَعْتُمْ وَلَا يُضَارَّ كَاتِبٌ وَلَا شَهِيدٌ وَإِنْ تَفْعَلُوا فَإِنَّهُ فُسُوقٌ بِكُمْ وَاتَّقُوا اللَّهَ وَيُعَلِّمُكُمُ اللَّهُ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ
++
++Верующие, если вы даете в долг (или берете в долг) на определенный срок [если между вами выстраиваются некие долговые отношения], то непременно запишите [это на бумаге]. Пусть писарь [к примеру, нотариус, у которого вы документально оформите и заверите финансовые обязательства, или вы сами] справедливо все распишет [не двусмысленно, что может привести в последующем к спорам и разбирательствам, а четко и понятно]. И пусть не проявляет непокорность, а напишет так, как научил его Аллах (Бог, Господь) [как следует]. Пусть напишет, а продиктует ему тот, кто берет в долг. Пусть же страшится Всевышнего, Господа своего, и не обманывает даже в малейшем.Если тот, на кого возлагаются долговые обязательства, глуп [неразумно расточителен] или слаб [немощен физически; слишком молод, очень стар], или не может диктовать [не может самостоятельно продиктовать текст или написать его], то пусть за него сделает это опекун [его доверенное лицо, причем] справедливо [верно все изложив]. И пусть [при этом процессе] будут двое свидетелей-мужчин из числа вас. Если нет двоих мужчин, тогда один мужчина и две женщины из тех, кого вы желали бы видеть свидетелями [заслуживающие доверия]. [Две женщины, потому что] если одна из них забудет, тогда вторая напомнит ей. И пусть не отказываются свидетели [от дачи показаний], когда их пригласят [на разрешение спорной ситуации]. И не испытывайте скуку (не ленитесь) зафиксировать на бумаге долговые отношения, устанавливаемые на определенный срок, вне зависимости от того, много или мало (вне зависимости от суммы долга)! Это наиболее справедливо пред Богом, наиболее правильно с точки зрения свидетельства этого процесса и минимизирует [впоследствии] сомнения (подозрения).Исключение — лишь когда вы продаете или покупаете что-то сразу [без отсрочки; из рук в руки], в этом случае нет на вас греха, если вы не пишете (нет необходимости что-то фиксировать). Пусть будут свидетели во время ваших торговых сделок [например, когда присутствует отсрочка платежа]. И пусть не пострадают от этого ни писарь, ни свидетель [ни остальные участники сделки]. Если же вы не последуете этому [преднамеренно навредите], то совершите грех. Бойтесь Аллаха (Бога, Господа) [совершать грех, наносить другим вред]. Всевышний учит вас [как наиболее верно и правильно поступать в ваше же благо]. Он знает абсолютно все [а потому будьте честны, правдивы, обязательны не только в делах, но и в ваших намерениях].
++
++<i>[Йа-аййухаллазина аману иза тада-йантум бидайнин ила ажалим-мусам-ман-фактубух. Уал йактуб-байнакум катибум-бил-’адл. Уа ла йа-ба катибун ай-йактуба кама ‘алламаху-ЛЛаху фал-йактуб. Уал-йумли-лиллази ‘алайхил-хакку уал-йаттаки-ЛЛаха Раббаху уа ла йаб-хс минху шайа. Фаин-каналлази ‘алайхилхакку сафихан ау да-’ифан ау ла йас-таты’у ай-йумиллахууа фал-йумлил уалиййуху бил-’адл. Уасташхиду шахидайни мир-рижаликум; фа-иллам йакуна ражулайни фаражулу-уамра-атани мим-мантардауна минаш-шухада-и ан-тадылла ихдахума фатузак-кира ихдахумал-ухра. Уа ла йа-баш-шухада-у иза м аду-’у. Уа ла тас-аму ан тактубуху сагыран ау кабиран ила ажалих. Заликум аксату ‘инда-ЛЛахи уа акуаму лиш-шахадати уа адна алла тартабу илла ан-такуна тижаратан хадыратан тудирунаха байнакум фалайса ‘алайкум жунахун алла тактубуха. Уа аш-хиду иза табайа’-тум. Уа ла йударра катибуну-уа ла шахид. Уа ин-таф-’алу фа-иннаху фусукум-бикум. Уаттаку-ЛЛах; уа йу-’аллимуку-му-ЛЛах. Уа-Ллаху би-кулли-шай-ин ‘алим]</i>
+diff --git a/src/tests/fixtures/2_282_ayat_without_transliteration.txt b/src/tests/fixtures/2_282_ayat_without_transliteration.txt
+new file mode 100644
+index 0000000..1ae671e
+--- /dev/null
++++ b/src/tests/fixtures/2_282_ayat_without_transliteration.txt
+@@ -0,0 +1,4 @@
++<a href="https://umma.ru/sura-2-al-bakara-korova/#2-282">2:282)</a>
++يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا تَدَايَنْتُمْ بِدَيْنٍ إِلَى أَجَلٍ مُسَمًّى فَاكْتُبُوهُ وَلْيَكْتُبْ بَيْنَكُمْ كَاتِبٌ بِالْعَدْلِ وَلَا يَأْبَ كَاتِبٌ أَنْ يَكْتُبَ كَمَا عَلَّمَهُ اللَّهُ فَلْيَكْتُبْ وَلْيُمْلِلِ الَّذِي عَلَيْهِ الْحَقُّ وَلْيَتَّقِ اللَّهَ رَبَّهُ وَلَا يَبْخَسْ مِنْهُ شَيْئًا فَإِنْ كَانَ الَّذِي عَلَيْهِ الْحَقُّ سَفِيهًا أَوْ ضَعِيفًا أَوْ لَا يَسْتَطِيعُ أَنْ يُمِلَّ هُوَ فَلْيُمْلِلْ وَلِيُّهُ بِالْعَدْلِ وَاسْتَشْهِدُوا شَهِيدَيْنِ مِنْ رِجَالِكُمْ فَإِنْ لَمْ يَكُونَا رَجُلَيْنِ فَرَجُلٌ وَامْرَأَتَانِ مِمَّنْ تَرْضَوْنَ مِنَ الشُّهَدَاءِ أَنْ تَضِلَّ إِحْدَاهُمَا فَتُذَكِّرَ إِحْدَاهُمَا الْأُخْرَى وَلَا يَأْبَ الشُّهَدَاءُ إِذَا مَا دُعُوا وَلَا تَسْأَمُوا أَنْ تَكْتُبُوهُ صَغِيرًا أَوْ كَبِيرًا إِلَى أَجَلِهِ ذَلِكُمْ أَقْسَطُ عِنْدَ اللَّهِ وَأَقْوَمُ لِلشَّهَادَةِ وَأَدْنَى أَلَّا تَرْتَابُوا إِلَّا أَنْ تَكُونَ تِجَارَةً حَاضِرَةً تُدِيرُونَهَا بَيْنَكُمْ فَلَيْسَ عَلَيْكُمْ جُنَاحٌ أَلَّا تَكْتُبُوهَا وَأَشْهِدُوا إِذَا تَبَايَعْتُمْ وَلَا يُضَارَّ كَاتِبٌ وَلَا شَهِيدٌ وَإِنْ تَفْعَلُوا فَإِنَّهُ فُسُوقٌ بِكُمْ وَاتَّقُوا اللَّهَ وَيُعَلِّمُكُمُ اللَّهُ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ
++
++Верующие, если вы даете в долг (или берете в долг) на определенный срок [если между вами выстраиваются некие долговые отношения], то непременно запишите [это на бумаге]. Пусть писарь [к примеру, нотариус, у которого вы документально оформите и заверите финансовые обязательства, или вы сами] справедливо все распишет [не двусмысленно, что может привести в последующем к спорам и разбирательствам, а четко и понятно]. И пусть не проявляет непокорность, а напишет так, как научил его Аллах (Бог, Господь) [как следует]. Пусть напишет, а продиктует ему тот, кто берет в долг. Пусть же страшится Всевышнего, Господа своего, и не обманывает даже в малейшем.Если тот, на кого возлагаются долговые обязательства, глуп [неразумно расточителен] или слаб [немощен физически; слишком молод, очень стар], или не может диктовать [не может самостоятельно продиктовать текст или написать его], то пусть за него сделает это опекун [его доверенное лицо, причем] справедливо [верно все изложив]. И пусть [при этом процессе] будут двое свидетелей-мужчин из числа вас. Если нет двоих мужчин, тогда один мужчина и две женщины из тех, кого вы желали бы видеть свидетелями [заслуживающие доверия]. [Две женщины, потому что] если одна из них забудет, тогда вторая напомнит ей. И пусть не отказываются свидетели [от дачи показаний], когда их пригласят [на разрешение спорной ситуации]. И не испытывайте скуку (не ленитесь) зафиксировать на бумаге долговые отношения, устанавливаемые на определенный срок, вне зависимости от того, много или мало (вне зависимости от суммы долга)! Это наиболее справедливо пред Богом, наиболее правильно с точки зрения свидетельства этого процесса и минимизирует [впоследствии] сомнения (подозрения).Исключение — лишь когда вы продаете или покупаете что-то сразу [без отсрочки; из рук в руки], в этом случае нет на вас греха, если вы не пишете (нет необходимости что-то фиксировать). Пусть будут свидетели во время ваших торговых сделок [например, когда присутствует отсрочка платежа]. И пусть не пострадают от этого ни писарь, ни свидетель [ни остальные участники сделки]. Если же вы не последуете этому [преднамеренно навредите], то совершите грех. Бойтесь Аллаха (Бога, Господа) [совершать грех, наносить другим вред]. Всевышний учит вас [как наиболее верно и правильно поступать в ваше же благо]. Он знает абсолютно все [а потому будьте честны, правдивы, обязательны не только в делах, но и в ваших намерениях].
+diff --git a/src/tests/it/srv/ayats/test_pg_ayat.py b/src/tests/it/srv/ayats/test_pg_ayat.py
+index c315b2f..1f1db57 100644
+--- a/src/tests/it/srv/ayats/test_pg_ayat.py
++++ b/src/tests/it/srv/ayats/test_pg_ayat.py
+@@ -23,0 +24 @@ import datetime
++from pathlib import Path
+@@ -29 +30,5 @@ from eljson.json_doc import JsonDoc
+-from srv.ayats.pg_ayat import PgAyat
++from settings import BASE_DIR
++from srv.ayats.ayat import FkAyat
++from srv.ayats.ayat_identifier import FkIdentifier
++from srv.ayats.pg_ayat import PgAyat, TextLenSafeAyat
++from srv.files.file import FkFile
+@@ -68,0 +74,24 @@ async def _db_ayat(pgsql):
++@pytest.mark.usefixtures('_db_ayat')
++async def test_str(pgsql):
++    got = await PgAyat.from_int(1, pgsql).to_str()
++
++    assert got == '\n'.join([
++        '<a href="https://umma.ruhttps://link-to-sura.domain#1-1">1:1-7)</a>',
++        'Arab text\n',
++        'Ayat content\n',
++        '<i>Transliteration</i>',
++    ])
++
++
++async def test_text_len_safe_ayat(pgsql):
++    got = await TextLenSafeAyat(
++        FkAyat(
++            FkIdentifier(272, 2, '282'),
++            Path(BASE_DIR / 'tests/fixtures/2_282_ayat_rendered.txt').read_text().strip(),
++            FkFile('', ''),
++        ),
++    ).to_str()
++
++    assert got == Path(BASE_DIR / 'tests/fixtures/2_282_ayat_without_transliteration.txt').read_text().strip()
++
++

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ondivi"
-version = "0.0.2a"
+version = "0.0.1a6"
 description = ""
 authors = ["Almaz Ilaletdinov <a.ilaletdinov@yandex.ru>"]
 readme = "README.md"

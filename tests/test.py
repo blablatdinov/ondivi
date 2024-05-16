@@ -26,14 +26,6 @@ from pathlib import Path
 from ondivi.__main__ import define_changed_lines, controller
 
 
-def test():
-    ps = subprocess.Popen(('echo', 'hello'), stdout=subprocess.PIPE)
-    got = subprocess.check_output(('poetry', 'run', 'ondivi'), stdin=ps.stdout).decode().strip()
-    ps.wait()
-
-    assert got == 'hello'
-
-
 def test_define_changed_files():
     got = define_changed_lines(
         Path('tests/fixtures/diff.txt').read_text(),

@@ -24,39 +24,38 @@ from contextlib import suppress
 
 from git import Repo
 
+Diff = str
+FileName = str
 
-def define_changed_lines(diff):
+
+def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:
     """Поиск измененных строк в файлах.
 
-    :return: dict
+    :param diff: Diff
+    :return: dict[FileName, list[int]]
     """
-    res = {}
-    current_file = None
+    res: dict[FileName, list[int]] = {}
+    current_file = ''
     for line in diff.splitlines():
         if line.startswith('diff --git'):
             current_file = line.split(' b/')[-1].strip()
             res[current_file] = []
         elif line.startswith('@@'):
-            line = line.split('@@')[1].strip()
-            added_lines = line.split('+')[1]
+            splitted_line = line.split('@@')[1].strip()
+            added_lines = splitted_line.split('+')[1]
             start_line = int(
                 added_lines.split(',')[0],
             )
-            if ',' not in added_lines:
-                num_lines = 0
-            else:
-                num_lines = int(
-                    added_lines.split(',')[1],
-                ) - 1
+            num_lines = 0 if ',' not in added_lines else int(added_lines.split(',')[1]) - 1
             res[current_file].extend(list(range(
                 start_line, start_line + num_lines + 1,
             )))
     return res
 
 
-def filter_out_violations(changed_lines, violations: list[str]):
+def filter_out_violations(changed_lines: dict[FileName, list[int]], violations: list[str]) -> list[str]:
     res = []
-    for violation in violations.splitlines():
+    for violation in violations:
         with suppress(ValueError, IndexError):
             filename = violation.split(':')[0]
             line = int(violation.split(':')[1])
@@ -68,24 +67,24 @@ def filter_out_violations(changed_lines, violations: list[str]):
     return res
 
 
-def controller(diff, violations):
+def controller(diff: Diff, violations: list[str]) -> list[str]:
     changed_lines = define_changed_lines(diff)
     return filter_out_violations(changed_lines, violations)
 
 
-def main():
+def main() -> None:
     a = 'not empty'
     violations = []
     while a:
         try:
             a = input()
             violations.append(a)
-        except EOFError:
+        except EOFError:  # noqa: PERF203
             break
-    print('\n'.join(
+    print('\n'.join(  # noqa: T201
         controller(
             Repo('.').git.diff('--unified=0', 'origin/master..HEAD'),
-            '\n'.join(violations),
+            violations,
         ),
     ))
 

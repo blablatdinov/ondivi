@@ -104,3 +104,7 @@ build-backend = "poetry.core.masonry.api"
 testpaths = [
   "tests/*",
 ]
+
+[tool.deltaver]
+fail_on_avg = 50
+fail_on_max = 360

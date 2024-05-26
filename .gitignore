@@ -228,3 +228,5 @@ tags
 [._]*.un~
 
 # End of https://www.toptal.com/developers/gitignore/api/python,vim,macos
+
+.deltaver_cache

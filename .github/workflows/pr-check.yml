@@ -91,4 +91,4 @@ jobs:
           VERSION="v3.0.1"
           curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker/releases/download/$VERSION/ec-linux-amd64.tar.gz
           tar xzf ec-linux-amd64.tar.gz
-          bin/ec-linux-amd64
+          bin/ec-linux-amd64 -v

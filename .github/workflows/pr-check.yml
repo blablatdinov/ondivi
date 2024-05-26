@@ -58,6 +58,8 @@ jobs:
         run: poetry install --no-interaction
       - name: Run tests via pytest
         run: make test
+      - name: Check dependencies relevance
+        run: poetry run deltaver poetry.lock --format lock
 
   lint:
     runs-on: ubuntu-latest
@@ -89,4 +91,4 @@ jobs:
           VERSION="v3.0.1"
           curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker/releases/download/$VERSION/ec-linux-amd64.tar.gz
           tar xzf ec-linux-amd64.tar.gz
-          bin/ec-linux-amd64
+          bin/ec-linux-amd64 -v

@@ -20,6 +20,13 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""Ondivi (Only diff violations).
+
+Python script filtering coding violations, identified by static analysis,
+only for changed lines in a Git repo.
+"""
+
+import sys
 from contextlib import suppress
 
 from git import Repo
@@ -28,8 +35,8 @@ Diff = str
 FileName = str
 
 
-def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:
-    """Поиск измененных строк в файлах.
+def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:  # noqa: WPS210. TODO: too many local variables
+    """Define changed lines in file.
 
     :param diff: Diff
     :return: dict[FileName, list[int]]
@@ -46,14 +53,26 @@ def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:
             start_line = int(
                 added_lines.split(',')[0],
             )
-            num_lines = 0 if ',' not in added_lines else int(added_lines.split(',')[1]) - 1
+            if ',' not in added_lines:  # noqa: SIM108. Too complexity line
+                num_lines = 0
+            else:
+                num_lines = int(added_lines.split(',')[1]) - 1
             res[current_file].extend(list(range(
                 start_line, start_line + num_lines + 1,
             )))
     return res
 
 
-def filter_out_violations(changed_lines: dict[FileName, list[int]], violations: list[str]) -> list[str]:
+def filter_out_violations(
+    changed_lines: dict[FileName, list[int]],
+    violations: list[str],
+) -> list[str]:
+    """Collect target violations.
+
+    :param changed_lines: dict[FileName, list[int]], violations: list[str]
+    :param violations: list[str]
+    :return: list[str]
+    """
     res = []
     for violation in violations:
         with suppress(ValueError, IndexError):
@@ -68,20 +87,20 @@ def filter_out_violations(changed_lines: dict[FileName, list[int]], violations: 
 
 
 def controller(diff: Diff, violations: list[str]) -> list[str]:
+    """Entrypoint.
+
+    :param diff: Diff
+    :param violations: list[str]
+    :return: list[str]
+    """
     changed_lines = define_changed_lines(diff)
     return filter_out_violations(changed_lines, violations)
 
 
 def main() -> None:
-    a = 'not empty'
-    violations = []
-    while a:
-        try:
-            a = input()
-            violations.append(a)
-        except EOFError:  # noqa: PERF203
-            break
-    print('\n'.join(  # noqa: T201
+    """Entrypoint."""
+    violations = sys.stdin.read().strip().splitlines()
+    sys.stdout.write('\n'.join(
         controller(
             Repo('.').git.diff('--unified=0', 'origin/master..HEAD'),
             violations,

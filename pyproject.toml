@@ -31,7 +31,6 @@ fixable = [
   "F401",   # Unused import
 ]
 ignore = [
-  "D",       # TODO: write docstrings
   "ANN101",  # Missing type annotation for `self` in method
   "ANN102",  # Missing type annotation for `cls` in classmethod
   "ARG001",  # Unused function argument

@@ -20,12 +20,15 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""Tests for ondivi."""
+
 from pathlib import Path
 
 from ondivi.__main__ import controller, define_changed_lines
 
 
 def test_define_changed_files() -> None:
+    """Testing search changed lines."""
     got = define_changed_lines(
         Path('tests/fixtures/diff.txt').read_text(),
     )
@@ -48,6 +51,7 @@ def test_define_changed_files() -> None:
 
 
 def test_controller() -> None:
+    """Testing script output with diff and violations list."""
     got = controller(
         Path('tests/fixtures/diff.txt').read_text(),
         Path('tests/fixtures/violations.txt').read_text().splitlines(),

@@ -58,6 +58,8 @@ jobs:
         run: poetry install --no-interaction
       - name: Run tests via pytest
         run: make test
+      - name: Check dependencies relevance
+        run: poetry run deltaver poetry.lock --format lock
 
   lint:
     runs-on: ubuntu-latest

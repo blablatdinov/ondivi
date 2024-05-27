@@ -26,6 +26,7 @@ Python script filtering coding violations, identified by static analysis,
 only for changed lines in a Git repo.
 """
 
+import argparse
 import sys
 from contextlib import suppress
 
@@ -99,10 +100,32 @@ def controller(diff: Diff, violations: list[str]) -> list[str]:
 
 def main() -> None:
     """Entrypoint."""
+    parser = argparse.ArgumentParser(
+        description='\n'.join([
+            'Ondivi (Only diff violations).\n',
+            'Python script filtering coding violations, identified by static analysis,',
+            'only for changed lines in a Git repo.\n',
+            'Usage example:\n',
+            'flake8 script.py | ondivi',
+        ]),
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument(
+        '--baseline',
+        dest='baseline',
+        type=str,
+        default='master',
+        help=' '.join([
+            'Commit or branch which will contain legacy code.',
+            'Program filter out violations on baseline',
+            '(default: "master")',
+        ]),
+    )
+    args = parser.parse_args()
     violations = sys.stdin.read().strip().splitlines()
     sys.stdout.write('\n'.join(
         controller(
-            Repo('.').git.diff('--unified=0', 'origin/master..HEAD'),
+            Repo('.').git.diff('--unified=0', args.baseline),
             violations,
         ),
     ))

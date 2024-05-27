@@ -23,11 +23,9 @@
 name: Check pull request
 
 on:
-  pull_request:
-    branches: [ "master" ]
-  # schedule:
-  #   - cron: '17 13 * * 3'
-  # workflow_dispatch:
+  schedule:
+    - cron: '17 13 * * 3'
+  workflow_dispatch:
 
 permissions:
   contents: read

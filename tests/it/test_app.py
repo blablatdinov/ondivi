@@ -28,8 +28,8 @@ import zipfile
 from pathlib import Path
 
 import pytest
-from _pytest.legacypath import TempdirFactory
 from _pytest.fixtures import FixtureRequest
+from _pytest.legacypath import TempdirFactory
 
 
 @pytest.fixture(scope='module')
@@ -53,7 +53,7 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> None:
 
 
 @pytest.fixture(scope='module', params=['>=2,<3', '>=3'])
-def _installed_gitpython(request: FixtureRequest, _test_repo: None):
+def _installed_gitpython(request: FixtureRequest, _test_repo: None) -> None:
     """Test script with different gitpython versions."""
     errors = subprocess.run(
         ['venv/bin/pip', 'install', 'gitpython{0}'.format(request.param)],

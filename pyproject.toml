@@ -61,6 +61,7 @@ ignore = [
   "ARG002",  # Unused method argument
   "D203",    # no-blank-line-before-class
   "D213",    # multi-line-summary-first-line
+  "D401",    # First line of docstring should be in imperative mood
   "D418",    # Function decorated with `@overload` shouldn't contain a docstring
   "FBT001",  # Boolean-typed positional argument in function definition
   "FBT002",  # Boolean-typed positional argument in function definition

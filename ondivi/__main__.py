@@ -114,11 +114,11 @@ def main() -> None:
         '--baseline',
         dest='baseline',
         type=str,
-        default='origin/master..HEAD',
+        default='master',
         help=' '.join([
             'Commit or branch which will contain legacy code.',
             'Program filter out violations on baseline',
-            '(default: "origin/master..HEAD")',
+            '(default: "master")',
         ]),
     )
     args = parser.parse_args()

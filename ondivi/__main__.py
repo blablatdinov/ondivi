@@ -36,8 +36,24 @@ Diff = str
 FileName = str
 
 
-def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:  # noqa: WPS210. TODO: too many local variables
+def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:
     """Define changed lines in file.
+
+    Example of diff:
+
+    +---------------------------------------------------------------------+
+    │ diff --git a/ondivi/__main__.py b/ondivi/__main__.py                | <- filename
+    | index 669d0ff..7a518fa 100644                                       |
+    | --- a/ondivi/__main__.py                                            |
+    | +++ b/ondivi/__main__.py                                            |
+    | @@ -26,0 +27,2 @@ from git import Repo                              | <- Changed lines = [27, 28]
+    | +Diff = str                                                         |
+    | +FileName = str                                                     |
+    | @@ -28 +30,2 @@ from git import Repo                                | <- Changed lines = [27, 28, 30, 31]
+    | -def define_changed_lines(diff):                                    |
+    | +                                                                   |
+    | +def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]: |
+    +---------------------------------------------------------------------+
 
     :param diff: Diff
     :return: dict[FileName, list[int]]
@@ -45,23 +61,42 @@ def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:  # noqa: WPS2
     res: dict[FileName, list[int]] = {}
     current_file = ''
     for line in diff.splitlines():
-        if line.startswith('diff --git'):
+        if _line_contain_filename(line):
             current_file = line.split(' b/')[-1].strip()
             res[current_file] = []
-        elif line.startswith('@@'):
-            splitted_line = line.split('@@')[1].strip()
-            added_lines = splitted_line.split('+')[1]
-            start_line = int(
-                added_lines.split(',')[0],
-            )
-            if ',' not in added_lines:  # noqa: SIM108. Too complexity line
-                num_lines = 0
-            else:
-                num_lines = int(added_lines.split(',')[1]) - 1
-            res[current_file].extend(list(range(
-                start_line, start_line + num_lines + 1,
-            )))
+        elif _diff_line_contain_changed_lines(line):
+            res[current_file].extend(_changed_lines(line))
     return res
+
+
+def _line_contain_filename(diff_line: str) -> bool:
+    return diff_line.startswith('diff --git')
+
+
+def _diff_line_contain_changed_lines(diff_line: str) -> bool:
+    return diff_line.startswith('@@')
+
+
+def _changed_lines(diff_line: str) -> list[int]:
+    """Changed lines.
+
+    >>> _changed_lines('@@ -28 +30,2 @@ from git import Repo')
+    [30, 31]
+
+    :param diff_line: str
+    :return: list[int]
+    """
+    splitted_line = diff_line.split('@@')[1].strip()
+    added_lines = splitted_line.split('+')[1]
+    start_line = int(
+        added_lines.split(',')[0],
+    )
+    num_lines = 0
+    if ',' in added_lines:
+        num_lines = int(added_lines.split(',')[1]) - 1
+    return list(range(
+        start_line, start_line + num_lines + 1,
+    ))
 
 
 def filter_out_violations(

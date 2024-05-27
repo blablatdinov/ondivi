@@ -27,7 +27,6 @@ only for changed lines in a Git repo.
 """
 
 import argparse
-import re
 import sys
 from contextlib import suppress
 
@@ -59,25 +58,14 @@ def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:
     :param diff: Diff
     :return: dict[FileName, list[int]]
     """
-    res = {}
+    res: dict[FileName, list[int]] = {}
     current_file = ''
     for line in diff.splitlines():
         if _line_contain_filename(line):
             current_file = line.split(' b/')[-1].strip()
             res[current_file] = []
         elif _diff_line_contain_changed_lines(line):
-            splitted_line = line.split('@@')[1].strip()
-            added_lines = splitted_line.split('+')[1]
-            start_line = int(
-                added_lines.split(',')[0],
-            )
-            if ',' not in added_lines:  # noqa: SIM108. Too complexity line
-                num_lines = 0
-            else:
-                num_lines = int(added_lines.split(',')[1]) - 1
-            res[current_file].extend(list(range(
-                start_line, start_line + num_lines + 1,
-            )))
+            res[current_file].extend(_changed_lines(line))
     return res
 
 
@@ -87,6 +75,25 @@ def _line_contain_filename(diff_line: str) -> bool:
 
 def _diff_line_contain_changed_lines(diff_line: str) -> bool:
     return diff_line.startswith('@@')
+
+
+def _changed_lines(diff_line: str) -> list[int]:
+    """Changed lines.
+
+    >>> _changed_lines('@@ -28 +30,2 @@ from git import Repo')
+    [30, 31]
+    """
+    splitted_line = diff_line.split('@@')[1].strip()
+    added_lines = splitted_line.split('+')[1]
+    start_line = int(
+        added_lines.split(',')[0],
+    )
+    num_lines = 0
+    if ',' in added_lines:
+        num_lines = int(added_lines.split(',')[1]) - 1
+    return list(range(
+        start_line, start_line + num_lines + 1,
+    ))
 
 
 def filter_out_violations(

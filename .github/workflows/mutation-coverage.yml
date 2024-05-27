@@ -59,7 +59,7 @@ jobs:
       - name: Run mutmut
         run: |
           poetry run mutmut run --CI --no-progress
-          mutant_ids=poetry run mutmut result-ids survived | tr ' ' '\n'
+          mutant_ids=$(poetry run mutmut result-ids survived | tr ' ' '\n')
           for id in $mutant_ids
           do
             poetry run mutmut show $id

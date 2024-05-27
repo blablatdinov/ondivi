@@ -42,6 +42,7 @@ isort = "5.13.2"
 pytest-cov = "5.0.0"
 mypy = "1.10.0"
 deltaver = "0.2.1"
+mutmut = "2.5.0"
 
 [tool.isort]
 line_length = 120
@@ -108,3 +109,8 @@ testpaths = [
 [tool.deltaver]
 fail_on_avg = 50
 fail_on_max = 360
+
+[tool.mutmut]
+paths_to_mutate="ondivi"
+runner="pytest tests -x -q --tb=no -o addopts=''"
+tests_dir="tests"

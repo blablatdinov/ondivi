@@ -29,6 +29,7 @@ from pathlib import Path
 
 import pytest
 from _pytest.legacypath import TempdirFactory
+from _pytest.fixtures import FixtureRequest
 
 
 @pytest.fixture(scope='module')
@@ -46,10 +47,23 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> None:
         zip_ref.extractall(tmp_path)
     os.chdir(tmp_path / 'ondivi-test-repo')
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
+    subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'flake8', str(current_dir)], check=True)
+    subprocess.run(['venv/bin/pip', 'uninstall', 'gitpython', '-y'], check=True)
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.fixture(scope='module', params=['>=2,<3', '>=3'])
+def _installed_gitpython(request: FixtureRequest, _test_repo: None):
+    """Test script with different gitpython versions."""
+    errors = subprocess.run(
+        ['venv/bin/pip', 'install', 'gitpython{0}'.format(request.param)],
+        stderr=subprocess.PIPE,
+        check=True,
+    ).stderr
+    assert not errors
+
+
+@pytest.mark.usefixtures('_installed_gitpython')
 def test() -> None:
     """Test script with real git repo."""
     got = subprocess.run(
@@ -65,7 +79,7 @@ def test() -> None:
     assert got == 'file.py:4:80: E501 line too long (119 > 79 characters)'
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('_installed_gitpython')
 def test_baseline_default() -> None:
     """Test baseline default."""
     got = subprocess.run(

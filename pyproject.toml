@@ -29,7 +29,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
-gitpython = "^3.0"
+gitpython = ">=2,<4"
 
 [tool.poetry.scripts]
 ondivi = "ondivi.__main__:main"

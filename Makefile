@@ -33,3 +33,7 @@ unit:
 
 it:  # integration tests
 	poetry run pytest tests/it -s -vv
+
+clean:
+	rm -rf .deltaver_cache .mypy_cache .pytest_cache .ruff_cache .coverage .mutmut-cache dist
+	find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete

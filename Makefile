@@ -26,5 +26,10 @@ lint:
 	poetry run flake8 ondivi tests
 	poetry run mypy ondivi tests --strict
 
-test:
-	poetry run pytest --cov=ondivi --cov-report=term-missing:skip-covered -vv
+test: unit it
+
+unit:
+	poetry run pytest tests/unit --cov=ondivi --cov-report=term-missing:skip-covered -vv
+
+it:  # integration tests
+	poetry run pytest tests/it -s -vv

@@ -82,6 +82,9 @@ def _changed_lines(diff_line: str) -> list[int]:
 
     >>> _changed_lines('@@ -28 +30,2 @@ from git import Repo')
     [30, 31]
+
+    :param diff_line: str
+    :return: list[int]
     """
     splitted_line = diff_line.split('@@')[1].strip()
     added_lines = splitted_line.split('+')[1]

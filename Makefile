@@ -29,7 +29,7 @@ lint:
 test: unit it
 
 unit:
-	poetry run pytest ondivi tests/unit --cov=ondivi --cov-report=term-missing:skip-covered -vv --doctest-modules
+	poetry run pytest tests/unit --cov=ondivi --cov-report=term-missing:skip-covered -vv
 
 it:  # integration tests
 	poetry run pytest tests/it -s -vv

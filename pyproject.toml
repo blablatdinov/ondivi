@@ -108,3 +108,8 @@ testpaths = [
 [tool.deltaver]
 fail_on_avg = 50
 fail_on_max = 360
+
+[tool.mutmut]
+paths_to_mutate="ondivi"
+runner="pytest tests -x -q --tb=no -o addopts=''"
+tests_dir="tests"

@@ -54,7 +54,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
       - name: Run tests via pytest
-        run: poetry run pytest
+        run: make test
 
   publish-pypi:
     needs: tests

@@ -28,7 +28,6 @@ import zipfile
 from pathlib import Path
 
 import pytest
-from _pytest.fixtures import FixtureRequest
 from _pytest.legacypath import TempdirFactory
 
 
@@ -48,26 +47,32 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> None:
     os.chdir(tmp_path / 'ondivi-test-repo')
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
-    subprocess.run(['venv/bin/pip', 'install', 'flake8', str(current_dir)], check=True)
-    subprocess.run(['venv/bin/pip', 'uninstall', 'gitpython', '-y'], check=True)
+    subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', str(current_dir)], check=True)
 
 
-@pytest.fixture(scope='module', params=['>=2,<3', '>=3'])
-def _installed_gitpython(request: FixtureRequest, _test_repo: None) -> None:
+@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.parametrize('version', ['>=2,<3', '>=3'])
+def test_gitpython_versions(version) -> None:
     """Test script with different gitpython versions."""
-    errors = subprocess.run(
-        ['venv/bin/pip', 'install', 'gitpython{0}'.format(request.param)],
-        stderr=subprocess.PIPE,
-        check=True,
-    ).stderr
-    assert not errors
+    subprocess.run(['venv/bin/pip', 'install', 'gitpython{0}'.format(version)], check=True)
+    got = subprocess.run(
+        ['venv/bin/ondivi'],
+        stdin=subprocess.Popen(
+            ['venv/bin/flake8', 'file.py'],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    ).stdout.decode('utf-8').strip()
+
+    assert got == 'file.py:4:80: E501 line too long (119 > 79 characters)'
 
 
-@pytest.mark.usefixtures('_installed_gitpython')
+@pytest.mark.usefixtures('_test_repo')
 def test() -> None:
     """Test script with real git repo."""
     got = subprocess.run(
-        ['ondivi', '--baseline', '56faa56'],
+        ['venv/bin/ondivi', '--baseline', '56faa56'],
         stdin=subprocess.Popen(
             ['venv/bin/flake8', 'file.py'],
             stdout=subprocess.PIPE,
@@ -79,11 +84,11 @@ def test() -> None:
     assert got == 'file.py:4:80: E501 line too long (119 > 79 characters)'
 
 
-@pytest.mark.usefixtures('_installed_gitpython')
+@pytest.mark.usefixtures('_test_repo')
 def test_baseline_default() -> None:
     """Test baseline default."""
     got = subprocess.run(
-        ['ondivi'],
+        ['venv/bin/ondivi'],
         stdin=subprocess.Popen(
             ['venv/bin/flake8', 'file.py'],
             stdout=subprocess.PIPE,
@@ -93,3 +98,25 @@ def test_baseline_default() -> None:
     ).stdout.decode('utf-8').strip()
 
     assert got == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_ruff() -> None:
+    """Test ruff."""
+    got = subprocess.run(
+        ['venv/bin/ondivi'],
+        stdin=subprocess.Popen(
+            ['venv/bin/ruff', 'check', '--select=ALL', 'file.py'],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    ).stdout.decode('utf-8').strip()
+
+    assert got == '\n'.join([
+        'file.py:4:5: T201 `print` found',
+        'file.py:4:11: Q000 [*] Single quotes found but double quotes preferred',
+        'file.py:4:89: E501 Line too long (119 > 88)',
+        'Found 13 errors.',
+        '[*] 4 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
+    ])

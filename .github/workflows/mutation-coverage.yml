@@ -58,7 +58,7 @@ jobs:
         run: poetry install --no-interaction
       - name: Run mutmut
         run: |
-          poetry run mutmut run
+          poetry run mutmut run --CI
           mutant_ids=poetry run mutmut result-ids survived | tr ' ' '\n'
           for id in $mutant_ids
           do

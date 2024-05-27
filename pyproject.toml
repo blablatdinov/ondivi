@@ -43,6 +43,7 @@ pytest-cov = "5.0.0"
 mypy = "1.10.0"
 deltaver = "0.2.1"
 mutmut = "2.5.0"
+pytest-randomly = "3.15.0"
 
 [tool.isort]
 line_length = 120
@@ -61,6 +62,7 @@ ignore = [
   "ARG002",  # Unused method argument
   "D203",    # no-blank-line-before-class
   "D213",    # multi-line-summary-first-line
+  "D401",    # First line of docstring should be in imperative mood
   "D418",    # Function decorated with `@overload` shouldn't contain a docstring
   "FBT001",  # Boolean-typed positional argument in function definition
   "FBT002",  # Boolean-typed positional argument in function definition

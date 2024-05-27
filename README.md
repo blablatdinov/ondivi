@@ -27,6 +27,27 @@ Run the script:
 flake8 script.py | ondivi
 ```
 
+```bash
+ondivi -h
+```
+
+```
+usage: ondivi [-h] [--baseline BASELINE]
+
+Ondivi (Only diff violations).
+
+Python script filtering coding violations, identified by static analysis,
+only for changed lines in a Git repo.
+
+Usage example:
+
+flake8 script.py | ondivi
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --baseline BASELINE  Commit or branch which will contain legacy code. Program filter out violations on baseline (default: "origin/master..HEAD")
+```
+
 ## How it Works
 
 The script parses the Git diff output to identify the changed lines in each file.

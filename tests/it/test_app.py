@@ -52,7 +52,7 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> None:
 
 @pytest.mark.usefixtures('_test_repo')
 @pytest.mark.parametrize('version', ['>=2,<3', '>=3'])
-def test_gitpython_versions(version) -> None:
+def test_gitpython_versions(version: str) -> None:
     """Test script with different gitpython versions."""
     subprocess.run(['venv/bin/pip', 'install', 'gitpython{0}'.format(version)], check=True)
     got = subprocess.run(

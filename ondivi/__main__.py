@@ -27,6 +27,7 @@ only for changed lines in a Git repo.
 """
 
 import argparse
+import re
 import sys
 from contextlib import suppress
 
@@ -36,19 +37,35 @@ Diff = str
 FileName = str
 
 
-def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:  # noqa: WPS210. TODO: too many local variables
+def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:
     """Define changed lines in file.
+
+    Example of diff:
+
+    +---------------------------------------------------------------------+
+    │ diff --git a/ondivi/__main__.py b/ondivi/__main__.py                | <- filename
+    | index 669d0ff..7a518fa 100644                                       |
+    | --- a/ondivi/__main__.py                                            |
+    | +++ b/ondivi/__main__.py                                            |
+    | @@ -26,0 +27,2 @@ from git import Repo                              | <- Changed lines = [27, 28]
+    | +Diff = str                                                         |
+    | +FileName = str                                                     |
+    | @@ -28 +30,2 @@ from git import Repo                                | <- Changed lines = [27, 28, 30, 31]
+    | -def define_changed_lines(diff):                                    |
+    | +                                                                   |
+    | +def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]: |
+    +---------------------------------------------------------------------+
 
     :param diff: Diff
     :return: dict[FileName, list[int]]
     """
-    res: dict[FileName, list[int]] = {}
+    res = {}
     current_file = ''
     for line in diff.splitlines():
-        if line.startswith('diff --git'):
+        if _line_contain_filename(line):
             current_file = line.split(' b/')[-1].strip()
             res[current_file] = []
-        elif line.startswith('@@'):
+        elif _diff_line_contain_changed_lines(line):
             splitted_line = line.split('@@')[1].strip()
             added_lines = splitted_line.split('+')[1]
             start_line = int(
@@ -62,6 +79,14 @@ def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:  # noqa: WPS2
                 start_line, start_line + num_lines + 1,
             )))
     return res
+
+
+def _line_contain_filename(diff_line: str) -> bool:
+    return diff_line.startswith('diff --git')
+
+
+def _diff_line_contain_changed_lines(diff_line: str) -> bool:
+    return diff_line.startswith('@@')
 
 
 def filter_out_violations(

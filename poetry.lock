@@ -192,23 +192,23 @@ files = [
 
 [[package]]
 name = "deltaver"
-version = "0.2.1"
+version = "0.2.2"
 description = ""
 optional = false
-python-versions = ">=3.9,<4.0"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "deltaver-0.2.1-py3-none-any.whl", hash = "sha256:1893186eacb0b45dccc92511e2b029359e828f95026303900e4b3c5ec6206f20"},
-    {file = "deltaver-0.2.1.tar.gz", hash = "sha256:71337b9ed08e80b1e4b131a69d053568509fc4b1294417c6947119f2541f98b7"},
+    {file = "deltaver-0.2.2-py3-none-any.whl", hash = "sha256:0a533e3d5374ade3a5ebdbbe6e2cafc16d49c7d42f70c7d6218eec0da12d14a2"},
+    {file = "deltaver-0.2.2.tar.gz", hash = "sha256:6d9e35452873fb85fe7e6ff09a6ef97de8f112608a2092275128dc6376c78fd8"},
 ]
 
 [package.dependencies]
 attrs = ">=23.0,<24.0"
 httpx = ">=0,<1"
-packaging = ">=23.2,<24.0"
+packaging = ">=23,<25"
 rich = ">=13.0,<14.0"
 toml = ">=0.10.2,<0.11.0"
-typer = ">=0.9,<0.10"
-typing-extensions = ">=4.9.0,<5.0.0"
+typer = ">=0,<1"
+typing-extensions = ">=4.9,<5.0"
 
 [[package]]
 name = "docutils"
@@ -1222,4 +1222,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "69c9f2de1b893f27628896ec85ae8e91e6558bc69aaaf9bf741aeb592e94d75b"
+content-hash = "d1c1bd4c019c7cb0e72b6a84e4d66e7846ab5f84d9bff6e8fbde3b34e6648381"

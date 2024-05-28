@@ -107,7 +107,7 @@ def filter_out_violations(
 
     :param changed_lines: dict[FileName, list[int]], violations: list[str]
     :param violations: list[str]
-    :return: list[str]
+    :return: tuple[list[str], bool]
     """
     res = []
     violation_found = False
@@ -124,12 +124,12 @@ def filter_out_violations(
     return res, violation_found
 
 
-def controller(diff: Diff, violations: list[str]) -> list[str]:
+def controller(diff: Diff, violations: list[str]) -> tuple[list[str], bool]:
     """Entrypoint.
 
     :param diff: Diff
     :param violations: list[str]
-    :return: list[str]
+    :return: tuple[list[str], bool]
     """
     changed_lines = define_changed_lines(diff)
     return filter_out_violations(changed_lines, violations)

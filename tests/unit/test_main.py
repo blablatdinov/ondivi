@@ -52,7 +52,7 @@ def test_define_changed_files() -> None:
 
 def test_controller() -> None:
     """Testing script output with diff and violations list."""
-    got = controller(
+    got, _ = controller(
         Path('tests/fixtures/diff.txt').read_text(),
         Path('tests/fixtures/violations.txt').read_text().splitlines(),
     )

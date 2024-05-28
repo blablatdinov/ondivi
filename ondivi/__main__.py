@@ -102,7 +102,7 @@ def _changed_lines(diff_line: str) -> list[int]:
 def filter_out_violations(
     changed_lines: dict[FileName, list[int]],
     violations: list[str],
-) -> list[str]:
+) -> tuple[list[str], bool]:
     """Collect target violations.
 
     :param changed_lines: dict[FileName, list[int]], violations: list[str]
@@ -110,6 +110,7 @@ def filter_out_violations(
     :return: list[str]
     """
     res = []
+    violation_found = False
     for violation in violations:
         with suppress(ValueError, IndexError):
             filename = violation.split(':')[0]
@@ -118,8 +119,9 @@ def filter_out_violations(
                 continue
             if line not in changed_lines[filename]:
                 continue
+            violation_found = True
         res.append(violation)
-    return res
+    return res, violation_found
 
 
 def controller(diff: Diff, violations: list[str]) -> list[str]:
@@ -157,13 +159,13 @@ def main() -> None:
         ]),
     )
     args = parser.parse_args()
-    violations = controller(
+    filtered_lines, violation_found = controller(
         Repo('.').git.diff('--unified=0', args.baseline),
         sys.stdin.read().strip().splitlines(),
     )
-    sys.stdout.write('\n'.join(violations))
+    sys.stdout.write('\n'.join(filtered_lines))
     sys.stdout.write('\n')
-    if violations:
+    if violation_found:
         sys.exit(1)
 
 

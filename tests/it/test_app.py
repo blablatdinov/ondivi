@@ -140,3 +140,20 @@ def test_without_violations() -> None:
     )
 
     assert got.returncode == 0
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_info_message() -> None:
+    """Test exit with info message."""
+    got = subprocess.run(
+        ['venv/bin/ondivi'],
+        stdin=subprocess.Popen(
+            ['echo', 'All files corect!'],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.stdout.decode('utf-8').strip() == 'All files corect!'
+    assert got.returncode == 0

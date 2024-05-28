@@ -32,11 +32,12 @@ from contextlib import suppress
 
 from git import Repo
 
-Diff = str
-FileName = str
+DiffStr = str
+FileNameStr = str
+ActualViolationsListStr = list[str]
 
 
-def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:
+def define_changed_lines(diff: DiffStr) -> dict[FileNameStr, list[int]]:
     """Define changed lines in file.
 
     Example of diff:
@@ -55,10 +56,10 @@ def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]:
     | +def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]: |
     +---------------------------------------------------------------------+
 
-    :param diff: Diff
-    :return: dict[FileName, list[int]]
+    :param diff: DiffStr
+    :return: dict[FileNameStr, list[int]]
     """
-    res: dict[FileName, list[int]] = {}
+    res: dict[FileNameStr, list[int]] = {}
     current_file = ''
     for line in diff.splitlines():
         if _line_contain_filename(line):
@@ -100,14 +101,14 @@ def _changed_lines(diff_line: str) -> list[int]:
 
 
 def filter_out_violations(
-    changed_lines: dict[FileName, list[int]],
+    changed_lines: dict[FileNameStr, list[int]],
     violations: list[str],
-) -> tuple[list[str], bool]:
+) -> tuple[ActualViolationsListStr, bool]:
     """Collect target violations.
 
     :param changed_lines: dict[FileName, list[int]], violations: list[str]
     :param violations: list[str]
-    :return: tuple[list[str], bool]
+    :return: tuple[ActualViolationsListStr, bool]
     """
     res = []
     violation_found = False
@@ -124,12 +125,12 @@ def filter_out_violations(
     return res, violation_found
 
 
-def controller(diff: Diff, violations: list[str]) -> tuple[list[str], bool]:
+def controller(diff: DiffStr, violations: list[str]) -> tuple[ActualViolationsListStr, bool]:
     """Entrypoint.
 
     :param diff: Diff
     :param violations: list[str]
-    :return: tuple[list[str], bool]
+    :return: tuple[ActualViolationsListStr, bool]
     """
     changed_lines = define_changed_lines(diff)
     return filter_out_violations(changed_lines, violations)

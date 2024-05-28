@@ -63,9 +63,10 @@ def test_gitpython_versions(version: str) -> None:
         ).stdout,
         stdout=subprocess.PIPE,
         check=False,
-    ).stdout.decode('utf-8').strip()
+    )
 
-    assert got == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.decode('utf-8').strip() == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+    assert got.returncode == 1
 
 
 @pytest.mark.usefixtures('_test_repo')
@@ -79,9 +80,10 @@ def test() -> None:
         ).stdout,
         stdout=subprocess.PIPE,
         check=False,
-    ).stdout.decode('utf-8').strip()
+    )
 
-    assert got == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.decode('utf-8').strip() == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+    assert got.returncode == 1
 
 
 @pytest.mark.usefixtures('_test_repo')
@@ -95,9 +97,10 @@ def test_baseline_default() -> None:
         ).stdout,
         stdout=subprocess.PIPE,
         check=False,
-    ).stdout.decode('utf-8').strip()
+    )
 
-    assert got == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.decode('utf-8').strip() == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+    assert got.returncode == 1
 
 
 @pytest.mark.usefixtures('_test_repo')
@@ -111,12 +114,13 @@ def test_ruff() -> None:
         ).stdout,
         stdout=subprocess.PIPE,
         check=False,
-    ).stdout.decode('utf-8').strip()
+    )
 
-    assert got == '\n'.join([
+    assert got.stdout.decode('utf-8').strip() == '\n'.join([
         'file.py:4:5: T201 `print` found',
         'file.py:4:11: Q000 [*] Single quotes found but double quotes preferred',
         'file.py:4:89: E501 Line too long (119 > 88)',
         'Found 13 errors.',
         '[*] 4 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
     ])
+    assert got.returncode == 1

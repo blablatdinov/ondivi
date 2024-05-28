@@ -157,14 +157,14 @@ def main() -> None:
         ]),
     )
     args = parser.parse_args()
-    violations = sys.stdin.read().strip().splitlines()
-    sys.stdout.write('\n'.join(
-        controller(
-            Repo('.').git.diff('--unified=0', args.baseline),
-            violations,
-        ),
-    ))
+    violations = controller(
+        Repo('.').git.diff('--unified=0', args.baseline),
+        sys.stdin.read().strip().splitlines(),
+    )
+    sys.stdout.write('\n'.join(violations))
     sys.stdout.write('\n')
+    if violations:
+        sys.exit(1)
 
 
 if __name__ == '__main__':

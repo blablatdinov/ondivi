@@ -1,7 +1,7 @@
 # Ondivi (Only diff violations)
 
 [![wemake-python-styleguide](https://img.shields.io/badge/style-wemake-000000.svg)](https://github.com/wemake-services/wemake-python-styleguide)
-[![Lines of code](https://tokei.rs/b1/github/blablatdinov/ondivi)](https://github.com/XAMPPRocky/tokei)
+[![Lines of code](https://tokei.rs/b1/github/blablatdinov/ondivi)](https://github.com/XAMPPRocky/tokei_rs).
 [![Hits-of-Code](https://hitsofcode.com/github/blablatdinov/ondivi)](https://hitsofcode.com/github/blablatdinov/quranbot-aiogram/view)
 
 This is a simple Python script designed to filter coding violations (likely identified by a static analyzer) for only the lines that have been changed in a Git repository.
@@ -45,7 +45,7 @@ flake8 script.py | ondivi
 
 optional arguments:
   -h, --help           show this help message and exit
-  --baseline BASELINE  Commit or branch which will contain legacy code. Program filter out violations on baseline (default: "origin/master..HEAD")
+  --baseline BASELINE  Commit or branch which will contain legacy code. Program filter out violations on baseline (default: "master")
 ```
 
 ## How it Works

@@ -124,3 +124,19 @@ def test_ruff() -> None:
         '[*] 4 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
     ])
     assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_without_violations() -> None:
+    """Test ruff."""
+    got = subprocess.run(
+        ['venv/bin/ondivi'],
+        stdin=subprocess.Popen(
+            ['echo', ''],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.returncode == 0

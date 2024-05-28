@@ -128,7 +128,7 @@ def test_ruff() -> None:
 
 @pytest.mark.usefixtures('_test_repo')
 def test_without_violations() -> None:
-    """Test ruff."""
+    """Test exit without violations."""
     got = subprocess.run(
         ['venv/bin/ondivi'],
         stdin=subprocess.Popen(

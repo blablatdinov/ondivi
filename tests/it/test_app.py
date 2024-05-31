@@ -124,8 +124,10 @@ def test_ruff() -> None:
         'file.py:12:5: T201 `print` found',
         'file.py:12:11: Q000 [*] Single quotes found but double quotes preferred',
         'file.py:12:89: E501 Line too long (119 > 88)',
-        'Found 15 errors.',
-        '[*] 6 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
+        'file.py:16:16: Q000 [*] Single quotes found but double quotes preferred',
+        'file.py:16:23: Q000 [*] Single quotes found but double quotes preferred',
+        'Found 17 errors.',
+        '[*] 8 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
     ])
     assert got.returncode == 1
 

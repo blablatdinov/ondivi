@@ -47,7 +47,7 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> None:
     os.chdir(tmp_path / 'ondivi-test-repo')
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
-    subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', str(current_dir)], check=True)
+    subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
 
 
 @pytest.mark.usefixtures('_test_repo')
@@ -65,7 +65,7 @@ def test_gitpython_versions(version: str) -> None:
         check=False,
     )
 
-    assert got.stdout.decode('utf-8').strip() == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
     assert got.returncode == 1
 
 
@@ -82,7 +82,11 @@ def test() -> None:
         check=False,
     )
 
-    assert got.stdout.decode('utf-8').strip() == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.decode('utf-8').strip().splitlines() == [
+        'file.py:3:1: E302 expected 2 blank lines, found 1',
+        'file.py:9:1: E302 expected 2 blank lines, found 1',
+        'file.py:12:80: E501 line too long (119 > 79 characters)',
+    ]
     assert got.returncode == 1
 
 
@@ -99,7 +103,7 @@ def test_baseline_default() -> None:
         check=False,
     )
 
-    assert got.stdout.decode('utf-8').strip() == 'file.py:4:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
     assert got.returncode == 1
 
 
@@ -117,12 +121,32 @@ def test_ruff() -> None:
     )
 
     assert got.stdout.decode('utf-8').strip() == '\n'.join([
-        'file.py:4:5: T201 `print` found',
-        'file.py:4:11: Q000 [*] Single quotes found but double quotes preferred',
-        'file.py:4:89: E501 Line too long (119 > 88)',
-        'Found 13 errors.',
-        '[*] 4 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
+        'file.py:12:5: T201 `print` found',
+        'file.py:12:11: Q000 [*] Single quotes found but double quotes preferred',
+        'file.py:12:89: E501 Line too long (119 > 88)',
+        'Found 15 errors.',
+        '[*] 6 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
     ])
+    assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_mypy() -> None:
+    """Test mypy."""
+    got = subprocess.run(
+        ['venv/bin/ondivi'],
+        stdin=subprocess.Popen(
+            ['venv/bin/mypy', 'file.py'],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.stdout.decode('utf-8').strip().splitlines() == [
+        'file.py:16: error: Argument 2 to "User" has incompatible type "str"; expected "int"  [arg-type]',
+        'Found 2 errors in 1 file (checked 1 source file)',
+    ]
     assert got.returncode == 1
 
 

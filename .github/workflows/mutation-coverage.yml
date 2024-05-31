@@ -57,11 +57,4 @@ jobs:
       - name: Run mutmut
         run: |
           poetry run mutmut run --CI --no-progress
-          mutant_ids=$(poetry run mutmut result-ids survived | tr ' ' '\n')
-          count=1
-          for id in $mutant_ids
-          do
-            printf "############### Mutant %d: ###############\n\n" "$count"
-            poetry run mutmut show $id
-            (( count++ ))
-          done
+          poetry run mutmut show ondivi/__main__.py

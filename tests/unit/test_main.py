@@ -24,7 +24,7 @@
 
 from pathlib import Path
 
-from ondivi.__main__ import controller, define_changed_lines
+from ondivi.__main__ import controller, define_changed_lines, filter_out_violations
 
 
 def test_define_changed_files() -> None:
@@ -52,7 +52,7 @@ def test_define_changed_files() -> None:
 
 def test_controller() -> None:
     """Testing script output with diff and violations list."""
-    got, _ = controller(
+    got, found = controller(
         Path('tests/fixtures/diff.txt').read_text(),
         Path('tests/fixtures/violations.txt').read_text().splitlines(),
     )
@@ -81,3 +81,22 @@ def test_controller() -> None:
             'without explicit `encoding` argument',
         ]),
     ]
+    assert found
+
+
+def test_without_violation() -> None:
+    violations, found = filter_out_violations(
+        {},
+        ['All checks passed'],
+    )
+
+    assert violations == ['All checks passed']
+    assert not found
+
+
+def test_define_filename() -> None:
+    got = define_changed_lines(
+        'diff --git XX b/ XX b/ file.py',
+    )
+
+    assert got == {'file.py': []}

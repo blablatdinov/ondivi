@@ -63,7 +63,6 @@ def define_changed_lines(diff: DiffStr) -> dict[FileNameStr, list[int]]:
     current_file = ''
     for line in diff.splitlines():
         if _line_contain_filename(line):
-            # assert False, line.split(' b/')
             current_file = line.split(' b/')[-1].strip()
             res[current_file] = []
         elif _diff_line_contain_changed_lines(line):

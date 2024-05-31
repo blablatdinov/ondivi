@@ -85,6 +85,7 @@ def test_controller() -> None:
 
 
 def test_without_violation() -> None:
+    """Test filtering without violations."""
     violations, found = filter_out_violations(
         {},
         ['All checks passed'],
@@ -95,6 +96,10 @@ def test_without_violation() -> None:
 
 
 def test_define_filename() -> None:
+    """Test define filename.
+
+    Created for kill mutant
+    """
     got = define_changed_lines(
         'diff --git XX b/ XX b/ file.py',
     )

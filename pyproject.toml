@@ -35,7 +35,7 @@ gitpython = ">=2,<4"
 ondivi = "ondivi.__main__:main"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "0.4.7"
+ruff = "0.4.8"
 wemake-python-styleguide = "0.19.2"
 pytest = "8.2.2"
 isort = "5.13.2"

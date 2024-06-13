@@ -30,6 +30,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.9,<3.14"
 gitpython = ">=2,<4"
+parse = "^1"
 
 [tool.poetry.scripts]
 ondivi = "ondivi.__main__:main"

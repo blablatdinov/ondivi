@@ -183,3 +183,20 @@ def test_info_message() -> None:
 
     assert got.stdout.decode('utf-8').strip() == 'All files corect!'
     assert got.returncode == 0
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_format() -> None:
+    """Test with custom format."""
+    got = subprocess.run(
+        ['venv/bin/ondivi', '--format', 'line={line_num:d} file={filename}{other}'],
+        stdin=subprocess.Popen(
+            ['echo', 'line=12 filename=file.py message=`print` found'],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.stdout.decode('utf-8').strip() == 'line=12 filename=file.py message=`print` found'
+    assert got.returncode == 0

@@ -53,34 +53,19 @@ def test_define_changed_files() -> None:
 def test_controller() -> None:
     """Testing script output with diff and violations list."""
     got, found = controller(
-        Path('tests/fixtures/diff.txt').read_text(),
-        Path('tests/fixtures/violations.txt').read_text().splitlines(),
+        '\n'.join([
+            'diff --git a/ondivi/__main__.py b/ondivi/__main__.py',
+            'index 669d0ff..7a518fa 100644',
+            '--- a/ondivi/__main__.py',
+            '+++ b/ondivi/__main__.py',
+            '@@ -26,0 +27,1 @@ from git import Repo',
+            '+Diff = str',
+        ]),
+        ['ondivi/__main__.py:27:1: Error message'],
+        '{filename}:{line_num:d}:{col_num:d}: {message}',
     )
 
-    assert got == [
-        'src/app_types/listable.py:23:1: UP035 Import from `collections.abc` instead: `Sequence`',
-        'src/srv/ayats/ayats_by_text_query.py:23:1: UP035 Import from `collections.abc` instead: `Sequence`',
-        'src/srv/ayats/ayats_by_text_query.py:23:47: F401 [*] `typing.Generic` imported but unused',
-        'src/srv/ayats/favorite_ayats_after_remove.py:23:1: UP035 Import from `collections.abc` instead: `Sequence`',
-        ' '.join([
-            'src/srv/ayats/pg_ayat.py:64:30: PLR2004 Magic value used in comparison,',
-            'consider replacing `4096` with a constant variable',
-        ]),
-        'src/srv/ayats/pg_ayat.py:66:44: COM812 Trailing comma missing',
-        ' '.join([
-            "src/tests/it/srv/ayats/test_pg_ayat.py:78:19: PLC1901 `got == ''` can be simplified",
-            'to `not got` as an empty string is falsey',
-        ]),
-        'src/app_types/listable.py:33:20: PYI059 `Generic[]` should always be the last base class',
-        ' '.join([
-            'src/tests/it/srv/ayats/test_pg_ayat.py:90:13: PLW1514 `pathlib.Path(...).read_text`',
-            'without explicit `encoding` argument',
-        ]),
-        ' '.join([
-            'src/tests/it/srv/ayats/test_pg_ayat.py:95:19: PLW1514 `pathlib.Path(...).read_text`',
-            'without explicit `encoding` argument',
-        ]),
-    ]
+    assert got == ['ondivi/__main__.py:27:1: Error message']
     assert found
 
 
@@ -89,6 +74,7 @@ def test_without_violation() -> None:
     violations, found = filter_out_violations(
         {},
         ['All checks passed'],
+        '{filename}:{line_num:d}:{col_num:d}: {message}',
     )
 
     assert violations == ['All checks passed']

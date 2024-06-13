@@ -54,10 +54,14 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[No
 
 
 @pytest.mark.usefixtures('_test_repo')
-@pytest.mark.parametrize('version', ['>=2,<3', '>=3'])
-def test_gitpython_versions(version: str) -> None:
+@pytest.mark.parametrize('version', [
+    ('gitpython==2.1.15',),
+    ('gitpython==3.1.43',),
+    ('gitpython', '-U'),
+])
+def test_gitpython_versions(version: tuple[str]) -> None:
     """Test script with different gitpython versions."""
-    subprocess.run(['venv/bin/pip', 'install', 'gitpython{0}'.format(version)], check=True)
+    subprocess.run(['venv/bin/pip', 'install', *version], check=True)
     got = subprocess.run(
         ['venv/bin/ondivi'],
         stdin=subprocess.Popen(
@@ -74,10 +78,11 @@ def test_gitpython_versions(version: str) -> None:
 
 @pytest.mark.usefixtures('_test_repo')
 @pytest.mark.parametrize('version', [
-    ('parse==1.3.2',),
+    ('parse==1.4',),
+    ('parse==1.20.2',),
     ('parse', '-U'),
 ])
-def test_parse_versions(version: str) -> None:
+def test_parse_versions(version: tuple[str]) -> None:
     """Test script with different parse versions."""
     subprocess.run(['venv/bin/pip', 'install', *version], check=True)
     got = subprocess.run(

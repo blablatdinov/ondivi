@@ -29,8 +29,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.14"
-gitpython = ">=2,<4"
-parse = "^1"
+gitpython = ">=2.1.15"
+parse = "^1.4"
 
 [tool.poetry.scripts]
 ondivi = "ondivi.entry:main"

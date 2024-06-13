@@ -48,7 +48,7 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[No
     os.chdir(tmp_path / 'ondivi-test-repo')
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
-    subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
+    subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', 'mypy', 'pylint', str(current_dir)], check=True)
     yield
     os.chdir(current_dir)
 
@@ -158,6 +158,28 @@ def test_ruff() -> None:
         'file.py:16:23: Q000 [*] Single quotes found but double quotes preferred',
         'Found 17 errors.',
         '[*] 8 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
+    ])
+    assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_pylint() -> None:
+    """Test pylint."""
+    got = subprocess.run(
+        ['venv/bin/ondivi'],
+        stdin=subprocess.Popen(
+            ['venv/bin/pylint', 'file.py'],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.stdout.decode('utf-8').strip() == '\n'.join([
+        '************* Module file',
+        'file.py:12:0: C0301: Line too long (119/100) (line-too-long)',
+        '',
+        '------------------------------------------------------------------',
     ])
     assert got.returncode == 1
 

@@ -24,7 +24,7 @@
 
 from pathlib import Path
 
-from ondivi.__main__ import controller, define_changed_lines, filter_out_violations
+from ondivi.define_changed_lines import define_changed_lines
 
 
 def test_define_changed_files() -> None:
@@ -48,37 +48,6 @@ def test_define_changed_files() -> None:
         'src/tests/fixtures/2_282_ayat_without_transliteration.txt': [1, 2, 3, 4],
         'src/tests/it/srv/ayats/test_pg_ayat.py': [24, 30, 31, 32, 33, 34, *range(74, 98)],
     }
-
-
-def test_controller() -> None:
-    """Testing script output with diff and violations list."""
-    got, found = controller(
-        '\n'.join([
-            'diff --git a/ondivi/__main__.py b/ondivi/__main__.py',
-            'index 669d0ff..7a518fa 100644',
-            '--- a/ondivi/__main__.py',
-            '+++ b/ondivi/__main__.py',
-            '@@ -26,0 +27,1 @@ from git import Repo',
-            '+Diff = str',
-        ]),
-        ['ondivi/__main__.py:27:1: Error message'],
-        '{filename}:{line_num:d}:{col_num:d}: {message}',
-    )
-
-    assert got == ['ondivi/__main__.py:27:1: Error message']
-    assert found
-
-
-def test_without_violation() -> None:
-    """Test filtering without violations."""
-    violations, found = filter_out_violations(
-        {},
-        ['All checks passed'],
-        '{filename}:{line_num:d}:{col_num:d}: {message}',
-    )
-
-    assert violations == ['All checks passed']
-    assert not found
 
 
 def test_define_filename() -> None:

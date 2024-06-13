@@ -25,6 +25,7 @@
 import os
 import subprocess
 import zipfile
+from collections.abc import Generator
 from pathlib import Path
 
 import pytest
@@ -39,7 +40,7 @@ def current_dir() -> Path:
 
 # flake8: noqa: S603, S607. Not a production code
 @pytest.fixture(scope='module')
-def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> None:
+def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[None, None, None]:
     """Real git repository."""
     tmp_path = tmpdir_factory.mktemp('test')
     with zipfile.ZipFile('tests/fixtures/ondivi-test-repo.zip', 'r') as zip_ref:
@@ -48,6 +49,8 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> None:
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
+    yield
+    os.chdir(current_dir)
 
 
 @pytest.mark.usefixtures('_test_repo')

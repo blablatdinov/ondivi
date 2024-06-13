@@ -20,8 +20,26 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Ondivi (Only diff violations).
+"""Tests for ondivi."""
 
-Python script filtering coding violations, identified by static analysis,
-only for changed lines in a Git repo.
-"""
+
+from ondivi.entry import controller
+
+
+def test_controller() -> None:
+    """Testing script output with diff and violations list."""
+    got, found = controller(
+        '\n'.join([
+            'diff --git a/ondivi/__main__.py b/ondivi/__main__.py',
+            'index 669d0ff..7a518fa 100644',
+            '--- a/ondivi/__main__.py',
+            '+++ b/ondivi/__main__.py',
+            '@@ -26,0 +27,1 @@ from git import Repo',
+            '+Diff = str',
+        ]),
+        ['ondivi/__main__.py:27:1: Error message'],
+        '{filename}:{line_num:d}:{col_num:d}: {message}',
+    )
+
+    assert got == ['ondivi/__main__.py:27:1: Error message']
+    assert found

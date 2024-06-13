@@ -33,7 +33,7 @@ gitpython = ">=2,<4"
 parse = "^1"
 
 [tool.poetry.scripts]
-ondivi = "ondivi.__main__:main"
+ondivi = "ondivi.entry:main"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "0.4.8"

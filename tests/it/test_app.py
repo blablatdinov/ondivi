@@ -73,10 +73,13 @@ def test_gitpython_versions(version: str) -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
-@pytest.mark.parametrize('version', ['==1.0.0', ' -U'])
+@pytest.mark.parametrize('version', [
+    ('parse==1.3.2',),
+    ('parse', '-U'),
+])
 def test_parse_versions(version: str) -> None:
     """Test script with different parse versions."""
-    subprocess.run(['venv/bin/pip', 'install', 'parse{0}'.format(version)], check=True)
+    subprocess.run(['venv/bin/pip', 'install', *version], check=True)
     got = subprocess.run(
         ['venv/bin/ondivi'],
         stdin=subprocess.Popen(

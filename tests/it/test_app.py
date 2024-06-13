@@ -73,6 +73,25 @@ def test_gitpython_versions(version: str) -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
+@pytest.mark.parametrize('version', ['==1.0.0', ' -U'])
+def test_parse_versions(version: str) -> None:
+    """Test script with different parse versions."""
+    subprocess.run(['venv/bin/pip', 'install', 'parse{0}'.format(version)], check=True)
+    got = subprocess.run(
+        ['venv/bin/ondivi'],
+        stdin=subprocess.Popen(
+            ['venv/bin/flake8', 'file.py'],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
 def test() -> None:
     """Test script with real git repo."""
     got = subprocess.run(

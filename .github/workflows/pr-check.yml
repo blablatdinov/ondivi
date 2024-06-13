@@ -25,6 +25,8 @@ name: Check pull request
 on:
   pull_request:
     branches: [ "master" ]
+  push:
+    branches: [ "master" ]
 
 permissions:
   contents: read

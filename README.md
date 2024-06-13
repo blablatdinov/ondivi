@@ -1,6 +1,7 @@
 # Ondivi (Only diff violations)
 
 [![wemake-python-styleguide](https://img.shields.io/badge/style-wemake-000000.svg)](https://github.com/wemake-services/wemake-python-styleguide)
+[![PyPI version](https://badge.fury.io/py/ondivi.svg)](https://badge.fury.io/py/ondivi)
 [![Lines of code](https://tokei.rs/b1/github/blablatdinov/ondivi)](https://github.com/XAMPPRocky/tokei_rs)
 [![Hits-of-Code](https://hitsofcode.com/github/blablatdinov/ondivi)](https://hitsofcode.com/github/blablatdinov/quranbot-aiogram/view)
 

@@ -25,6 +25,7 @@
 import os
 import subprocess
 import zipfile
+from collections.abc import Generator
 from pathlib import Path
 
 import pytest
@@ -39,7 +40,7 @@ def current_dir() -> Path:
 
 # flake8: noqa: S603, S607. Not a production code
 @pytest.fixture(scope='module')
-def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> None:
+def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[None, None, None]:
     """Real git repository."""
     tmp_path = tmpdir_factory.mktemp('test')
     with zipfile.ZipFile('tests/fixtures/ondivi-test-repo.zip', 'r') as zip_ref:
@@ -48,13 +49,42 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> None:
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
+    yield
+    os.chdir(current_dir)
 
 
 @pytest.mark.usefixtures('_test_repo')
-@pytest.mark.parametrize('version', ['>=2,<3', '>=3'])
-def test_gitpython_versions(version: str) -> None:
+@pytest.mark.parametrize('version', [
+    ('gitpython==2.1.15',),
+    ('gitpython==3.1.43',),
+    ('gitpython', '-U'),
+])
+def test_gitpython_versions(version: tuple[str]) -> None:
     """Test script with different gitpython versions."""
-    subprocess.run(['venv/bin/pip', 'install', 'gitpython{0}'.format(version)], check=True)
+    subprocess.run(['venv/bin/pip', 'install', *version], check=True)
+    got = subprocess.run(
+        ['venv/bin/ondivi'],
+        stdin=subprocess.Popen(
+            ['venv/bin/flake8', 'file.py'],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.parametrize('version', [
+    ('parse==1.4',),
+    ('parse==1.20.2',),
+    ('parse', '-U'),
+])
+def test_parse_versions(version: tuple[str]) -> None:
+    """Test script with different parse versions."""
+    subprocess.run(['venv/bin/pip', 'install', *version], check=True)
     got = subprocess.run(
         ['venv/bin/ondivi'],
         stdin=subprocess.Popen(
@@ -182,4 +212,21 @@ def test_info_message() -> None:
     )
 
     assert got.stdout.decode('utf-8').strip() == 'All files corect!'
+    assert got.returncode == 0
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_format() -> None:
+    """Test with custom format."""
+    got = subprocess.run(
+        ['venv/bin/ondivi', '--format', 'line={line_num:d} file={filename}{other}'],
+        stdin=subprocess.Popen(
+            ['echo', 'line=12 filename=file.py message=`print` found'],
+            stdout=subprocess.PIPE,
+        ).stdout,
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.stdout.decode('utf-8').strip() == 'line=12 filename=file.py message=`print` found'
     assert got.returncode == 0

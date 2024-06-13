@@ -20,21 +20,9 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Ondivi (Only diff violations).
+"""Define changed lines in file."""
 
-Python script filtering coding violations, identified by static analysis,
-only for changed lines in a Git repo.
-"""
-
-import argparse
-import sys
-from contextlib import suppress
-
-from git import Repo
-
-DiffStr = str
-FileNameStr = str
-ActualViolationsListStr = list[str]
+from ondivi.types import DiffStr, FileNameStr
 
 
 def define_changed_lines(diff: DiffStr) -> dict[FileNameStr, list[int]]:
@@ -98,77 +86,3 @@ def _changed_lines(diff_line: str) -> list[int]:
     return list(range(
         start_line, start_line + num_lines + 1,
     ))
-
-
-def filter_out_violations(
-    changed_lines: dict[FileNameStr, list[int]],
-    violations: list[str],
-) -> tuple[ActualViolationsListStr, bool]:
-    """Collect target violations.
-
-    :param changed_lines: dict[FileName, list[int]], violations: list[str]
-    :param violations: list[str]
-    :return: tuple[ActualViolationsListStr, bool]
-    """
-    res = []
-    violation_found = False
-    for violation in violations:
-        with suppress(ValueError, IndexError):
-            filename = violation.split(':')[0]
-            line = int(violation.split(':')[1])
-            if filename not in changed_lines:
-                continue
-            if line not in changed_lines[filename]:
-                continue
-            violation_found = True
-        res.append(violation)
-    return res, violation_found
-
-
-def controller(diff: DiffStr, violations: list[str]) -> tuple[ActualViolationsListStr, bool]:
-    """Entrypoint.
-
-    :param diff: Diff
-    :param violations: list[str]
-    :return: tuple[ActualViolationsListStr, bool]
-    """
-    changed_lines = define_changed_lines(diff)
-    return filter_out_violations(changed_lines, violations)
-
-
-def main() -> None:
-    """Entrypoint."""
-    parser = argparse.ArgumentParser(
-        description='\n'.join([
-            'Ondivi (Only diff violations).\n',
-            'Python script filtering coding violations, identified by static analysis,',
-            'only for changed lines in a Git repo.\n',
-            'Usage example:\n',
-            'flake8 script.py | ondivi',
-        ]),
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
-    parser.add_argument(
-        '--baseline',
-        dest='baseline',
-        type=str,
-        default='master',
-        help=' '.join([
-            'Commit or branch which will contain legacy code.',
-            'Program filter out violations on baseline',
-            '(default: "master")',
-        ]),
-    )
-    args = parser.parse_args()
-    filtered_lines, violation_found = controller(
-        Repo('.').git.diff('--unified=0', args.baseline),
-        sys.stdin.read().strip().splitlines(),
-    )
-    sys.stdout.write('\n'.join(filtered_lines))
-    sys.stdout.write('\n')
-    if violation_found:
-        sys.exit(1)
-
-
-if __name__ == '__main__':
-    main()

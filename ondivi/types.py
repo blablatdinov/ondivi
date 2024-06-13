@@ -20,8 +20,21 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Ondivi (Only diff violations).
+"""Ondivi app types."""
 
-Python script filtering coding violations, identified by static analysis,
-only for changed lines in a Git repo.
-"""
+from typing import TypedDict
+
+DiffStr = str
+FileNameStr = str
+ActualViolationsListStr = list[str]
+ViolationFormatStr = str
+
+
+class ParsedViolation(TypedDict):
+    """Parsed violation.
+
+    After parsing parse.parse takes dict type
+    """
+
+    filename: FileNameStr
+    line_num: int

@@ -20,8 +20,18 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Ondivi (Only diff violations).
+"""Tests for ondivi."""
 
-Python script filtering coding violations, identified by static analysis,
-only for changed lines in a Git repo.
-"""
+from ondivi.filter_out_violations import filter_out_violations
+
+
+def test_without_violation() -> None:
+    """Test filtering without violations."""
+    violations, found = filter_out_violations(
+        {},
+        ['All checks passed'],
+        '{filename}:{line_num:d}:{col_num:d}: {message}',
+    )
+
+    assert violations == ['All checks passed']
+    assert not found

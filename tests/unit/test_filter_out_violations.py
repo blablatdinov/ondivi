@@ -35,3 +35,15 @@ def test_without_violation() -> None:
 
     assert violations == ['All checks passed']
     assert not found
+
+
+def test_custom_format() -> None:
+    """Test custom violation format."""
+    violations, found = filter_out_violations(
+        {'file.py': [12]},
+        ['line=12 file=file.py message=`print` found'],
+        'line={line_num:d} file={filename} {other}',
+    )
+
+    assert violations == ['line=12 file=file.py message=`print` found']
+    assert found

@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Test custom violation format
+
 ## [0.4.0] - 2024-06-13
 
 ### Added

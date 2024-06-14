@@ -28,7 +28,7 @@ authors = ["Almaz Ilaletdinov <a.ilaletdinov@yandex.ru>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.14"
+python = "^3.9"
 gitpython = ">=2.1.15"
 parse = "^1.4"
 

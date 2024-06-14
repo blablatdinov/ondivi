@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1]
+
 ### Changed
 
 - Availabe python version (#36)
@@ -112,7 +114,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial version
 
-[unreleased]: https://github.com/blablatdinov/ondivi/compare/0.4.0...HEAD
+[unreleased]: https://github.com/blablatdinov/ondivi/compare/0.4.1...HEAD
+[0.4.1]: https://github.com/blablatdinov/ondivi/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/blablatdinov/ondivi/compare/0.3.1...0.4.0
 [0.3.1]: https://github.com/blablatdinov/ondivi/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/blablatdinov/ondivi/compare/0.2.1...0.3.0

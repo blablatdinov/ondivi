@@ -22,7 +22,7 @@
 
 [tool.poetry]
 name = "ondivi"
-version = "0.4.0"
+version = "0.4.1"
 description = ""
 authors = ["Almaz Ilaletdinov <a.ilaletdinov@yandex.ru>"]
 readme = "README.md"

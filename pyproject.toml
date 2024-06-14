@@ -36,7 +36,7 @@ parse = "^1.4"
 ondivi = "ondivi.entry:main"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "0.4.8"
+ruff = "0.4.9"
 wemake-python-styleguide = "0.19.2"
 pytest = "8.2.2"
 isort = "5.13.2"

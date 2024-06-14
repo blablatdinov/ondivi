@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Availabe python version (#36)
+
 ### Fixed
 
 - Test custom violation format (#34)

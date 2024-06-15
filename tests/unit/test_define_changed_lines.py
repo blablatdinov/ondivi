@@ -30,7 +30,7 @@ from ondivi.define_changed_lines import define_changed_lines
 def test_define_changed_files() -> None:
     """Testing search changed lines."""
     got = define_changed_lines(
-        Path('tests/fixtures/diff.txt').read_text(),
+        Path('tests/fixtures/diff.txt').read_text(encoding='utf-8'),
     )
 
     assert got == {

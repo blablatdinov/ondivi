@@ -30,8 +30,8 @@ from ondivi.entry import controller
 def test_controller() -> None:
     """Testing script output with diff and violations list."""
     got, found = controller(
-        Path('tests/fixtures/diff.txt').read_text(),
-        Path('tests/fixtures/violations.txt').read_text().splitlines(),
+        Path('tests/fixtures/diff.txt').read_text(encoding='utf-8'),
+        Path('tests/fixtures/violations.txt').read_text(encoding='utf-8').splitlines(),
         '{filename}:{line_num:d}:{col_num:d}: {message}',
     )
 

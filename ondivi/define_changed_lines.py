@@ -47,15 +47,15 @@ def define_changed_lines(diff: DiffStr) -> dict[FileNameStr, list[int]]:
     :param diff: DiffStr
     :return: dict[FileNameStr, list[int]]
     """
-    res: dict[FileNameStr, list[int]] = {}
+    changed_lines: dict[FileNameStr, list[int]] = {}
     current_file = ''
     for line in diff.splitlines():
         if _line_contain_filename(line):
             current_file = line.split(' b/')[-1].strip()
-            res[current_file] = []
+            changed_lines[current_file] = []
         elif _diff_line_contain_changed_lines(line):
-            res[current_file].extend(_changed_lines(line))
-    return res
+            changed_lines[current_file].extend(_changed_lines(line))
+    return changed_lines
 
 
 def _line_contain_filename(diff_line: str) -> bool:

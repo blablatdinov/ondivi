@@ -24,6 +24,7 @@ lint:
 	poetry run isort ondivi tests
 	poetry run ruff check ondivi tests --fix
 	poetry run flake8 ondivi tests
+	poetry run pylint ondivi tests
 	poetry run mypy ondivi tests --strict
 
 test: unit it

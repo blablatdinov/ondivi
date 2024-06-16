@@ -39,14 +39,14 @@ def filter_out_violations(
     :param violation_format: ViolationFormatStr
     :return: tuple[ActualViolationsListStr, bool]
     """
-    res = []
+    filtered_violations = []
     violation_found = False
     for violation in violations:
         line_for_out, is_violation = _is_line_for_out(changed_lines, violation, violation_format)
         violation_found = violation_found or is_violation
         if line_for_out:
-            res.append(violation)
-    return res, violation_found
+            filtered_violations.append(violation)
+    return filtered_violations, violation_found
 
 
 def _is_line_for_out(

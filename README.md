@@ -29,6 +29,35 @@ Run the script:
 flake8 script.py | ondivi
 ```
 
+Flake8 on file:
+
+```bash
+$ flake8
+file.py:3:1: E302 expected 2 blank lines, found 1
+file.py:9:1: E302 expected 2 blank lines, found 1
+file.py:10:121: E501 line too long (123 > 120 characters)
+file.py:14:1: E305 expected 2 blank lines after class or function definition, found 1
+```
+
+Define changed lines with `git diff`
+
+```bash
+$ git diff
+diff --git a/file.py b/file.py
+index 2b63c84..7589f73 100644
+--- a/file.py
++++ b/file.py
+@@ -11,0 +12 @@ def greet(user: User):
++    print('Long string in new commit ################################################################################')
+@@ -14,0 +16 @@ if __name__ == '__main__':
++    greet(User('Bob', '23'))
+```
+
+```bash
+$ flake8 script.py | ondivi
+file.py:12:80: E501 line too long (119 > 79 characters)
+```
+
 ```bash
 ondivi --help
 ```

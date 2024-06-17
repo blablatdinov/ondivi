@@ -27,7 +27,9 @@ only for changed lines in a Git repo.
 """
 
 import argparse
+import traceback
 import sys
+from typing import TextIO, Callable
 
 from git import Repo
 
@@ -50,6 +52,18 @@ def controller(
     """
     changed_lines = define_changed_lines(diff)
     return filter_out_violations(changed_lines, violations, violation_format)
+
+
+def cli(args):
+    filtered_lines, violation_found = controller(
+        Repo('.').git.diff('--unified=0', args.baseline),
+        sys.stdin.read().strip().splitlines(),
+        args.violation_format,
+    )
+    sys.stdout.write('\n'.join(filtered_lines))
+    if violation_found:
+        sys.stdout.write('\n')
+        sys.exit(1)
 
 
 def main() -> None:
@@ -99,14 +113,16 @@ def main() -> None:
         ]),
     )
     args = parser.parse_args()
-    filtered_lines, violation_found = controller(
-        Repo('.').git.diff('--unified=0', args.baseline),
-        sys.stdin.read().strip().splitlines(),
-        args.violation_format,
-    )
-    sys.stdout.write('\n'.join(filtered_lines))
-    sys.stdout.write('\n')
-    if violation_found:
+    try:
+        cli(args)
+    except Exception as err:
+        sys.stdout.write('\n'.join([
+            'Fail with: "{0}"'.format(err),
+            'Please submit it to https://github.com/blablatdinov/ondivi/issues',
+            'Copy and paste this stack trace to GitHub:',
+            '========================================',
+            traceback.format_exc(),
+        ]))
         sys.exit(1)
 
 

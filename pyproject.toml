@@ -508,6 +508,7 @@ disable = [
   "fixme",
   "missing-module-docstring",
   "consider-using-f-string",
+  "broad-exception-caught",  # Check via ruff
 ]
 
 # Enable the message, report, category or checker with the given id(s). You can

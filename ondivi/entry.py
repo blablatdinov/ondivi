@@ -27,9 +27,8 @@ only for changed lines in a Git repo.
 """
 
 import argparse
-import traceback
 import sys
-from typing import TextIO, Callable
+import traceback
 
 from git import Repo
 
@@ -54,7 +53,11 @@ def controller(
     return filter_out_violations(changed_lines, violations, violation_format)
 
 
-def cli(args):
+def cli(args: argparse.Namespace) -> None:
+    """Controller with CLI side effects.
+
+    :param args: argparse.Namespace
+    """
     filtered_lines, violation_found = controller(
         Repo('.').git.diff('--unified=0', args.baseline),
         sys.stdin.read().strip().splitlines(),
@@ -115,7 +118,7 @@ def main() -> None:
     args = parser.parse_args()
     try:
         cli(args)
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001. Application entrypoint
         sys.stdout.write('\n'.join([
             'Fail with: "{0}"'.format(err),
             'Please submit it to https://github.com/blablatdinov/ondivi/issues',

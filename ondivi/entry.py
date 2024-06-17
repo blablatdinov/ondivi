@@ -120,7 +120,7 @@ def main() -> None:
         cli(args)
     except Exception as err:  # noqa: BLE001. Application entrypoint
         sys.stdout.write('\n'.join([
-            'Fail with: "{0}"'.format(err),
+            'Ondivi fail with: "{0}"'.format(err),
             'Please submit it to https://github.com/blablatdinov/ondivi/issues',
             'Copy and paste this stack trace to GitHub:',
             '========================================',

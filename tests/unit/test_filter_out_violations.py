@@ -57,7 +57,7 @@ def test_not_target_violation() -> None:
         '{filename}:{line_num:d}:{col_num:d}: {message}',
     )
 
-    assert violations == []
+    assert not violations
     assert not found
 
 
@@ -69,5 +69,5 @@ def test_file_without_diff() -> None:
         '{filename}:{line_num:d}:{col_num:d}: {message}',
     )
 
-    assert violations == []
+    assert not violations
     assert not found

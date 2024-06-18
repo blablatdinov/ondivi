@@ -29,7 +29,10 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
 from _pytest.legacypath import TempdirFactory
+
+from ondivi.entry import main
 
 
 @pytest.fixture(scope='module')
@@ -56,7 +59,6 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[No
 @pytest.mark.usefixtures('_test_repo')
 @pytest.mark.parametrize('version', [
     ('gitpython==2.1.15',),
-    ('gitpython==3.1.43',),
     ('gitpython', '-U'),
 ])
 def test_gitpython_versions(version: tuple[str]) -> None:
@@ -77,11 +79,30 @@ def test_gitpython_versions(version: tuple[str]) -> None:
 @pytest.mark.usefixtures('_test_repo')
 @pytest.mark.parametrize('version', [
     ('parse==1.4',),
-    ('parse==1.20.2',),
     ('parse', '-U'),
 ])
 def test_parse_versions(version: tuple[str]) -> None:
     """Test script with different parse versions."""
+    subprocess.run(['venv/bin/pip', 'install', *version], check=True)
+    with subprocess.Popen(['venv/bin/flake8', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
+        got = subprocess.run(
+            ['venv/bin/ondivi'],
+            stdin=lint_proc.stdout,
+            stdout=subprocess.PIPE,
+            check=False,
+        )
+
+    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.parametrize('version', [
+    ('click==0.1',),
+    ('click', '-U'),
+])
+def test_click_versions(version: tuple[str]) -> None:
+    """Test script with different click versions."""
     subprocess.run(['venv/bin/pip', 'install', *version], check=True)
     with subprocess.Popen(['venv/bin/flake8', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
         got = subprocess.run(
@@ -212,3 +233,18 @@ def test_format() -> None:
 
     assert got.stdout.decode('utf-8').strip() == 'line=12 file=file.py message=`print` found'
     assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_click_app() -> None:
+    """Test click app."""
+    got = CliRunner().invoke(main, input='\n'.join([
+        'file.py:3:1: E302 expected 2 blank lines, found 1',
+        'file.py:9:1: E302 expected 2 blank lines, found 1',
+        'file.py:10:80: E501 line too long (123 > 79 characters)',
+        'file.py:12:80: E501 line too long (119 > 79 characters)',
+        'file.py:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+    ]))
+
+    assert got.exit_code == 1
+    assert got.stdout.strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'

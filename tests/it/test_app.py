@@ -265,7 +265,7 @@ def test_handle_exception() -> None:
 
     assert got.exit_code == 1
     assert len(got.stdout.strip().splitlines()) == 14
-    assert got.stdout.strip().splitlines()[0] == [
+    assert got.stdout.strip().splitlines()[:5] == [
         'Ondivi fail with: "Fail"',
         'Please submit it to https://github.com/blablatdinov/ondivi/issues',
         'Copy and paste this stack trace to GitHub:',

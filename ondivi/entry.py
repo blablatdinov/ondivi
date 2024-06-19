@@ -26,7 +26,6 @@ Python script filtering coding violations, identified by static analysis,
 only for changed lines in a Git repo.
 """
 
-import argparse
 import sys
 import traceback
 
@@ -57,7 +56,8 @@ def controller(
 def cli(baseline: str, violation_format: str) -> None:
     """Controller with CLI side effects.
 
-    :param args: argparse.Namespace
+    :param baseline: str
+    :param violation_format: str
     """
     filtered_lines, violation_found = controller(
         Repo('.').git.diff('--unified=0', baseline),
@@ -70,6 +70,7 @@ def cli(baseline: str, violation_format: str) -> None:
         sys.exit(1)
 
 
+# flake8: noqa: DAR101. Broke --help out
 @click.command()
 @click.option(
     '--baseline',

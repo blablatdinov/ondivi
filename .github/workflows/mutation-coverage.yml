@@ -57,4 +57,4 @@ jobs:
       - name: Run mutmut
         run: |
           poetry run mutmut run --CI --no-progress
-          poetry run mutmut show ondivi/__main__.py
+          poetry run mutmut show ondivi

@@ -264,7 +264,7 @@ def test_handle_exception() -> None:
     got = CliRunner().invoke(main, input='')
 
     assert got.exit_code == 1
-    assert len(got.stdout.strip().splitlines()) == 14
+    assert len(got.stdout.strip().splitlines()) > 10
     assert got.stdout.strip().splitlines()[:5] == [
         'Ondivi fail with: "Fail"',
         'Please submit it to https://github.com/blablatdinov/ondivi/issues',

@@ -54,7 +54,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
       - name: Run tests via pytest
-        run: make test
+        run: poetry run pytest --cov=ondivi --cov-report=term-missing:skip-covered -s -vv
 
   publish-pypi:
     needs: tests

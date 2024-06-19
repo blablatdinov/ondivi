@@ -27,10 +27,11 @@ import subprocess
 import zipfile
 from collections.abc import Generator
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
-from click.testing import CliRunner
 from _pytest.legacypath import TempdirFactory
+from click.testing import CliRunner
 
 from ondivi.entry import main
 
@@ -248,3 +249,27 @@ def test_click_app() -> None:
 
     assert got.exit_code == 1
     assert got.stdout.strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+
+
+@pytest.fixture()
+def _broke_cli() -> Generator[None, None, None]:
+    with patch('ondivi.entry.cli') as cli_patch:
+        cli_patch.side_effect = ValueError('Fail')
+        yield
+
+
+@pytest.mark.usefixtures('_broke_cli')
+def test_handle_exception() -> None:
+    """Test handle exception."""
+    got = CliRunner().invoke(main, input='')
+
+    assert got.exit_code == 1
+    assert len(got.stdout.strip().splitlines()) > 10
+    assert got.stdout.strip().splitlines()[:5] == [
+        'Ondivi fail with: "Fail"',
+        'Please submit it to https://github.com/blablatdinov/ondivi/issues',
+        'Copy and paste this stack trace to GitHub:',
+        '========================================',
+        'Traceback (most recent call last):',
+    ]
+    assert got.stdout.strip().splitlines()[-1] == 'ValueError: Fail'

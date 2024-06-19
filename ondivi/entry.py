@@ -65,8 +65,8 @@ def cli(baseline: str, violation_format: str) -> None:
         violation_format,
     )
     sys.stdout.write('\n'.join(filtered_lines))
+    sys.stdout.write('\n')
     if violation_found:
-        sys.stdout.write('\n')
         sys.exit(1)
 
 

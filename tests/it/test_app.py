@@ -60,6 +60,7 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[No
 @pytest.mark.usefixtures('_test_repo')
 @pytest.mark.parametrize('version', [
     ('gitpython==2.1.15',),
+    ('gitpython==3.1.43',),
     ('gitpython', '-U'),
 ])
 def test_gitpython_versions(version: tuple[str]) -> None:
@@ -80,6 +81,7 @@ def test_gitpython_versions(version: tuple[str]) -> None:
 @pytest.mark.usefixtures('_test_repo')
 @pytest.mark.parametrize('version', [
     ('parse==1.4',),
+    ('parse==1.20.2',),
     ('parse', '-U'),
 ])
 def test_parse_versions(version: tuple[str]) -> None:
@@ -100,6 +102,7 @@ def test_parse_versions(version: tuple[str]) -> None:
 @pytest.mark.usefixtures('_test_repo')
 @pytest.mark.parametrize('version', [
     ('click==0.1',),
+    ('click==8.1.7',),
     ('click', '-U'),
 ])
 def test_click_versions(version: tuple[str]) -> None:

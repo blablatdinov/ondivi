@@ -33,6 +33,7 @@ def test_without_violation() -> None:
         {},
         ['All checks passed'],
         '{filename}:{line_num:d}:{col_num:d}: {message}',
+        only_violations=False,
     )
 
     assert violations == ['All checks passed']
@@ -45,6 +46,7 @@ def test_custom_format() -> None:
         {'file.py': [12]},
         ['line=12 file=file.py message=`print` found'],
         'line={line_num:d} file={filename} {other}',
+        only_violations=False,
     )
 
     assert violations == ['line=12 file=file.py message=`print` found']
@@ -57,6 +59,7 @@ def test_not_target_violation() -> None:
         {'file.py': [1, 2]},
         ['file.py:3:1: line too long'],
         '{filename}:{line_num:d}:{col_num:d}: {message}',
+        only_violations=False,
     )
 
     assert not violations
@@ -69,14 +72,13 @@ def test_file_without_diff() -> None:
         {'file.py': [1, 2]},
         ['foo.py:3:1: line too long'],
         '{filename}:{line_num:d}:{col_num:d}: {message}',
+        only_violations=False,
     )
 
     assert not violations
     assert not found
 
 
-# TODO #48 implement and remove `skip` flag
-@pytest.mark.skip()
 def test_only_violations() -> None:
     """Test only violations."""
     violations, found = filter_out_violations(
@@ -86,6 +88,7 @@ def test_only_violations() -> None:
             'Info message',
         ],
         '{filename}:{line_num:d}:{col_num:d}: {message}',
+        only_violations=True,
     )
 
     assert violations == ['foo.py:3:1: line too long']

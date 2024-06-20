@@ -51,8 +51,7 @@ def controller(
     :param only_violations: bool
     :return: tuple[ActualViolationsListStr, bool]
     """
-    changed_lines = define_changed_lines(diff)
-    return filter_out_violations(changed_lines, violations, violation_format, only_violations)
+    return filter_out_violations(define_changed_lines(diff), violations, violation_format, only_violations)
 
 
 def cli(baseline: str, violation_format: str, only_violations: bool) -> None:

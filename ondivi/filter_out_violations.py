@@ -46,14 +46,7 @@ def filter_out_violations(
     for violation in violations:
         line_for_out, is_violation = _is_line_for_out(changed_lines, violation, violation_format)
         violation_found = violation_found or is_violation
-        print(f'{line_for_out=}')
-        print(f'{violation=}')
-        print(f'{only_violations=}')
-        print(f'{is_violation=}')
-        print(f'============')
-        if is_violation:
-            filtered_violations.append(violation)
-        elif line_for_out and not only_violations:
+        if is_violation or (line_for_out and not only_violations):
             filtered_violations.append(violation)
     return filtered_violations, violation_found
 

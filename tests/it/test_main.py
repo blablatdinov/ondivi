@@ -33,6 +33,7 @@ def test_controller() -> None:
         Path('tests/fixtures/diff.txt').read_text(encoding='utf-8'),
         Path('tests/fixtures/violations.txt').read_text(encoding='utf-8').splitlines(),
         '{filename}:{line_num:d}:{col_num:d}: {message}',
+        only_violations=False,
     )
 
     assert got == [

@@ -22,6 +22,8 @@
 
 """Tests for ondivi."""
 
+import pytest
+
 from ondivi.filter_out_violations import filter_out_violations
 
 
@@ -71,3 +73,20 @@ def test_file_without_diff() -> None:
 
     assert not violations
     assert not found
+
+
+# TODO #48 implement and remove `skip` flag
+@pytest.mark.skip()
+def test_only_violations() -> None:
+    """Test only violations."""
+    violations, found = filter_out_violations(
+        {'file.py': [3]},
+        [
+            'foo.py:3:1: line too long',
+            'Info message',
+        ],
+        '{filename}:{line_num:d}:{col_num:d}: {message}',
+    )
+
+    assert violations == ['foo.py:3:1: line too long']
+    assert found

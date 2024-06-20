@@ -110,6 +110,7 @@ def cli(baseline: str, violation_format: str, only_violations: bool) -> None:
     '--only-violations',
     default=False,
     help='Show only violations',
+    is_flag=True,
 )
 def main(baseline: str, violation_format: str, only_violations: bool) -> None:
     """Ondivi (Only diff violations).

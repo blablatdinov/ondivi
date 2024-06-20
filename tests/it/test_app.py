@@ -276,3 +276,24 @@ def test_handle_exception() -> None:
         'Traceback (most recent call last):',
     ]
     assert got.stdout.strip().splitlines()[-1] == 'ValueError: Fail'
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_only_violations() -> None:
+    """Test only violations."""
+    with subprocess.Popen(['venv/bin/ruff', 'check', '--select=ALL', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
+        got = subprocess.run(
+            ['venv/bin/ondivi', '--only-violations'],
+            stdin=lint_proc.stdout,
+            stdout=subprocess.PIPE,
+            check=False,
+        )
+
+    assert got.stdout.decode('utf-8').strip() == '\n'.join([
+        'file.py:12:5: T201 `print` found',
+        'file.py:12:11: Q000 [*] Single quotes found but double quotes preferred',
+        'file.py:12:89: E501 Line too long (119 > 88)',
+        'file.py:16:16: Q000 [*] Single quotes found but double quotes preferred',
+        'file.py:16:23: Q000 [*] Single quotes found but double quotes preferred',
+    ])
+    assert got.returncode == 1

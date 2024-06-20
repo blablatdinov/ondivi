@@ -41,28 +41,31 @@ def controller(
     diff: DiffStr,
     violations: list[str],
     violation_format: ViolationFormatStr,
+    only_violations: bool,
 ) -> tuple[ActualViolationsListStr, bool]:
     """Entrypoint.
 
     :param diff: Diff
     :param violations: list[str]
     :param violation_format: ViolationFormatStr
+    :param only_violations: bool
     :return: tuple[ActualViolationsListStr, bool]
     """
-    changed_lines = define_changed_lines(diff)
-    return filter_out_violations(changed_lines, violations, violation_format)
+    return filter_out_violations(define_changed_lines(diff), violations, violation_format, only_violations)
 
 
-def cli(baseline: str, violation_format: str) -> None:
+def cli(baseline: str, violation_format: str, only_violations: bool) -> None:
     """Controller with CLI side effects.
 
     :param baseline: str
     :param violation_format: str
+    :param only_violations: bool
     """
     filtered_lines, violation_found = controller(
         Repo('.').git.diff('--unified=0', baseline),
         sys.stdin.read().strip().splitlines(),
         violation_format,
+        only_violations,
     )
     sys.stdout.write('\n'.join(filtered_lines))
     sys.stdout.write('\n')
@@ -103,7 +106,13 @@ def cli(baseline: str, violation_format: str) -> None:
         '(default: "{filename}:{line_num:d}{other}")',
     ]),
 )
-def main(baseline: str, violation_format: str) -> None:
+@click.option(
+    '--only-violations',
+    default=False,
+    help='Show only violations',
+    is_flag=True,
+)
+def main(baseline: str, violation_format: str, only_violations: bool) -> None:
     """Ondivi (Only diff violations).
 
     Python script filtering coding violations, identified by static analysis,
@@ -113,7 +122,7 @@ def main(baseline: str, violation_format: str) -> None:
     flake8 script.py | ondivi
     """
     try:
-        cli(baseline, violation_format)
+        cli(baseline, violation_format, only_violations)
     except Exception as err:  # noqa: BLE001. Application entrypoint
         sys.stdout.write('\n'.join([
             'Ondivi fail with: "{0}"'.format(err),

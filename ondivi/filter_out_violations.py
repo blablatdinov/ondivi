@@ -31,12 +31,14 @@ def filter_out_violations(
     changed_lines: dict[FileNameStr, list[int]],
     violations: list[str],
     violation_format: ViolationFormatStr,
+    only_violations: bool,
 ) -> tuple[ActualViolationsListStr, bool]:
     """Collect target violations.
 
     :param changed_lines: dict[FileName, list[int]], violations: list[str]
     :param violations: list[str]
     :param violation_format: ViolationFormatStr
+    :param only_violations: bool
     :return: tuple[ActualViolationsListStr, bool]
     """
     filtered_violations = []
@@ -44,7 +46,7 @@ def filter_out_violations(
     for violation in violations:
         line_for_out, is_violation = _is_line_for_out(changed_lines, violation, violation_format)
         violation_found = violation_found or is_violation
-        if line_for_out:
+        if is_violation or (line_for_out and not only_violations):
             filtered_violations.append(violation)
     return filtered_violations, violation_found
 

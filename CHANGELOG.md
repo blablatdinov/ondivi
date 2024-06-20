@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Lint via pylint (#39)
 - Handle exception (#42)
 - `click` for CLI (#45)
+- Show only violations in output. `--only-violations` flag (#48)
 
 ## [0.4.1]
 

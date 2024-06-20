@@ -39,6 +39,7 @@ def test_controller() -> None:
         ]),
         ['ondivi/__main__.py:27:1: Error message'],
         '{filename}:{line_num:d}:{col_num:d}: {message}',
+        only_violations=False,
     )
 
     assert got == ['ondivi/__main__.py:27:1: Error message']

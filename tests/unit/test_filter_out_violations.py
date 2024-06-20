@@ -82,12 +82,12 @@ def test_only_violations() -> None:
     violations, found = filter_out_violations(
         {'file.py': [3]},
         [
-            'foo.py:3:1: line too long',
+            'file.py:3:1: line too long',
             'Info message',
         ],
         '{filename}:{line_num:d}:{col_num:d}: {message}',
         only_violations=True,
     )
 
-    assert violations == ['foo.py:3:1: line too long']
+    assert violations == ['file.py:3:1: line too long']
     assert found

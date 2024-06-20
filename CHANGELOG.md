@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2024-06-21
+
 ### Added
 
 - Lint via pylint (#39)
@@ -37,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `click` for CLI (#45)
 - Show only violations in output. `--only-violations` flag (#48)
 
-## [0.4.1]
+## [0.4.1] - 2024-06-14
 
 ### Changed
 
@@ -121,7 +123,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial version
 
-[unreleased]: https://github.com/blablatdinov/ondivi/compare/0.4.1...HEAD
+[unreleased]: https://github.com/blablatdinov/ondivi/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/blablatdinov/ondivi/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/blablatdinov/ondivi/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/blablatdinov/ondivi/compare/0.3.1...0.4.0
 [0.3.1]: https://github.com/blablatdinov/ondivi/compare/0.3.0...0.3.1

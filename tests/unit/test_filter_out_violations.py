@@ -75,6 +75,7 @@ def test_file_without_diff() -> None:
     assert not found
 
 
+# TODO #48 implement and remove `skip` flag
 @pytest.mark.skip()
 def test_only_violations() -> None:
     """Test only violations."""
@@ -88,4 +89,4 @@ def test_only_violations() -> None:
     )
 
     assert violations == ['foo.py:3:1: line too long']
-    assert not found
+    assert found

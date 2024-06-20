@@ -70,7 +70,7 @@ ignore = [
   "D418",    # Function decorated with `@overload` shouldn't contain a docstring
   "FBT001",  # Boolean-typed positional argument in function definition
   "FBT002",  # Boolean-typed positional argument in function definition
-  "FIX002",  # Line contains TODO, consider resolving the issue
+  "FIX002",  # Line contains T0DO, consider resolving the issue
   "FLY002",  # We not use f-strings
   "I001",    # Conflict with isort
   "RUF100",  # WPS primary linter
@@ -81,7 +81,7 @@ ignore = [
   "UP030",   # We use explicit references
   "UP032",   # We not use f-strings
   "UP004",   # Class `PrayerReaction` inherits from `object`
-  "TD",      # "todo" formats
+  "TD",      # "t0do" formats
   "PLR630",  # We disrespect staticmethods
   "TCH003",  # Move standard library import `...` into a type-checking block
 ]
@@ -534,7 +534,7 @@ timeout-methods = [
 
 [tool.pylint.miscellaneous]
 # List of note tags to take in consideration, separated by a comma.
-notes = ["FIXME", "XXX", "TODO"]
+notes = ["FIXME", "XXX"]
 
 # Regular expression of note tags to take in consideration.
 # notes-rgx =

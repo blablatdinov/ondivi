@@ -22,8 +22,6 @@
 
 """Tests for ondivi."""
 
-import pytest
-
 from ondivi.filter_out_violations import filter_out_violations
 
 

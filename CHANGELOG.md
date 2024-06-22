@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `--help` output (#43)
+
 ## [0.5.0] - 2024-06-21
 
 ### Added

@@ -103,6 +103,6 @@ jobs:
         uses: actions/checkout@v4
       - uses: actions/setup-node@v4
       - name: Install jscpd
-        run: npm i jscpd -g
+        run: npm i jscpd@4.0.4 -g
       - name: Run jscpd
         run: jscpd -p '**/*.py' -l 44 -t 0

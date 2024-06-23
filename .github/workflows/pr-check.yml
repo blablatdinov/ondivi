@@ -94,3 +94,15 @@ jobs:
           curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker/releases/download/$VERSION/ec-linux-amd64.tar.gz
           tar xzf ec-linux-amd64.tar.gz
           bin/ec-linux-amd64 -v
+
+  check-duplicates:
+    runs-on: ubuntu-22.04
+    name: Check duplicated code
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+      - name: Install jscpd
+        run: npm i jscpd -g
+      - name: Run jscpd
+        run: jscpd -p '**/*.py' -l 44 -t 0

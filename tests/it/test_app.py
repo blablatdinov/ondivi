@@ -27,13 +27,17 @@ import subprocess
 import zipfile
 from collections.abc import Generator
 from pathlib import Path
+from typing import Callable
 from unittest.mock import patch
 
 import pytest
 from _pytest.legacypath import TempdirFactory
 from click.testing import CliRunner
+from typing_extensions import TypeAlias
 
 from ondivi.entry import main
+
+_RUN_SHELL_T: TypeAlias = Callable[[list[str], list[str]], subprocess.CompletedProcess[bytes]]
 
 
 @pytest.fixture(scope='module')
@@ -57,79 +61,45 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[No
     os.chdir(current_dir)
 
 
+@pytest.fixture()
+def run_shell() -> _RUN_SHELL_T:
+    """Run commands with pipe in shell."""
+    def _exec(lint_cmd: list[str], ondivi_cmd: list[str]) -> subprocess.CompletedProcess[bytes]:
+        with subprocess.Popen(lint_cmd, stdout=subprocess.PIPE) as lint_proc:
+            return subprocess.run(
+                ondivi_cmd,
+                stdin=lint_proc.stdout,
+                stdout=subprocess.PIPE,
+                check=False,
+            )
+    return _exec
+
+
 @pytest.mark.usefixtures('_test_repo')
 @pytest.mark.parametrize('version', [
     ('gitpython==2.1.15',),
     ('gitpython==3.1.43',),
     ('gitpython', '-U'),
-])
-def test_gitpython_versions(version: tuple[str]) -> None:
-    """Test script with different gitpython versions."""
-    subprocess.run(['venv/bin/pip', 'install', *version], check=True)
-    with subprocess.Popen(['venv/bin/flake8', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
-
-    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
-    assert got.returncode == 1
-
-
-@pytest.mark.usefixtures('_test_repo')
-@pytest.mark.parametrize('version', [
     ('parse==1.4',),
     ('parse==1.20.2',),
     ('parse', '-U'),
-])
-def test_parse_versions(version: tuple[str]) -> None:
-    """Test script with different parse versions."""
-    subprocess.run(['venv/bin/pip', 'install', *version], check=True)
-    with subprocess.Popen(['venv/bin/flake8', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
-
-    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
-    assert got.returncode == 1
-
-
-@pytest.mark.usefixtures('_test_repo')
-@pytest.mark.parametrize('version', [
     ('click==0.1',),
     ('click==8.1.7',),
     ('click', '-U'),
 ])
-def test_click_versions(version: tuple[str]) -> None:
-    """Test script with different click versions."""
+def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> None:
+    """Test script with different dependency versions."""
     subprocess.run(['venv/bin/pip', 'install', *version], check=True)
-    with subprocess.Popen(['venv/bin/flake8', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
+    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi'])
 
     assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
     assert got.returncode == 1
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test() -> None:
+def test(run_shell: _RUN_SHELL_T) -> None:
     """Test script with real git repo."""
-    with subprocess.Popen(['venv/bin/flake8', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi', '--baseline', '56faa56'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
+    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', '56faa56'])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
         'file.py:3:1: E302 expected 2 blank lines, found 1',
@@ -140,30 +110,18 @@ def test() -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_baseline_default() -> None:
+def test_baseline_default(run_shell: _RUN_SHELL_T) -> None:
     """Test baseline default."""
-    with subprocess.Popen(['venv/bin/flake8', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
+    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi'])
 
     assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
     assert got.returncode == 1
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_ruff() -> None:
+def test_ruff(run_shell: _RUN_SHELL_T) -> None:
     """Test ruff."""
-    with subprocess.Popen(['venv/bin/ruff', 'check', '--select=ALL', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
+    got = run_shell(['venv/bin/ruff', 'check', '--select=ALL', 'file.py'], ['venv/bin/ondivi'])
 
     assert got.stdout.decode('utf-8').strip() == '\n'.join([
         'file.py:12:5: T201 `print` found',
@@ -178,15 +136,9 @@ def test_ruff() -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_mypy() -> None:
+def test_mypy(run_shell: _RUN_SHELL_T) -> None:
     """Test mypy."""
-    with subprocess.Popen(['venv/bin/mypy', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
+    got = run_shell(['venv/bin/mypy', 'file.py'], ['venv/bin/ondivi'])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
         'file.py:16: error: Argument 2 to "User" has incompatible type "str"; expected "int"  [arg-type]',
@@ -196,44 +148,29 @@ def test_mypy() -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_without_violations() -> None:
+def test_without_violations(run_shell: _RUN_SHELL_T) -> None:
     """Test exit without violations."""
-    with subprocess.Popen(['echo', ''], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
+    got = run_shell(['echo', ''], ['venv/bin/ondivi'])
 
     assert got.returncode == 0
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_info_message() -> None:
+def test_info_message(run_shell: _RUN_SHELL_T) -> None:
     """Test exit with info message."""
-    with subprocess.Popen(['echo', 'All files corect!'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
+    got = run_shell(['echo', 'All files corect!'], ['venv/bin/ondivi'])
 
     assert got.stdout.decode('utf-8').strip() == 'All files corect!'
     assert got.returncode == 0
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_format() -> None:
+def test_format(run_shell: _RUN_SHELL_T) -> None:
     """Test with custom format."""
-    with subprocess.Popen(['echo', 'line=12 file=file.py message=`print` found'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi', '--format', 'line={line_num:d} file={filename} {other}'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
+    got = run_shell(
+        ['echo', 'line=12 file=file.py message=`print` found'],
+        ['venv/bin/ondivi', '--format', 'line={line_num:d} file={filename} {other}'],
+    )
 
     assert got.stdout.decode('utf-8').strip() == 'line=12 file=file.py message=`print` found'
     assert got.returncode == 1
@@ -279,15 +216,9 @@ def test_handle_exception() -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_only_violations() -> None:
+def test_only_violations(run_shell: _RUN_SHELL_T) -> None:
     """Test only violations."""
-    with subprocess.Popen(['venv/bin/ruff', 'check', '--select=ALL', 'file.py'], stdout=subprocess.PIPE) as lint_proc:
-        got = subprocess.run(
-            ['venv/bin/ondivi', '--only-violations'],
-            stdin=lint_proc.stdout,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
+    got = run_shell(['venv/bin/ruff', 'check', '--select=ALL', 'file.py'], ['venv/bin/ondivi', '--only-violations'])
 
     assert got.stdout.decode('utf-8').strip() == '\n'.join([
         'file.py:12:5: T201 `print` found',

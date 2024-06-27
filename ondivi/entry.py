@@ -26,6 +26,8 @@ Python script filtering coding violations, identified by static analysis,
 only for changed lines in a Git repo.
 """
 
+from __future__ import annotations
+
 import sys
 import traceback
 
@@ -34,24 +36,29 @@ from git import Repo
 
 from ondivi.define_changed_lines import define_changed_lines
 from ondivi.filter_out_violations import filter_out_violations
-from ondivi.types import ActualViolationsListStr, DiffStr, ViolationFormatStr
+from ondivi.types import ActualViolationsListStr, DiffStr, LinterAdditionalMessageStr, ViolationFormatStr, ViolationStr
 
 
 def controller(
     diff: DiffStr,
-    violations: list[str],
+    linter_out: list[ViolationStr | LinterAdditionalMessageStr],
     violation_format: ViolationFormatStr,
     only_violations: bool,
 ) -> tuple[ActualViolationsListStr, bool]:
     """Entrypoint.
 
     :param diff: Diff
-    :param violations: list[str]
+    :param linter_out: list[str]
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
     :return: tuple[ActualViolationsListStr, bool]
     """
-    return filter_out_violations(define_changed_lines(diff), violations, violation_format, only_violations)
+    return filter_out_violations(
+        define_changed_lines(diff),
+        linter_out,
+        violation_format,
+        only_violations,
+    )
 
 
 def cli(baseline: str, violation_format: str, only_violations: bool) -> None:

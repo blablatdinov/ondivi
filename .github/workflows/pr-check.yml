@@ -53,7 +53,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
       - name: Run tests via pytest
-        run: poetry run pytest --cov=ondivi --cov-report=term-missing:skip-covered -s -vv --fail-under=100
+        run: poetry run pytest --cov=ondivi --cov-report=term-missing:skip-covered -s -vv --cov-fail-under=100
       - name: Check dependencies relevance
         run: poetry run deltaver poetry.lock --format lock
 

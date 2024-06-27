@@ -26,6 +26,8 @@ from typing import TypedDict
 
 DiffStr = str
 FileNameStr = str
+ViolationStr = str
+LinterAdditionalMessageStr = str
 ActualViolationsListStr = list[str]
 ViolationFormatStr = str
 

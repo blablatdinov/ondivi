@@ -22,41 +22,50 @@
 
 """Collect target violations."""
 
+from __future__ import annotations
+
 from parse import parse as parse_from_pattern  # type: ignore [import-untyped]
 
-from ondivi.types import ActualViolationsListStr, FileNameStr, ParsedViolation, ViolationFormatStr
+from ondivi.types import (
+    ActualViolationsListStr,
+    FileNameStr,
+    LinterAdditionalMessageStr,
+    ParsedViolation,
+    ViolationFormatStr,
+    ViolationStr,
+)
 
 
 def filter_out_violations(
     changed_lines: dict[FileNameStr, list[int]],
-    violations: list[str],
+    linter_out: list[ViolationStr | LinterAdditionalMessageStr],
     violation_format: ViolationFormatStr,
     only_violations: bool,
 ) -> tuple[ActualViolationsListStr, bool]:
     """Collect target violations.
 
     :param changed_lines: dict[FileName, list[int]], violations: list[str]
-    :param violations: list[str]
+    :param linter_out: list[ViolationStr | LinterAdditionalMessageStr]
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
     :return: tuple[ActualViolationsListStr, bool]
     """
     filtered_violations = []
     violation_found = False
-    for violation in violations:
-        line_for_out, is_violation = _is_line_for_out(changed_lines, violation, violation_format)
+    for linter_out_line in linter_out:
+        line_for_out, is_violation = _is_line_for_out(changed_lines, linter_out_line, violation_format)
         violation_found = violation_found or is_violation
         if is_violation or (line_for_out and not only_violations):
-            filtered_violations.append(violation)
+            filtered_violations.append(linter_out_line)
     return filtered_violations, violation_found
 
 
 def _is_line_for_out(
     changed_lines: dict[FileNameStr, list[int]],
-    violation: str,
+    linter_out_line: ViolationStr | LinterAdditionalMessageStr,
     violation_format: ViolationFormatStr,
 ) -> tuple[bool, bool]:
-    parsed_violation = parse_from_pattern(violation_format, violation)
+    parsed_violation = parse_from_pattern(violation_format, linter_out_line)
     line_for_out, is_violation = True, True
     if not parsed_violation:
         line_for_out = True

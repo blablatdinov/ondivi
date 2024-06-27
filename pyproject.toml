@@ -84,6 +84,7 @@ ignore = [
   "TD",      # "t0do" formats
   "PLR630",  # We disrespect staticmethods
   "TCH003",  # Move standard library import `...` into a type-checking block
+  "TCH001",  # Move application import into a type-checking block
 ]
 
 [tool.ruff]

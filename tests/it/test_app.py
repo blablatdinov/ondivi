@@ -121,7 +121,10 @@ def test_baseline_default(run_shell: _RUN_SHELL_T) -> None:
 @pytest.mark.usefixtures('_test_repo')
 def test_ruff(run_shell: _RUN_SHELL_T) -> None:
     """Test ruff."""
-    got = run_shell(['venv/bin/ruff', 'check', '--select=ALL', 'file.py', '--output-format=concise'], ['venv/bin/ondivi'])
+    got = run_shell(
+        ['venv/bin/ruff', 'check', '--select=ALL', 'file.py', '--output-format=concise'],
+        ['venv/bin/ondivi'],
+    )
 
     assert got.stdout.decode('utf-8').strip() == '\n'.join([
         'file.py:12:5: T201 `print` found',
@@ -218,7 +221,10 @@ def test_handle_exception() -> None:
 @pytest.mark.usefixtures('_test_repo')
 def test_only_violations(run_shell: _RUN_SHELL_T) -> None:
     """Test only violations."""
-    got = run_shell(['venv/bin/ruff', 'check', '--select=ALL', 'file.py', '--output-format=concise'], ['venv/bin/ondivi', '--only-violations'])
+    got = run_shell(
+        ['venv/bin/ruff', 'check', '--select=ALL', 'file.py', '--output-format=concise'],
+        ['venv/bin/ondivi', '--only-violations'],
+    )
 
     assert got.stdout.decode('utf-8').strip() == '\n'.join([
         'file.py:12:5: T201 `print` found',

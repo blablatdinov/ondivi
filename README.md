@@ -37,6 +37,8 @@ Run the script:
 
 ```bash
 flake8 script.py | ondivi
+# with ruff:
+ruff check file.py --output-format=concise | ondivi
 ```
 
 ```

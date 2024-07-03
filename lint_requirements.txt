@@ -1,4 +1,4 @@
 # Some linters allow from python3.9
 
 wemake-python-styleguide==0.19.2
-deltaver=0.2.2
+deltaver==0.2.2

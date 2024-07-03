@@ -24,6 +24,8 @@
 
 from __future__ import annotations
 
+from typing import List, Dict
+
 from parse import parse as parse_from_pattern  # type: ignore [import-untyped]
 
 from ondivi.types import (
@@ -37,15 +39,15 @@ from ondivi.types import (
 
 
 def filter_out_violations(
-    changed_lines: dict[FileNameStr, list[int]],
-    linter_out: list[ViolationStr | LinterAdditionalMessageStr],
+    changed_lines: Dict[FileNameStr, List[int]],
+    linter_out: List[ViolationStr | LinterAdditionalMessageStr],
     violation_format: ViolationFormatStr,
     only_violations: bool,
 ) -> tuple[ActualViolationsListStr, bool]:
     """Collect target violations.
 
-    :param changed_lines: dict[FileName, list[int]], violations: list[str]
-    :param linter_out: list[ViolationStr | LinterAdditionalMessageStr]
+    :param changed_lines: Dict[FileName, List[int]], violations: List[str]
+    :param linter_out: List[ViolationStr | LinterAdditionalMessageStr]
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
     :return: tuple[ActualViolationsListStr, bool]
@@ -61,7 +63,7 @@ def filter_out_violations(
 
 
 def _is_line_for_out(
-    changed_lines: dict[FileNameStr, list[int]],
+    changed_lines: Dict[FileNameStr, List[int]],
     linter_out_line: ViolationStr | LinterAdditionalMessageStr,
     violation_format: ViolationFormatStr,
 ) -> tuple[bool, bool]:
@@ -76,7 +78,7 @@ def _is_line_for_out(
     return line_for_out, is_violation
 
 
-def _is_target_violation(changed_lines: dict[FileNameStr, list[int]], parsed_violation: ParsedViolation) -> bool:
+def _is_target_violation(changed_lines: Dict[FileNameStr, List[int]], parsed_violation: ParsedViolation) -> bool:
     is_target_file = parsed_violation['filename'] in changed_lines
     try:
         violation_on_changed_line = parsed_violation['line_num'] in changed_lines[parsed_violation['filename']]

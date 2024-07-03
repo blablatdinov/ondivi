@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import sys
 import traceback
+from typing import List
 
 import click
 from git import Repo
@@ -41,14 +42,14 @@ from ondivi.types import ActualViolationsListStr, DiffStr, LinterAdditionalMessa
 
 def controller(
     diff: DiffStr,
-    linter_out: list[ViolationStr | LinterAdditionalMessageStr],
+    linter_out: List[ViolationStr | LinterAdditionalMessageStr],
     violation_format: ViolationFormatStr,
     only_violations: bool,
 ) -> tuple[ActualViolationsListStr, bool]:
     """Entrypoint.
 
     :param diff: Diff
-    :param linter_out: list[str]
+    :param linter_out: List[str]
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
     :return: tuple[ActualViolationsListStr, bool]

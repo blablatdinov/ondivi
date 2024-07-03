@@ -22,10 +22,12 @@
 
 """Define changed lines in file."""
 
+from typing import List, Dict
+
 from ondivi.types import DiffStr, FileNameStr
 
 
-def define_changed_lines(diff: DiffStr) -> dict[FileNameStr, list[int]]:
+def define_changed_lines(diff: DiffStr) -> Dict[FileNameStr, List[int]]:
     """Define changed lines in file.
 
     Example of diff:
@@ -41,13 +43,13 @@ def define_changed_lines(diff: DiffStr) -> dict[FileNameStr, list[int]]:
     | @@ -28 +30,2 @@ from git import Repo                                | <- Changed lines = [27, 28, 30, 31]
     | -def define_changed_lines(diff):                                    |
     | +                                                                   |
-    | +def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]: |
+    | +def define_changed_lines(diff: Diff) -> Dict[FileName, List[int]]: |
     +---------------------------------------------------------------------+
 
     :param diff: DiffStr
-    :return: dict[FileNameStr, list[int]]
+    :return: Dict[FileNameStr, List[int]]
     """
-    changed_lines: dict[FileNameStr, list[int]] = {}
+    changed_lines: Dict[FileNameStr, List[int]] = {}
     current_file = ''
     for line in diff.splitlines():
         if _line_contain_filename(line):
@@ -66,14 +68,14 @@ def _diff_line_contain_changed_lines(diff_line: str) -> bool:
     return diff_line.startswith('@@')
 
 
-def _changed_lines(diff_line: str) -> list[int]:
+def _changed_lines(diff_line: str) -> List[int]:
     """Changed lines.
 
     >>> _changed_lines('@@ -28 +30,2 @@ from git import Repo')
     [30, 31]
 
     :param diff_line: str
-    :return: list[int]
+    :return: List[int]
     """
     splitted_line = diff_line.split('@@')[1].strip()
     added_lines = splitted_line.split('+')[1]

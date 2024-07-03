@@ -27,7 +27,7 @@ import subprocess
 import zipfile
 from collections.abc import Generator
 from pathlib import Path
-from typing import Callable
+from typing import Callable, List
 from unittest.mock import patch
 
 import pytest
@@ -37,7 +37,7 @@ from typing_extensions import TypeAlias
 
 from ondivi.entry import main
 
-_RUN_SHELL_T: TypeAlias = Callable[[list[str], list[str]], subprocess.CompletedProcess[bytes]]
+_RUN_SHELL_T: TypeAlias = Callable[[List[str], List[str]], subprocess.CompletedProcess[bytes]]
 
 
 @pytest.fixture(scope='module')
@@ -64,7 +64,7 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[No
 @pytest.fixture()
 def run_shell() -> _RUN_SHELL_T:
     """Run commands with pipe in shell."""
-    def _exec(lint_cmd: list[str], ondivi_cmd: list[str]) -> subprocess.CompletedProcess[bytes]:
+    def _exec(lint_cmd: List[str], ondivi_cmd: List[str]) -> subprocess.CompletedProcess[bytes]:
         with subprocess.Popen(lint_cmd, stdout=subprocess.PIPE) as lint_proc:
             return subprocess.run(
                 ondivi_cmd,

@@ -22,7 +22,7 @@
 
 """Ondivi app types."""
 
-from typing import TypedDict
+from typing import TypedDict, List
 
 DiffStr = str
 # Diff str is out of `git diff` command
@@ -38,7 +38,7 @@ DiffStr = str
 # | @@ -28 +30,2 @@ from git import Repo                                |
 # | -def define_changed_lines(diff):                                    |
 # | +                                                                   |
-# | +def define_changed_lines(diff: Diff) -> dict[FileName, list[int]]: |
+# | +def define_changed_lines(diff: Diff) -> Dict[FileName, List[int]]: |
 # +---------------------------------------------------------------------+
 
 FileNameStr = str
@@ -56,7 +56,7 @@ LinterAdditionalMessageStr = str
 # This line not needed for ondivi, but we must send it to user in some cases
 # See: "--only-violations" option
 
-ActualViolationsListStr = list[str]
+ActualViolationsListStr = List[str]
 # List of violations filtered by ondivi
 
 ViolationFormatStr = str

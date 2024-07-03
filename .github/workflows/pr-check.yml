@@ -54,8 +54,19 @@ jobs:
         run: poetry install --no-interaction
       - name: Run tests via pytest
         run: poetry run pytest --cov=ondivi --cov-report=term-missing:skip-covered -s -vv --cov-fail-under=100
-      - name: Check dependencies relevance
-        run: poetry run deltaver poetry.lock --format lock
+  
+  check-dependency-relevance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Deltaver
+        run: |
+          pip install -r lint_requirements.txt
+          deltaver poetry.lock --format lock
 
   lint:
     runs-on: ubuntu-latest
@@ -73,7 +84,7 @@ jobs:
           installer-parallel: true
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction && pip install -r lint_requirements.txt
       - name: Lint
         run: make lint
       - name: Checking files for compliance with editorconfig

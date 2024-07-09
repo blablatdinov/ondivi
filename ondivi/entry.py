@@ -35,7 +35,8 @@ import click
 from git import Repo
 
 from ondivi._internal.define_changed_lines import define_changed_lines  # noqa: WPS436. _internal allow into ondivi app
-from ondivi._internal.filter_out_violations import filter_out_violations  # noqa: WPS436. _internal allow into ondivi app
+from ondivi._internal.filter_out_violations import \
+    filter_out_violations  # noqa: WPS436. _internal allow into ondivi app
 from ondivi._internal.types import (  # noqa: WPS436. _internal allow into ondivi app
     ActualViolationsListStr,
     DiffStr,

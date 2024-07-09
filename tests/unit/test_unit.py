@@ -22,7 +22,6 @@
 
 """Tests for ondivi."""
 
-
 from ondivi.entry import controller
 
 

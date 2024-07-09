@@ -161,9 +161,9 @@ def test_without_violations(run_shell: _RUN_SHELL_T) -> None:
 @pytest.mark.usefixtures('_test_repo')
 def test_info_message(run_shell: _RUN_SHELL_T) -> None:
     """Test exit with info message."""
-    got = run_shell(['echo', 'All files corect!'], ['venv/bin/ondivi'])
+    got = run_shell(['echo', 'All files correct!'], ['venv/bin/ondivi'])
 
-    assert got.stdout.decode('utf-8').strip() == 'All files corect!'
+    assert got.stdout.decode('utf-8').strip() == 'All files correct!'
     assert got.returncode == 0
 
 

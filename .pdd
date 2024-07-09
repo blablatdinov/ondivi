@@ -1,0 +1,2 @@
+--source=.
+--exclude=tests/fixtures/violations.txt

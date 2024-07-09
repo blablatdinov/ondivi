@@ -4,7 +4,7 @@ django/db/models/sql/query.py:1404:34: ANN001 Missing type annotation for functi
 django/db/models/sql/query.py:1404:40: ANN001 Missing type annotation for function argument `lookups`
 django/db/models/sql/query.py:1405:9: D205 1 blank line required between summary line and description
 django/db/models/sql/query.py:1405:9: D212 [*] Multi-line docstring summary should start at the first line
-django/db/models/sql/query.py:1405:9: D401 First line of docstring should be in imperative mood: 'Helper method for build_lookup(). Try to fetch and initialize'
+django/db/models/sql/query.py:1405:9: D401 First line of docstring should be in imperative mood: "Helper method for build_lookup(). Try to fetch and initialize"
 django/db/models/sql/query.py:1418:30: UP031 Use format specifiers instead of percent format
 django/db/models/sql/query.py:1427:17: UP031 Use format specifiers instead of percent format
 django/db/models/sql/query.py:1428:88: COM812 [*] Trailing comma missing

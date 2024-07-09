@@ -39,9 +39,7 @@ def test_define_changed_files() -> None:
             *range(1401, 1408),
             *range(1418, 1432),
         ],
-        'tests/custom_lookups/tests.py': [
-            *range(614, 624),
-        ],
+        'tests/custom_lookups/tests.py': list(range(614, 624)),
         'tests/lookup/tests.py': [
             *range(812, 846),
             *range(853, 860),

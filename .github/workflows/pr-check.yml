@@ -94,3 +94,15 @@ jobs:
         run: npm i jscpd@4.0.4 -g
       - name: Run jscpd
         run: jscpd -p '**/*.py' -t 0
+
+  check-spelling:
+    runs-on: ubuntu-22.04
+    name: Check spelling
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - name: Install cspell
+        run: npm i cspell@8.10.4 @cspell/dict-ru_ru@2.2.1 -g
+      - name: Run cspell
+        run: cspell ondivi tests --no-progress --show-suggestions --show-context

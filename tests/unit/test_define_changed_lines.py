@@ -24,7 +24,7 @@
 
 from pathlib import Path
 
-from ondivi._internal.define_changed_lines import define_changed_lines
+from ondivi._internal.define_changed_lines import define_changed_lines  # noqa: WPS436. _internal allow into ondivi app
 
 
 def test_define_changed_files() -> None:

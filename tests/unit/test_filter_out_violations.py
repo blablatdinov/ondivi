@@ -22,7 +22,7 @@
 
 """Tests for ondivi."""
 
-from ondivi._internal.filter_out_violations import filter_out_violations
+from ondivi._internal.filter_out_violations import filter_out_violations  # noqa: WPS436. _internal allow into ondivi app
 
 
 def test_without_violation() -> None:

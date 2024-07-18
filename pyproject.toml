@@ -37,7 +37,7 @@ click = "*"
 ondivi = "ondivi.entry:main"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "0.5.2"
+ruff = "0.5.3"
 wemake-python-styleguide = "0.19.2"
 pytest = "8.2.2"
 isort = "5.13.2"

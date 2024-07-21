@@ -4,6 +4,7 @@ Almaz
 Analyse
 analysed
 argparse
+automerge
 Availabe
 backreferencing
 blahblah

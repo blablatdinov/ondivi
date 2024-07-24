@@ -20,27 +20,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Tests for ondivi."""
+"""Internal logic.
 
-
-from ondivi.entry import controller
-
-
-def test_controller() -> None:
-    """Testing script output with diff and violations list."""
-    got, found = controller(
-        '\n'.join([
-            'diff --git a/ondivi/__main__.py b/ondivi/__main__.py',
-            'index 669d0ff..7a518fa 100644',
-            '--- a/ondivi/__main__.py',
-            '+++ b/ondivi/__main__.py',
-            '@@ -26,0 +27,1 @@ from git import Repo',
-            '+Diff = str',
-        ]),
-        ['ondivi/__main__.py:27:1: Error message'],
-        '{filename}:{line_num:d}:{col_num:d}: {message}',
-        only_violations=False,
-    )
-
-    assert got == ['ondivi/__main__.py:27:1: Error message']
-    assert found
+Protected from import
+"""

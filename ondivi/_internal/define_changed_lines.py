@@ -22,7 +22,7 @@
 
 """Define changed lines in file."""
 
-from ondivi.types import DiffStr, FileNameStr
+from ondivi._internal.types import DiffStr, FileNameStr  # noqa: WPS436. _internal allow into ondivi app
 
 
 def define_changed_lines(diff: DiffStr) -> dict[FileNameStr, list[int]]:

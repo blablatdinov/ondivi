@@ -35,7 +35,8 @@ jobs:
   tests:
     strategy:
       matrix:
-        python_version: [ "3.9", "3.12", "3.13.0-beta.3" ]
+        # https://github.com/actions/python-versions/blob/main/versions-manifest.json
+        python_version: [ "3.9", "3.12", "3.13.0-beta.4" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

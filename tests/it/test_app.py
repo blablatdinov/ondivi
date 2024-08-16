@@ -61,7 +61,7 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[No
     os.chdir(current_dir)
 
 
-@pytest.fixture()
+@pytest.fixture
 def run_shell() -> _RUN_SHELL_T:
     """Run commands with pipe in shell."""
     def _exec(lint_cmd: list[str], ondivi_cmd: list[str]) -> subprocess.CompletedProcess[bytes]:
@@ -194,7 +194,7 @@ def test_click_app() -> None:
     assert got.stdout.strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
 
 
-@pytest.fixture()
+@pytest.fixture
 def _broke_cli() -> Generator[None, None, None]:
     with patch('ondivi.entry.cli') as cli_patch:
         cli_patch.side_effect = ValueError('Fail')

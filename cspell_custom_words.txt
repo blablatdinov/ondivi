@@ -65,6 +65,7 @@ subq
 subquery
 testpaths
 testyear
+tomli
 typealias
 typecheck
 typevar

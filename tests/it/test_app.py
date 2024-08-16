@@ -31,6 +31,7 @@ from typing import Callable
 from unittest.mock import patch
 
 import pytest
+import tomli
 from _pytest.legacypath import TempdirFactory
 from click.testing import CliRunner
 from typing_extensions import TypeAlias
@@ -44,6 +45,17 @@ _RUN_SHELL_T: TypeAlias = Callable[[list[str], list[str]], subprocess.CompletedP
 def current_dir() -> Path:
     """Current directory for installing actual ondivi."""
     return Path().absolute()
+
+
+def _version_from_lock(package_name: str) -> str:
+    return '{0}=={1}'.format(
+        package_name,
+        next(
+            package
+            for package in tomli.loads(Path('poetry.lock').read_text(encoding='utf-8'))['package']
+            if package['name'] == package_name
+        )['version'],
+    )
 
 
 # flake8: noqa: S603, S607. Not a production code
@@ -78,13 +90,13 @@ def run_shell() -> _RUN_SHELL_T:
 @pytest.mark.usefixtures('_test_repo')
 @pytest.mark.parametrize('version', [
     ('gitpython==2.1.15',),
-    ('gitpython==3.1.43',),
+    (_version_from_lock('gitpython'),),
     ('gitpython', '-U'),
     ('parse==1.4',),
-    ('parse==1.20.2',),
+    (_version_from_lock('parse'),),
     ('parse', '-U'),
     ('click==0.1',),
-    ('click==8.1.7',),
+    (_version_from_lock('click'),),
     ('click', '-U'),
 ])
 def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> None:

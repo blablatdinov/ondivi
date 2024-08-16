@@ -52,7 +52,7 @@ def _version_from_lock(package_name: str) -> str:
         package_name,
         next(
             package
-            for package in tomli.loads(Path('poetry.lock').read_text())['package']
+            for package in tomli.loads(Path('poetry.lock').read_text(encoding='utf-8'))['package']
             if package['name'] == package_name
         )['version'],
     )

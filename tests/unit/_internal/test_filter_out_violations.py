@@ -92,3 +92,46 @@ def test_only_violations() -> None:
 
     assert violations == ['file.py:3:1: line too long']
     assert found
+
+
+def test_black_check_only_violations() -> None:
+    """Test black --check output, only violations."""
+    got, found = filter_out_violations(
+        {'ondivi/__main__.py': [27]},
+        [
+            'would reformat ondivi/__main__.py',
+            'would reformat file.py',
+            '',
+            'Oh no! 💥 💔 💥',
+            '1 file would be reformatted.',
+        ],
+        'would reformat {filename}',
+        only_violations=True,
+    )
+
+    assert got == ['would reformat ondivi/__main__.py']
+    assert found
+
+
+def test_black_check() -> None:
+    """Test black --check output."""
+    got, found = filter_out_violations(
+        {'ondivi/__main__.py': [27]},
+        [
+            'would reformat ondivi/__main__.py',
+            'would reformat file.py',
+            '',
+            'Oh no! 💥 💔 💥',
+            '1 file would be reformatted.',
+        ],
+        'would reformat {filename}',
+        only_violations=False,
+    )
+
+    assert got == [
+        'would reformat ondivi/__main__.py',
+        '',
+        'Oh no! 💥 💔 💥',
+        '1 file would be reformatted.',
+    ]
+    assert found

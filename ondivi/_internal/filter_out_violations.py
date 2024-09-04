@@ -70,6 +70,9 @@ def _is_line_for_out(
     if not parsed_violation:
         line_for_out = True
         is_violation = False
+    elif 'line_num:d' not in violation_format and 'col_num:d' not in violation_format:
+        is_violation = parsed_violation['filename'] in changed_lines
+        line_for_out = is_violation
     elif not _is_target_violation(changed_lines, parsed_violation):
         line_for_out = False
         is_violation = False

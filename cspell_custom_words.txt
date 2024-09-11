@@ -23,6 +23,7 @@ elif
 fexpr
 flakeheaven
 flakehell
+gitdb
 gitpython
 Ilaletdinov
 inlinevar
@@ -59,6 +60,7 @@ refcounts
 repr
 rgxs
 rubocop
+smmap
 staticmethods
 styleguide
 subq

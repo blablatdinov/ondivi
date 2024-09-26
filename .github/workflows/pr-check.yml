@@ -85,7 +85,7 @@ jobs:
           bin/ec-linux-amd64 -v
 
   check-duplicates:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: Check duplicated code
     steps:
       - name: Checkout
@@ -97,7 +97,7 @@ jobs:
         run: jscpd -p '**/*.py' -t 0
 
   check-spelling:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: Check spelling
     steps:
       - name: Checkout

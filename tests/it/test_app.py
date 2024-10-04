@@ -22,9 +22,9 @@
 
 """Integration test with installing and check on real git repo."""
 
-import uuid
 import os
 import subprocess
+import uuid
 import zipfile
 from collections.abc import Generator
 from pathlib import Path

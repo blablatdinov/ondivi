@@ -24,7 +24,7 @@
 
 from pathlib import Path
 
-from ondivi.entry import controller, cli
+from ondivi.entry import cli, controller
 
 
 def test_controller() -> None:

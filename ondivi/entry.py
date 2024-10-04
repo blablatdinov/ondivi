@@ -26,18 +26,20 @@ Python script filtering coding violations, identified by static analysis,
 only for changed lines in a Git repo.
 """
 
+# flake8: noqa: WPS436. _internal allow into ondivi app
+
 from __future__ import annotations
 
 import sys
 import traceback
+from pathlib import Path
 
 import click
 from git import Repo
 
-from ondivi._internal.define_changed_lines import define_changed_lines  # noqa: WPS436. _internal allow into ondivi app
-from ondivi._internal.filter_out_violations import \
-    filter_out_violations  # noqa: WPS436. _internal allow into ondivi app
-from ondivi._internal.types import (  # noqa: WPS436. _internal allow into ondivi app
+from ondivi._internal.define_changed_lines import define_changed_lines
+from ondivi._internal.filter_out_violations import filter_out_violations
+from ondivi._internal.types import (
     ActualViolationsListStr,
     DiffStr,
     LinterAdditionalMessageStr,
@@ -68,16 +70,24 @@ def controller(
     )
 
 
-def cli(baseline: str, violation_format: str, only_violations: bool) -> None:
+def cli(baseline: str, fromfile: str | None, violation_format: str, only_violations: bool) -> None:
     """Controller with CLI side effects.
 
     :param baseline: str
+    :param fromfile: str
     :param violation_format: str
     :param only_violations: bool
     """
+    if fromfile:
+        if not Path(fromfile).exists():
+            sys.stdout.write('File with violations "{0}" not found'.format(fromfile))
+            sys.exit(1)
+        linter_output = Path(fromfile).read_text().strip().splitlines()  # FIXME: file not found case
+    else:
+        linter_output = sys.stdin.read().strip().splitlines()
     filtered_lines, violation_found = controller(
         Repo('.').git.diff('--unified=0', baseline),
-        sys.stdin.read().strip().splitlines(),
+        linter_output,
         violation_format,
         only_violations,
     )
@@ -97,6 +107,11 @@ def cli(baseline: str, violation_format: str, only_violations: bool) -> None:
         'Program filter out violations on baseline',
         '(default: "master")',
     ]),
+)
+@click.option(
+    '--fromfile',
+    default=None,
+    help='Path to file with violations',
 )
 @click.option(
     '--format',
@@ -124,7 +139,7 @@ def cli(baseline: str, violation_format: str, only_violations: bool) -> None:
     help='Show only violations',
     is_flag=True,
 )
-def main(baseline: str, violation_format: str, only_violations: bool) -> None:
+def main(baseline: str, fromfile: str | None, violation_format: str, only_violations: bool) -> None:
     """Ondivi (Only diff violations).
 
     Python script filtering coding violations, identified by static analysis,
@@ -134,7 +149,7 @@ def main(baseline: str, violation_format: str, only_violations: bool) -> None:
     flake8 script.py | ondivi
     """
     try:
-        cli(baseline, violation_format, only_violations)
+        cli(baseline, fromfile, violation_format, only_violations, )
     except Exception as err:  # noqa: BLE001. Application entrypoint
         sys.stdout.write('\n'.join([
             'Ondivi fail with: "{0}"'.format(err),

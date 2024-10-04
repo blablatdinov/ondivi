@@ -24,7 +24,6 @@
 
 import os
 import subprocess
-import uuid
 import zipfile
 from collections.abc import Generator
 from pathlib import Path
@@ -280,6 +279,15 @@ def test_fromfile(file_with_violations: Path) -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
+def test_fromfile_via_cli_runner(file_with_violations: Path) -> None:
+    """Test script with violations from file via CliRunner."""
+    got = CliRunner().invoke(main, ['--fromfile', str(file_with_violations)], input='')
+
+    assert got.stdout.strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.exit_code == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
 def test_fromfile_not_found() -> None:
     """Test script with violations from file."""
     got = subprocess.run(
@@ -290,3 +298,12 @@ def test_fromfile_not_found() -> None:
 
     assert got.stdout.decode('utf-8').strip() == 'File with violations "undefined.txt" not found'
     assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_fromfile_not_found_via_cli_runner() -> None:
+    """Test script with violations from file via CliRunner."""
+    got = CliRunner().invoke(main, ['--fromfile', 'undefined.txt'], input='')
+
+    assert got.stdout.strip() == 'File with violations "undefined.txt" not found'
+    assert got.exit_code == 1

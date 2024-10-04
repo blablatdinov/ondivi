@@ -23,6 +23,7 @@ elif
 fexpr
 flakeheaven
 flakehell
+fromfile
 gitdb
 gitpython
 Ilaletdinov

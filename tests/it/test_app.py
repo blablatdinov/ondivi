@@ -283,14 +283,10 @@ def test_fromfile(file_with_violations: Path) -> None:
 def test_fromfile_not_found() -> None:
     """Test script with violations from file."""
     got = subprocess.run(
-        ['venv/bin/ondivi', '--fromfile', str(uuid.uuid4())],
+        ['venv/bin/ondivi', '--fromfile', 'undefined.txt'],
         stdout=subprocess.PIPE,
         check=False,
     )
 
-    assert got.stdout.decode('utf-8').strip().splitlines() == [
-        'file.py:3:1: E302 expected 2 blank lines, found 1',
-        'file.py:9:1: E302 expected 2 blank lines, found 1',
-        'file.py:12:80: E501 line too long (119 > 79 characters)',
-    ]
+    assert got.stdout.decode('utf-8').strip() == 'File with violations "undefined.txt" not found'
     assert got.returncode == 1

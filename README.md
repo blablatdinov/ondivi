@@ -55,7 +55,7 @@ Usage: ondivi [OPTIONS]
 Options:
   --baseline TEXT    Commit or branch which will contain legacy code. Program
                      filter out violations on baseline (default: "master")
-  --fromfile TEXT    Path to file with violations
+  --fromfile TEXT    Path to file with violations. Expected "utf-8" encoding
   --format TEXT      Template for parsing linter messages. The template should
                      include the following named parts:
 

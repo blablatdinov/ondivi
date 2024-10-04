@@ -90,6 +90,7 @@ def run_shell() -> _RUN_SHELL_T:
 
 @pytest.fixture
 def file_with_violations(_test_repo: Path) -> Path:
+    """File contain violations from linter."""
     violations_file = _test_repo / 'violations.txt'
     violations_file.write_text(
         '\n'.join([
@@ -266,7 +267,7 @@ def test_only_violations(run_shell: _RUN_SHELL_T) -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_fromfile(file_with_violations) -> None:
+def test_fromfile(file_with_violations: Path) -> None:
     """Test script with violations from file."""
     got = subprocess.run(
         ['venv/bin/ondivi', '--fromfile', str(file_with_violations)],
@@ -279,7 +280,7 @@ def test_fromfile(file_with_violations) -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_fromfile_not_found(file_with_violations: Path) -> None:
+def test_fromfile_not_found() -> None:
     """Test script with violations from file."""
     got = subprocess.run(
         ['venv/bin/ondivi', '--fromfile', str(uuid.uuid4())],

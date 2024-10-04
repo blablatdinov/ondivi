@@ -82,7 +82,7 @@ def cli(baseline: str, fromfile: str | None, violation_format: str, only_violati
         if not Path(fromfile).exists():
             sys.stdout.write('File with violations "{0}" not found'.format(fromfile))
             sys.exit(1)
-        linter_output = Path(fromfile).read_text().strip().splitlines()  # FIXME: file not found case
+        linter_output = Path(fromfile).read_text(encoding='utf-8').strip().splitlines()
     else:
         linter_output = sys.stdin.read().strip().splitlines()
     filtered_lines, violation_found = controller(
@@ -111,7 +111,7 @@ def cli(baseline: str, fromfile: str | None, violation_format: str, only_violati
 @click.option(
     '--fromfile',
     default=None,
-    help='Path to file with violations',
+    help='Path to file with violations. Expected "utf-8" encoding',
 )
 @click.option(
     '--format',
@@ -149,7 +149,7 @@ def main(baseline: str, fromfile: str | None, violation_format: str, only_violat
     flake8 script.py | ondivi
     """
     try:
-        cli(baseline, fromfile, violation_format, only_violations, )
+        cli(baseline, fromfile, violation_format, only_violations)
     except Exception as err:  # noqa: BLE001. Application entrypoint
         sys.stdout.write('\n'.join([
             'Ondivi fail with: "{0}"'.format(err),

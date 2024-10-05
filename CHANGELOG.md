@@ -30,10 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Reading violations from file. `--fromfile` flag (#109)
+
 ### Changed
 
 - `--help` output (#43)
-- Reading violations from file. `--fromfile` flag (#109)
 
 ## [0.5.0] - 2024-06-21
 

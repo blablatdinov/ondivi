@@ -10,18 +10,18 @@ This is a simple Python script designed to filter coding violations (likely iden
 
 This tool works with any linter or static code analyzer, including but not limited to:
 
-- Flake8
-- ruff
-- pylint
-- mypy
-- eslint
-- rubocop
-- stylelint
+- [Flake8](https://github.com/PyCQA/flake8)
+- [Ruff](https://github.com/astral-sh/ruff)
+- [Pylint](https://github.com/pylint-dev/pylint)
+- [Mypy](https://github.com/python/mypy)
+- [Eslint](https://github.com/eslint/eslint)
+- [Rubocop](https://github.com/rubocop/rubocop)
+- [Stylelint](https://github.com/stylelint/stylelint)
 
 ## Prerequisites:
 
-- Python 3.9 or higher
-- Git
+- [Python](https://python.org) 3.9 or higher
+- [Git](https://git-scm.com/)
 
 ## Installation
 

@@ -41,6 +41,13 @@ flake8 script.py | ondivi
 ruff check file.py --output-format=concise | ondivi
 ```
 
+or:
+
+```bash
+flake8 script.py > violations.txt
+ondivi --fromfile=violations.txt
+```
+
 ```
 $ ondivi --help
 Usage: ondivi [OPTIONS]

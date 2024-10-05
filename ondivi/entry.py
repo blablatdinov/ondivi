@@ -45,6 +45,8 @@ from ondivi._internal.types import (
     LinterAdditionalMessageStr,
     ViolationFormatStr,
     ViolationStr,
+    FromFilePathStr,
+    BaselineStr,
 )
 
 
@@ -70,12 +72,17 @@ def controller(
     )
 
 
-def cli(baseline: str, fromfile: str | None, violation_format: str, only_violations: bool) -> None:
+def cli(
+    baseline: BaselineStr,
+    fromfile: FromFilePathStr | None,
+    violation_format: ViolationFormatStr,
+    only_violations: bool,
+) -> None:
     """Controller with CLI side effects.
 
-    :param baseline: str
-    :param fromfile: str
-    :param violation_format: str
+    :param baseline: BaselineStr
+    :param fromfile: FromFilePathStr | None
+    :param violation_format: ViolationFormatStr
     :param only_violations: bool
     """
     if fromfile:

@@ -296,7 +296,7 @@ def test_fromfile_not_found() -> None:
         check=False,
     )
 
-    assert got.stdout.decode('utf-8').strip() == 'File with violations "undefined.txt" not found'
+    assert got.stdout.decode('utf-8') == 'File with violations "undefined.txt" not found\n'
     assert got.returncode == 1
 
 
@@ -305,5 +305,5 @@ def test_fromfile_not_found_via_cli_runner() -> None:
     """Test script with violations from file via CliRunner."""
     got = CliRunner().invoke(main, ['--fromfile', 'undefined.txt'], input='')
 
-    assert got.stdout.strip() == 'File with violations "undefined.txt" not found'
+    assert got.stdout == 'File with violations "undefined.txt" not found\n'
     assert got.exit_code == 1

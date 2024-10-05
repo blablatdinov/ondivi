@@ -80,7 +80,7 @@ def cli(baseline: str, fromfile: str | None, violation_format: str, only_violati
     """
     if fromfile:
         if not Path(fromfile).exists():
-            sys.stdout.write('File with violations "{0}" not found'.format(fromfile))
+            sys.stdout.write('File with violations "{0}" not found\n'.format(fromfile))
             sys.exit(1)
         linter_output = Path(fromfile).read_text(encoding='utf-8').strip().splitlines()
     else:

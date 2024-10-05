@@ -65,6 +65,12 @@ ViolationFormatStr = str
 # {line_num}   The line number with the error/warning (integer)',
 # See "--format" option, https://github.com/r1chardj0n3s/parse
 
+BaselineStr = str
+# Branch name or commit hash
+
+FromFilePathStr = str
+# Path to file with violations in utf-8 encoding
+
 
 class ParsedViolation(TypedDict):
     """Parsed violation.

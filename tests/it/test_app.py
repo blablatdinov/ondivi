@@ -60,7 +60,7 @@ def _version_from_lock(package_name: str) -> str:
 
 # flake8: noqa: S603, S607. Not a production code
 @pytest.fixture(scope='module')
-def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[None, None, None]:
+def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Path, None, None]:
     """Real git repository."""
     tmp_path = tmpdir_factory.mktemp('test')
     with zipfile.ZipFile('tests/fixtures/ondivi-test-repo.zip', 'r') as zip_ref:
@@ -69,7 +69,7 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[No
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
-    yield
+    yield tmp_path
     os.chdir(current_dir)
 
 
@@ -85,6 +85,23 @@ def run_shell() -> _RUN_SHELL_T:
                 check=False,
             )
     return _exec
+
+
+@pytest.fixture
+def file_with_violations(_test_repo: Path) -> Path:
+    """File contain violations from linter."""
+    violations_file = _test_repo / 'violations.txt'
+    violations_file.write_text(
+        '\n'.join([
+            'file.py:3:1: E302 expected 2 blank lines, found 1',
+            'file.py:9:1: E302 expected 2 blank lines, found 1',
+            'file.py:10:80: E501 line too long (123 > 79 characters)',
+            'file.py:12:80: E501 line too long (119 > 79 characters)',
+            'file.py:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+        ]),
+        encoding='utf-8',
+    )
+    return violations_file
 
 
 @pytest.mark.usefixtures('_test_repo')
@@ -246,3 +263,47 @@ def test_only_violations(run_shell: _RUN_SHELL_T) -> None:
         'file.py:16:23: Q000 [*] Single quotes found but double quotes preferred',
     ])
     assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_fromfile(file_with_violations: Path) -> None:
+    """Test script with violations from file."""
+    got = subprocess.run(
+        ['venv/bin/ondivi', '--fromfile', str(file_with_violations)],
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_fromfile_via_cli_runner(file_with_violations: Path) -> None:
+    """Test script with violations from file via CliRunner."""
+    got = CliRunner().invoke(main, ['--fromfile', str(file_with_violations)], input='')
+
+    assert got.stdout.strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.exit_code == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_fromfile_not_found() -> None:
+    """Test script with violations from file."""
+    got = subprocess.run(
+        ['venv/bin/ondivi', '--fromfile', 'undefined.txt'],
+        stdout=subprocess.PIPE,
+        check=False,
+    )
+
+    assert got.stdout.decode('utf-8') == 'File with violations "undefined.txt" not found\n'
+    assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_fromfile_not_found_via_cli_runner() -> None:
+    """Test script with violations from file via CliRunner."""
+    got = CliRunner().invoke(main, ['--fromfile', 'undefined.txt'], input='')
+
+    assert got.stdout == 'File with violations "undefined.txt" not found\n'
+    assert got.exit_code == 1

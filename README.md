@@ -55,6 +55,7 @@ Usage: ondivi [OPTIONS]
 Options:
   --baseline TEXT    Commit or branch which will contain legacy code. Program
                      filter out violations on baseline (default: "master")
+  --fromfile TEXT    Path to file with violations. Expected "utf-8" encoding
   --format TEXT      Template for parsing linter messages. The template should
                      include the following named parts:
 
@@ -76,7 +77,7 @@ Options:
 
                       - filename: "src/app_types/listable.py"
                       - line_num: 23
-                      - other: :1: UP035 Import from collections.abc instead:
+                      - other: :1: "UP035 Import from collections.abc instead:
                       Sequence"
 
                      Ensure that the template matches the format of the
@@ -92,7 +93,7 @@ The script parses the Git diff output to identify the changed lines in each file
 
 It then filters the given coding violations to include only those violations that correspond to the changed lines.
 
-[flakeheaven](https://github.com/flakeheaven/flakeheaven) and [flakehell](https://github.com/flakehell/flakehell) 
+[flakeheaven](https://github.com/flakeheaven/flakeheaven) and [flakehell](https://github.com/flakehell/flakehell)
 are not supported because they rely on internal flake8 API, which can lead to compatibility issues as flake8
 evolves. In contrast, ondivi uses only the text output of violations and the state of Git repository, making
 it more robust and easier to maintain.

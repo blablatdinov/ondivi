@@ -36,7 +36,7 @@ jobs:
     strategy:
       matrix:
         # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-        python_version: [ "3.9", "3.12", "3.13.0-rc.2", "pypy3.10" ]
+        python_version: [ "3.9", "3.12", "3.13.0-rc.3", "pypy3.10" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

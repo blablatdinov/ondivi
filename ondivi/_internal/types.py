@@ -69,7 +69,7 @@ BaselineStr = str
 # Branch name or commit hash
 
 FromFilePathStr = str
-# Path to file with violstions in utf-8 encoding
+# Path to file with violations in utf-8 encoding
 
 
 class ParsedViolation(TypedDict):

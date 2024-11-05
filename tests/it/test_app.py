@@ -307,3 +307,12 @@ def test_fromfile_not_found_via_cli_runner() -> None:
 
     assert got.stdout == 'File with violations "undefined.txt" not found\n'
     assert got.exit_code == 1
+
+
+@pytest.mark.usefixtures('_test_repo')
+def test_commit_not_found() -> None:
+    """Test commit not found."""
+    got = CliRunner().invoke(main, ['--baseline', 'fakeHash'], input='')
+
+    assert got.stdout == 'Revision "fakeHash" not found'
+    assert got.exit_code == 1

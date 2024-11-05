@@ -36,6 +36,7 @@ from pathlib import Path
 
 import click
 from git import Repo
+from git.exc import GitCommandError
 
 from ondivi._internal.define_changed_lines import define_changed_lines
 from ondivi._internal.filter_out_violations import filter_out_violations
@@ -72,6 +73,13 @@ def controller(
     )
 
 
+def _linter_output_from_file(file_path: FromFilePathStr) -> list[str]:
+    if not Path(file_path).exists():
+        sys.stdout.write('File with violations "{0}" not found\n'.format(file_path))
+        sys.exit(1)
+    return Path(file_path).read_text(encoding='utf-8').strip().splitlines()
+
+
 def cli(
     baseline: BaselineStr,
     fromfile: FromFilePathStr | None,
@@ -85,15 +93,14 @@ def cli(
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
     """
-    if fromfile:
-        if not Path(fromfile).exists():
-            sys.stdout.write('File with violations "{0}" not found\n'.format(fromfile))
-            sys.exit(1)
-        linter_output = Path(fromfile).read_text(encoding='utf-8').strip().splitlines()
-    else:
-        linter_output = sys.stdin.read().strip().splitlines()
+    linter_output = _linter_output_from_file(fromfile) if fromfile else sys.stdin.read().strip().splitlines()
+    try:
+        diff = Repo('.').git.diff('--unified=0', baseline)
+    except GitCommandError:
+        sys.stdout.write('Revision "{0}" not found'.format(baseline))
+        sys.exit(1)
     filtered_lines, violation_found = controller(
-        Repo('.').git.diff('--unified=0', baseline),
+        diff,
         linter_output,
         violation_format,
         only_violations,

@@ -310,7 +310,7 @@ def test_fromfile_not_found_via_cli_runner() -> None:
 
 
 @pytest.mark.usefixtures('_test_repo')
-def test_commit_not_found(run_shell: _RUN_SHELL_T) -> None:
+def test_commit_not_found() -> None:
     """Test commit not found."""
     got = CliRunner().invoke(main, ['--baseline', 'fakeHash'], input='')
 

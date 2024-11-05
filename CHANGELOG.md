@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Reading violations from file. `--fromfile` flag (#109)
+- Handle "revision not found" (#125)
 
 ### Changed
 

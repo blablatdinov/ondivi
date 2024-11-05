@@ -36,6 +36,7 @@ from pathlib import Path
 
 import click
 from git import Repo
+from git.exc import GitCommandError
 
 from ondivi._internal.define_changed_lines import define_changed_lines
 from ondivi._internal.filter_out_violations import filter_out_violations
@@ -92,8 +93,13 @@ def cli(
         linter_output = Path(fromfile).read_text(encoding='utf-8').strip().splitlines()
     else:
         linter_output = sys.stdin.read().strip().splitlines()
+    try:
+        diff = Repo('.').git.diff('--unified=0', baseline)
+    except GitCommandError as err:
+        sys.stdout.write('Revision "{0}" not found'.format(baseline))
+        sys.exit(1)
     filtered_lines, violation_found = controller(
-        Repo('.').git.diff('--unified=0', baseline),
+        diff,
         linter_output,
         violation_format,
         only_violations,

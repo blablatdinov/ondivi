@@ -40,6 +40,7 @@ from git.exc import GitCommandError
 
 from ondivi._internal.define_changed_lines import define_changed_lines
 from ondivi._internal.filter_out_violations import filter_out_violations
+from ondivi._internal.linter_output_from_file import linter_output_from_file
 from ondivi._internal.types import (
     ActualViolationsListStr,
     BaselineStr,
@@ -73,13 +74,6 @@ def controller(
     )
 
 
-def _linter_output_from_file(file_path: Path):
-    if not Path(file_path).exists():
-        sys.stdout.write('File with violations "{0}" not found\n'.format(file_path))
-        sys.exit(1)
-    return Path(file_path).read_text(encoding='utf-8').strip().splitlines()
-
-
 def cli(
     baseline: BaselineStr,
     fromfile: FromFilePathStr | None,
@@ -94,7 +88,10 @@ def cli(
     :param only_violations: bool
     """
     if fromfile:
-        linter_output = _linter_output_from_file(fromfile)
+        try:
+            linter_output = linter_output_from_file(fromfile)
+        except FileNotFoundError:
+            sys.exit(1)
     else:
         linter_output = sys.stdin.read().strip().splitlines()
     try:

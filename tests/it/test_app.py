@@ -312,10 +312,7 @@ def test_fromfile_not_found_via_cli_runner() -> None:
 @pytest.mark.usefixtures('_test_repo')
 def test_commit_not_found(run_shell: _RUN_SHELL_T) -> None:
     """Test commit not found."""
-    got = run_shell(
-        ['venv/bin/ruff', 'check', '--select=ALL', 'file.py', '--output-format=concise'],
-        ['venv/bin/ondivi', '--baseline', 'fakeHash'],
-    )
+    got = CliRunner().invoke(main, ['--baseline', 'fakeHash'], input='')
 
-    assert got.stdout.decode('utf-8').strip() == 'Revision "fakeHash" not found'
-    assert got.returncode == 1
+    assert got.stdout == 'Revision "fakeHash" not found'
+    assert got.exit_code == 1

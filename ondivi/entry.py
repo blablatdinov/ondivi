@@ -73,6 +73,13 @@ def controller(
     )
 
 
+def _linter_output_from_file(file_path: Path):
+    if not Path(file_path).exists():
+        sys.stdout.write('File with violations "{0}" not found\n'.format(file_path))
+        sys.exit(1)
+    return Path(file_path).read_text(encoding='utf-8').strip().splitlines()
+
+
 def cli(
     baseline: BaselineStr,
     fromfile: FromFilePathStr | None,
@@ -87,15 +94,12 @@ def cli(
     :param only_violations: bool
     """
     if fromfile:
-        if not Path(fromfile).exists():
-            sys.stdout.write('File with violations "{0}" not found\n'.format(fromfile))
-            sys.exit(1)
-        linter_output = Path(fromfile).read_text(encoding='utf-8').strip().splitlines()
+        linter_output = _linter_output_from_file(fromfile)
     else:
         linter_output = sys.stdin.read().strip().splitlines()
     try:
         diff = Repo('.').git.diff('--unified=0', baseline)
-    except GitCommandError as err:
+    except GitCommandError:
         sys.stdout.write('Revision "{0}" not found'.format(baseline))
         sys.exit(1)
     filtered_lines, violation_found = controller(

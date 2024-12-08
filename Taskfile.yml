@@ -19,21 +19,49 @@
 # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
+---
+version: '3'
 
-lint:
-	poetry run isort ondivi tests
-	poetry run ruff check ondivi tests --fix
-	poetry run flake8 ondivi tests
-	poetry run pylint ondivi tests
-	poetry run mypy ondivi tests --strict
+tasks:
+  default:
+    desc: "Build pipeline"
+    deps: [install-deps,unit-tests,integration-tests,lint,build]
 
-test: unit it
+  build:
+    desc: "Build the app"
+    deps: [install-deps]
+    cmds:
+      - poetry build
 
-unit:
-	poetry run pytest tests/unit --cov=ondivi --cov-report=term-missing:skip-covered -vv
+  install-deps:
+    desc: "Install dependencies"
+    cmds:
+     - poetry install
 
-it:  # integration tests
-	poetry run pytest tests/it -s -vv
+  unit-tests:
+    desc: "Run unit tests"
+    cmds:
+      - poetry run pytest tests/unit
 
-clean:
-	git clean -f -d -x
+  integration-tests:
+    desc: "Run integration tests"
+    cmds:
+      - poetry run pytest tests/it
+
+  fmt:
+    desc: "Run formatters"
+    cmds:
+      - poetry run isort ondivi tests
+      - poetry run ruff check ondivi tests --fix
+
+  lint:
+    desc: "Run linters"
+    cmds:
+      - poetry run flake8 ondivi tests
+      - poetry run pylint ondivi tests
+      - poetry run mypy ondivi tests --strict
+
+  clean:
+    desc: "Clean caches"
+    cmds:
+      - git clean -f -d -x

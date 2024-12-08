@@ -740,13 +740,13 @@ files = [
 
 [[package]]
 name = "mutmut"
-version = "3.2.0"
+version = "3.2.2"
 description = "mutation testing for Python 3"
 optional = false
 python-versions = "*"
 files = [
-    {file = "mutmut-3.2.0-py3-none-any.whl", hash = "sha256:e82fecd8b3e5837752317cb7ec5fda48fc9577f2bb5cc57fe8b780fbd0f19eee"},
-    {file = "mutmut-3.2.0.tar.gz", hash = "sha256:958acede0c99de902dc3c55ef7c4c025eeb70cef44f59e932f9f0f47b310ec61"},
+    {file = "mutmut-3.2.2-py3-none-any.whl", hash = "sha256:a548b1c443b62c8f1f66a3e601d6d98331d050db8bc47004bb583a0d6c491949"},
+    {file = "mutmut-3.2.2.tar.gz", hash = "sha256:db6d2e10c57226cb0525b10aa5e665a34587ae1f212eb521b40c57e97de1d2f6"},
 ]
 
 [package.dependencies]
@@ -755,6 +755,7 @@ junit-xml = "1.8"
 parso = "*"
 setproctitle = "*"
 textual = "*"
+toml = {version = ">=0.10.2", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "mypy"
@@ -1555,4 +1556,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "71387fb1457bc08f9a9498b395e7b13d5bdbc369b2794a18077a4e1bb28361dc"
+content-hash = "27cd70c0c12f4df58e23a1738a5393bd3b5cb2119f09bb68df7b256b1351aba5"

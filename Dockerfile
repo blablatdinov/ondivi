@@ -26,6 +26,7 @@ ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 ENV EC_VERSION="v3.0.3"
 ENV PATH="/root/.local/bin:$PATH"
 WORKDIR /app
+RUN cd /app
 RUN pip install poetry==1.8.4
 RUN apt-get update && apt-get install curl -y
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin
@@ -34,5 +35,8 @@ RUN curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker
     mkdir -p /root/.local/bin && \
     mv /tmp/bin/ec-linux-amd64 /root/.local/bin/ec
 COPY poetry.lock pyproject.toml /app/
+COPY lint-requirements.txt /app/
+RUN python3 -m venv lint-venv
+RUN ./lint-venv/bin/pip install -r lint-requirements.txt
 RUN poetry install
 COPY . .

@@ -77,3 +77,5 @@ unref
 usefixtures
 wemake
 wookkl
+VIRTUALENVS
+pyproject

@@ -19,62 +19,20 @@
 # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
----
-version: '3'
 
-tasks:
-
-  docker-setup:
-    cmds:
-      - docker build -t ondivi-dev .
-
-  docker-bash:
-    cmds:
-      - docker run -it --rm -v $(pwd):/app --name ondivi-dev ondivi-dev bash
-
-  default:
-    desc: "Build pipeline"
-    deps: [install-deps,unit-tests,integration-tests,ec,lint,build]
-
-  build:
-    desc: "Build the app"
-    deps: [install-deps]
-    cmds:
-      - poetry build
-
-  install-deps:
-    desc: "Install dependencies"
-    cmds:
-      - poetry install
-
-  unit-tests:
-    desc: "Run unit tests"
-    cmds:
-      - poetry run pytest tests/unit
-
-  integration-tests:
-    desc: "Run integration tests"
-    cmds:
-      - poetry run pytest tests/it
-
-  fmt:
-    desc: "Run formatters"
-    cmds:
-      - poetry run isort ondivi tests
-      - poetry run ruff check ondivi tests --fix
-
-  lint:
-    desc: "Run linters"
-    cmds:
-      - poetry run flake8 ondivi tests
-      - poetry run pylint ondivi tests
-      - poetry run mypy ondivi tests --strict
-
-  ec:
-    cmds:
-      - git ls-files | xargs ec
-
-  clean:
-    desc: "Clean caches"
-    cmds:
-      - git clean -f -d -x
+FROM python:3.13.1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV POETRY_VIRTUALENVS_IN_PROJECT=true
+ENV EC_VERSION="v3.0.3"
+ENV PATH="/root/.local/bin:$PATH"
+WORKDIR /app
+RUN pip install poetry==1.8.4
+RUN apt-get update && apt-get install curl -y
+RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin
+RUN curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker/releases/download/$EC_VERSION/ec-linux-amd64.tar.gz && \
+    tar xzf ec-linux-amd64.tar.gz -C /tmp && \
+    mkdir -p /root/.local/bin && \
+    mv /tmp/bin/ec-linux-amd64 /root/.local/bin/ec
+COPY poetry.lock pyproject.toml /app/
+RUN poetry install
+COPY . .

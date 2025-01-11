@@ -34,7 +34,7 @@ tasks:
 
   default:
     desc: "Build pipeline"
-    deps: [install-deps,unit-tests,integration-tests,lint,build]
+    deps: [install-deps,unit-tests,integration-tests,ec,lint,build]
 
   build:
     desc: "Build the app"
@@ -66,10 +66,13 @@ tasks:
   lint:
     desc: "Run linters"
     cmds:
-      - git ls-files | xargs ec
       - poetry run flake8 ondivi tests
       - poetry run pylint ondivi tests
       - poetry run mypy ondivi tests --strict
+
+  ec:
+    cmds:
+      - git ls-files | xargs ec
 
   clean:
     desc: "Clean caches"

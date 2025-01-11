@@ -79,3 +79,8 @@ wemake
 wookkl
 VIRTUALENVS
 pyproject
+venv
+mccabe
+pycodestyle
+pyflakes
+pygments

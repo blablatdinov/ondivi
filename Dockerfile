@@ -20,23 +20,22 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-FROM python:3.13.1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-ENV POETRY_VIRTUALENVS_IN_PROJECT=true
-ENV EC_VERSION="v3.0.3"
-ENV PATH="/root/.local/bin:$PATH"
+FROM python:3.9 AS base
 WORKDIR /app
 RUN cd /app
-RUN pip install poetry==1.8.4
-RUN apt-get update && apt-get install curl -y
+ENV EC_VERSION="v3.1.2"
+ENV YAMLLINT_VERSION="1.35.1"
+ENV POETRY_VERSION="2.0.0"
+ENV PATH="/root/.local/bin:$PATH"
+RUN apt-get update && apt-get install -y curl
+RUN pip install yamllint==$YAMLLINT_VERSION --break-system-packages
+RUN pip install poetry==$POETRY_VERSION
+RUN mkdir -p /root/.local/bin
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin
 RUN curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker/releases/download/$EC_VERSION/ec-linux-amd64.tar.gz && \
     tar xzf ec-linux-amd64.tar.gz -C /tmp && \
-    mkdir -p /root/.local/bin && \
     mv /tmp/bin/ec-linux-amd64 /root/.local/bin/ec
 COPY poetry.lock pyproject.toml /app/
 COPY lint-requirements.txt /app/
-RUN python3 -m venv lint-venv
-RUN ./lint-venv/bin/pip install -r lint-requirements.txt
-RUN poetry install
+RUN task install-deps
 COPY . .

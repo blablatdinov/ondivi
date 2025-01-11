@@ -24,13 +24,15 @@ version: '3'
 
 tasks:
 
-  docker-setup:
+  docker-build:
+    desc: "Build docker image"
     cmds:
-      - docker build -t ondivi-dev .
+      - docker build -t blablatdinov/ondivi-dev .
 
   docker-bash:
+    desc: "Build docker image"
     cmds:
-      - docker run -it --rm -v $(pwd):/app --name ondivi-dev ondivi-dev bash
+      - docker run -it --rm -v $(pwd):/app --name ondivi-dev blablatdinov/ondivi-dev bash
 
   default:
     desc: "Build pipeline"
@@ -46,6 +48,8 @@ tasks:
     desc: "Install dependencies"
     cmds:
       - poetry install
+      - python3 -m venv lint-venv
+      - ./lint-venv/bin/pip install -r lint-requirements.txt
 
   unit-tests:
     desc: "Run unit tests"

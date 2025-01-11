@@ -20,21 +20,41 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-FROM python:3.9 AS base
-WORKDIR /app
-ENV EC_VERSION="v3.0.3"
-ENV YAMLLINT_VERSION="1.35.1"
-ENV POETRY_VERSION="1.8.5"
-ENV PATH="/root/.local/bin:$PATH"
-RUN apt-get update && apt-get install -y curl
-RUN pip install yamllint==$YAMLLINT_VERSION --break-system-packages
-RUN pip install poetry==$POETRY_VERSION
-RUN mkdir -p /root/.local/bin
-RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin
-RUN curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker/releases/download/$EC_VERSION/ec-linux-amd64.tar.gz && \
-    tar xzf ec-linux-amd64.tar.gz -C /tmp && \
-    mv /tmp/bin/ec-linux-amd64 /root/.local/bin/ec
-COPY poetry.lock pyproject.toml /app/
-COPY lint-requirements.txt /app/
-RUN task install-deps
-COPY . .
+"""Tests for ondivi."""
+
+from pathlib import Path
+
+from ondivi._internal.define_changed_lines import define_changed_lines  # noqa: WPS436. _internal allow into ondivi app
+
+
+def test_define_changed_files() -> None:
+    """Testing search changed lines."""
+    got = define_changed_lines(
+        Path('tests/fixtures/diff.patch').read_text(encoding='utf-8'),
+    )
+
+    assert got == {
+        'django/db/models/sql/query.py': [
+            *range(1367, 1374),
+            *range(1401, 1408),
+            *range(1418, 1432),
+        ],
+        'tests/custom_lookups/tests.py': list(range(614, 624)),
+        'tests/lookup/tests.py': [
+            *range(812, 846),
+            *range(853, 860),
+            *range(1087, 1097),
+        ],
+    }
+
+
+def test_define_filename() -> None:
+    """Test define filename.
+
+    Created for kill mutant
+    """
+    got = define_changed_lines(
+        'diff --git XX b/ XX b/ file.py',
+    )
+
+    assert got == {'file.py': []}

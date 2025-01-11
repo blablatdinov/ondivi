@@ -20,21 +20,21 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-FROM python:3.9 AS base
-WORKDIR /app
-ENV EC_VERSION="v3.0.3"
-ENV YAMLLINT_VERSION="1.35.1"
-ENV POETRY_VERSION="1.8.5"
-ENV PATH="/root/.local/bin:$PATH"
-RUN apt-get update && apt-get install -y curl
-RUN pip install yamllint==$YAMLLINT_VERSION --break-system-packages
-RUN pip install poetry==$POETRY_VERSION
-RUN mkdir -p /root/.local/bin
-RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin
-RUN curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker/releases/download/$EC_VERSION/ec-linux-amd64.tar.gz && \
-    tar xzf ec-linux-amd64.tar.gz -C /tmp && \
-    mv /tmp/bin/ec-linux-amd64 /root/.local/bin/ec
-COPY poetry.lock pyproject.toml /app/
-COPY lint-requirements.txt /app/
-RUN task install-deps
-COPY . .
+"""Tests for ondivi."""
+
+from pathlib import Path
+
+from ondivi.entry import controller
+
+
+def test_controller() -> None:
+    """Testing script output with diff and violations list."""
+    got, found = controller(
+        Path('tests/fixtures/diff.patch').read_text(encoding='utf-8'),
+        Path('tests/fixtures/violations.txt').read_text(encoding='utf-8').splitlines(),
+        '{filename}:{line_num:d}:{col_num:d}: {message}',
+        only_violations=False,
+    )
+
+    assert got == Path('tests/fixtures/actual_violations.txt').read_text(encoding='utf-8').splitlines()
+    assert found

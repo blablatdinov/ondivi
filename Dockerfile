@@ -22,9 +22,10 @@
 
 FROM python:3.9 AS base
 WORKDIR /app
-ENV EC_VERSION="v3.0.3"
+RUN cd /app
+ENV EC_VERSION="v3.1.2"
 ENV YAMLLINT_VERSION="1.35.1"
-ENV POETRY_VERSION="1.8.5"
+ENV POETRY_VERSION="2.0.0"
 ENV PATH="/root/.local/bin:$PATH"
 RUN apt-get update && apt-get install -y curl
 RUN pip install yamllint==$YAMLLINT_VERSION --break-system-packages

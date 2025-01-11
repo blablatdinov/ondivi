@@ -79,6 +79,10 @@ jobs:
         uses: pnorton5432/setup-task@v1
         with:
           task-version: 3.29.1
+      - name: Install lint dependencies
+        run: |
+          python3 -m venv lint-venv
+          lint-venv/bin/pip install -r lint-requirements.txt
       - name: Lint
         run: task lint
       - name: Checking files for compliance with editorconfig

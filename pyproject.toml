@@ -38,7 +38,7 @@ ondivi = "ondivi.entry:main"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "0.9.1"
-wemake-python-styleguide = "0.19.2"
+wemake-python-styleguide = "1.0.0"
 pytest = "8.3.4"
 isort = "5.13.2"
 pytest-cov = "6.0.0"

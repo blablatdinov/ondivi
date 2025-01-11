@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from parse import parse as parse_from_pattern  # type: ignore [import-untyped]
 
-from ondivi._internal.types import (  # noqa: WPS436. _internal allow into ondivi app
+from ondivi._internal.ondivi_types import (  # noqa: WPS436. _internal allow into ondivi app
     ActualViolationsListStr,
     FileNameStr,
     LinterAdditionalMessageStr,

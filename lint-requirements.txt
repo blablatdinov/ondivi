@@ -19,62 +19,17 @@
 # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
----
-version: '3'
 
-tasks:
-
-  docker-setup:
-    cmds:
-      - docker build -t ondivi-dev .
-
-  docker-bash:
-    cmds:
-      - docker run -it --rm -v $(pwd):/app --name ondivi-dev ondivi-dev bash
-
-  default:
-    desc: "Build pipeline"
-    deps: [install-deps,unit-tests,integration-tests,ec,lint,build]
-
-  build:
-    desc: "Build the app"
-    deps: [install-deps]
-    cmds:
-      - poetry build
-
-  install-deps:
-    desc: "Install dependencies"
-    cmds:
-      - poetry install
-
-  unit-tests:
-    desc: "Run unit tests"
-    cmds:
-      - poetry run pytest tests/unit
-
-  integration-tests:
-    desc: "Run integration tests"
-    cmds:
-      - poetry run pytest tests/it
-
-  fmt:
-    desc: "Run formatters"
-    cmds:
-      - poetry run isort ondivi tests
-      - poetry run ruff check ondivi tests --fix
-
-  lint:
-    desc: "Run linters"
-    cmds:
-      - poetry run ruff check ondivi tests
-      - ./lint-venv/bin/flake8 ondivi tests
-      - poetry run mypy ondivi tests --strict
-
-  ec:
-    cmds:
-      - git ls-files | xargs ec
-
-  clean:
-    desc: "Clean caches"
-    cmds:
-      - git clean -f -d -x
+attrs==24.3.0
+    # via wemake-python-styleguide
+flake8==7.1.1
+    # via wemake-python-styleguide
+mccabe==0.7.0
+    # via flake8
+pycodestyle==2.12.1
+    # via flake8
+pyflakes==3.2.0
+    # via flake8
+pygments==2.19.1
+    # via wemake-python-styleguide
+wemake-python-styleguide==1.0.0

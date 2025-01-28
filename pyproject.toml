@@ -39,7 +39,7 @@ ondivi = "ondivi.entry:main"
 [tool.poetry.group.dev.dependencies]
 ruff = "0.9.3"
 pytest = "8.3.4"
-isort = "5.13.2"
+isort = "6.0.0"
 pytest-cov = "6.0.0"
 mypy = "1.14.1"
 deltaver = "0.2.3"

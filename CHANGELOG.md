@@ -30,6 +30,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `Dockerfile` for development (#145)
+
+### Changed
+
+- Replace `Makefile` -> `Taskfile.yml` (#137)
+- Update license year to 2025 (#143)
+- Separate lint requirements, use ruff (#143)
+- Updated dev dependencies
+
+### Removed
+
+- isort
+
 ## [0.6.0] - 2024-10-05
 
 ### Added

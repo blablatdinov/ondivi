@@ -84,3 +84,4 @@ mccabe
 pycodestyle
 pyflakes
 pygments
+Taskfile

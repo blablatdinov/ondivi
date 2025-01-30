@@ -10,7 +10,7 @@
     ],
     "dictionaries": [
         "cspell-custom-words",
-        "typescript",
+        "python",
         "html"
     ],
     "import": [],

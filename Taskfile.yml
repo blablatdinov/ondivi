@@ -69,6 +69,11 @@ tasks:
       - ./lint-venv/bin/flake8 ondivi tests
       - poetry run mypy ondivi tests --strict
 
+  cspell-baseline:
+    desc: "Generate cspell baseline"
+    cmds:
+      - git ls-files | xargs cspell --words-only | sort -uf > cspell_custom_words.txt
+
   ec:
     cmds:
       - git ls-files | xargs ec

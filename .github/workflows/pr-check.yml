@@ -32,12 +32,14 @@ permissions:
   contents: read
 
 jobs:
+
   tests:
     strategy:
       matrix:
         # https://github.com/actions/python-versions/blob/main/versions-manifest.json
         python_version: [ "3.9", "3.13", "pypy3.10" ]
-    runs-on: ubuntu-latest
+        os: [ "ubuntu-24.04", "windows-2022" ]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python

@@ -115,3 +115,17 @@ jobs:
         run: npm i cspell@8.15.4 @cspell/dict-ru_ru@2.2.4 -g
       - name: Run cspell
         run: cspell . no-progress --show-suggestions --show-context
+
+  gotemir:
+    runs-on: ubuntu-24.04
+    name: Src and tests structure check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run gotemir
+        run: |
+          VERSION="0.0.3"
+          curl -O -L -C - https://github.com/blablatdinov/gotemir/releases/download/$VERSION/gotemir-linux-amd64.tar
+          tar xzf gotemir-linux-amd64.tar
+          ./gotemir-linux-amd64 --ext .py ondivi tests/unit
+        shell: bash

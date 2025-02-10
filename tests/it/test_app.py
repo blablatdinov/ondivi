@@ -67,8 +67,8 @@ def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Pa
         zip_ref.extractall(tmp_path)
     os.chdir(tmp_path / 'ondivi-test-repo')
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
-    subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
-    subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
+    subprocess.run([str(Path('venv/bin/pip')), 'install', 'pip', '-U'], check=True)
+    subprocess.run([str(Path('venv/bin/pip')), 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
     yield tmp_path
     os.chdir(current_dir)
 
@@ -118,8 +118,8 @@ def file_with_violations(_test_repo: Path) -> Path:
 ])
 def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> None:
     """Test script with different dependency versions."""
-    subprocess.run(['venv/bin/pip', 'install', *version], check=True)
-    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi'])
+    subprocess.run([str(Path('venv/bin/pip')), 'install', *version], check=True)
+    got = run_shell([str(Path('venv/bin/flake8')), 'file.py'], [str(Path('venv/bin/ondivi'))])
 
     assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
     assert got.returncode == 1
@@ -128,7 +128,7 @@ def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> No
 @pytest.mark.usefixtures('_test_repo')
 def test(run_shell: _RUN_SHELL_T) -> None:
     """Test script with real git repo."""
-    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', '56faa56'])
+    got = run_shell([str(Path('venv/bin/flake8')), 'file.py'], [str(Path('venv/bin/ondivi')), '--baseline', '56faa56'])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
         'file.py:3:1: E302 expected 2 blank lines, found 1',
@@ -141,7 +141,7 @@ def test(run_shell: _RUN_SHELL_T) -> None:
 @pytest.mark.usefixtures('_test_repo')
 def test_baseline_default(run_shell: _RUN_SHELL_T) -> None:
     """Test baseline default."""
-    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi'])
+    got = run_shell([str(Path('venv/bin/flake8')), 'file.py'], [str(Path('venv/bin/ondivi'))])
 
     assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
     assert got.returncode == 1
@@ -151,8 +151,8 @@ def test_baseline_default(run_shell: _RUN_SHELL_T) -> None:
 def test_ruff(run_shell: _RUN_SHELL_T) -> None:
     """Test ruff."""
     got = run_shell(
-        ['venv/bin/ruff', 'check', '--select=ALL', 'file.py', '--output-format=concise'],
-        ['venv/bin/ondivi'],
+        [str(Path('venv/bin/ruff')), 'check', '--select=ALL', 'file.py', '--output-format=concise'],
+        [str(Path('venv/bin/ondivi'))],
     )
 
     assert got.stdout.decode('utf-8').strip() == '\n'.join([
@@ -170,7 +170,7 @@ def test_ruff(run_shell: _RUN_SHELL_T) -> None:
 @pytest.mark.usefixtures('_test_repo')
 def test_mypy(run_shell: _RUN_SHELL_T) -> None:
     """Test mypy."""
-    got = run_shell(['venv/bin/mypy', 'file.py'], ['venv/bin/ondivi'])
+    got = run_shell([str(Path('venv/bin/mypy')), 'file.py'], [str(Path('venv/bin/ondivi'))])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
         'file.py:16: error: Argument 2 to "User" has incompatible type "str"; expected "int"  [arg-type]',
@@ -182,7 +182,7 @@ def test_mypy(run_shell: _RUN_SHELL_T) -> None:
 @pytest.mark.usefixtures('_test_repo')
 def test_without_violations(run_shell: _RUN_SHELL_T) -> None:
     """Test exit without violations."""
-    got = run_shell(['echo', ''], ['venv/bin/ondivi'])
+    got = run_shell(['echo', ''], [str(Path('venv/bin/ondivi'))])
 
     assert got.returncode == 0
 
@@ -190,7 +190,7 @@ def test_without_violations(run_shell: _RUN_SHELL_T) -> None:
 @pytest.mark.usefixtures('_test_repo')
 def test_info_message(run_shell: _RUN_SHELL_T) -> None:
     """Test exit with info message."""
-    got = run_shell(['echo', 'All files correct!'], ['venv/bin/ondivi'])
+    got = run_shell(['echo', 'All files correct!'], [str(Path('venv/bin/ondivi'))])
 
     assert got.stdout.decode('utf-8').strip() == 'All files correct!'
     assert got.returncode == 0
@@ -201,7 +201,7 @@ def test_format(run_shell: _RUN_SHELL_T) -> None:
     """Test with custom format."""
     got = run_shell(
         ['echo', 'line=12 file=file.py message=`print` found'],
-        ['venv/bin/ondivi', '--format', 'line={line_num:d} file={filename} {other}'],
+        [str(Path('venv/bin/ondivi')), '--format', 'line={line_num:d} file={filename} {other}'],
     )
 
     assert got.stdout.decode('utf-8').strip() == 'line=12 file=file.py message=`print` found'
@@ -291,7 +291,7 @@ def test_fromfile_via_cli_runner(file_with_violations: Path) -> None:
 def test_fromfile_not_found() -> None:
     """Test script with violations from file."""
     got = subprocess.run(
-        ['venv/bin/ondivi', '--fromfile', 'undefined.txt'],
+        [str(Path('venv/bin/ondivi')), '--fromfile', 'undefined.txt'],
         stdout=subprocess.PIPE,
         check=False,
     )

@@ -52,6 +52,10 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
+      - name: Add Poetry to PATH on Windows
+        if: runner.os == 'Windows'
+        run: echo "C:\Users\runneradmin\AppData\Roaming\Python\Scripts" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+        shell: powershell
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction

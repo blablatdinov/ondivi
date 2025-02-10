@@ -59,8 +59,6 @@ fixable = [
   "I001",   # sort imports
 ]
 ignore = [
-  "ANN101",  # Missing type annotation for `self` in method
-  "ANN102",  # Missing type annotation for `cls` in classmethod
   "ARG001",  # Unused function argument
   "ARG002",  # Unused method argument
   "D203",    # no-blank-line-before-class
@@ -81,8 +79,8 @@ ignore = [
   "UP004",   # Class `PrayerReaction` inherits from `object`
   "TD",      # "t0do" formats
   "PLR630",  # We disrespect staticmethods
-  "TCH003",  # Move standard library import `...` into a type-checking block
-  "TCH001",  # Move application import into a type-checking block
+  "TC003",   # Move standard library import `...` into a type-checking block
+  "TC001",   # Move application import into a type-checking block
 ]
 
 [tool.ruff]

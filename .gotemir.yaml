@@ -21,8 +21,9 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 ---
 test-free-files:
+  # __init__ files for define package
   - .*__init__.py
+  # File contain type aliases
   - ondivi/_internal/ondivi_types.py
+  # entry.py test by integration tests
   - ondivi/entry.py
-test-helpers:
-  - tests/unit/_internal/test_unit.py

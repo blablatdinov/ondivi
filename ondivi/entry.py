@@ -26,8 +26,6 @@ Python script filtering coding violations, identified by static analysis,
 only for changed lines in a Git repo.
 """
 
-# flake8: noqa: WPS436. _internal allow into ondivi app
-
 from __future__ import annotations
 
 import sys
@@ -93,7 +91,11 @@ def cli(
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
     """
-    linter_output = _linter_output_from_file(fromfile) if fromfile else sys.stdin.read().strip().splitlines()
+    linter_output = (
+        _linter_output_from_file(fromfile)
+        if fromfile
+        else sys.stdin.read().strip().splitlines()
+    )
     try:
         diff = Repo('.').git.diff('--unified=0', baseline)
     except GitCommandError:
@@ -111,7 +113,6 @@ def cli(
         sys.exit(1)
 
 
-# flake8: noqa: DAR101. Broke --help out
 @click.command()
 @click.option(
     '--baseline',

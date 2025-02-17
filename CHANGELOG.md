@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update license year to 2025 (#143)
 - Separate lint requirements, use ruff (#143)
 - Updated dev dependencies
+- Replace zip archieve for integration test to create repo from `yaml` file (#174)
 
 ### Removed
 

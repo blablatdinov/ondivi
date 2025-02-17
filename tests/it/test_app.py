@@ -29,12 +29,14 @@ from collections.abc import Generator
 from pathlib import Path
 from typing import Callable
 from unittest.mock import patch
+import yaml
 
 import pytest
 import tomli
 from _pytest.legacypath import TempdirFactory
 from click.testing import CliRunner
 from typing_extensions import TypeAlias
+from git import Repo
 
 from ondivi.entry import main
 
@@ -60,17 +62,29 @@ def _version_from_lock(package_name: str) -> str:
 
 # flake8: noqa: S603, S607. Not a production code
 @pytest.fixture(scope='module')
-def _test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Path, None, None]:
+def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Path, None, None]:
     """Real git repository."""
     tmp_path = tmpdir_factory.mktemp('test')
-    with zipfile.ZipFile('tests/fixtures/ondivi-test-repo.zip', 'r') as zip_ref:
-        zip_ref.extractall(tmp_path)
-    os.chdir(tmp_path / 'ondivi-test-repo')
+    repo_path = tmp_path / 'ondivi-test-repo'
+    changes_definition = yaml.safe_load(Path('tests/fixtures/test-repo.yaml').read_text())
+    repo_path.mkdir()
+    repo = Repo.init(repo_path)
+    os.chdir(repo_path)
+    for change in changes_definition['changes']:
+        Path(change['path']).write_text(change['content'])
+        if change.get('commit'):
+            repo.index.add([change['path']])
+            repo.index.commit(change['commit']['message'])
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
     subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
     yield tmp_path
     os.chdir(current_dir)
+
+
+@pytest.fixture
+def revisions(test_repo) -> tuple[str]:
+    return tuple(str(commit) for commit in Repo(test_repo / 'ondivi-test-repo').iter_commits())
 
 
 @pytest.fixture
@@ -88,9 +102,9 @@ def run_shell() -> _RUN_SHELL_T:
 
 
 @pytest.fixture
-def file_with_violations(_test_repo: Path) -> Path:
+def file_with_violations(test_repo: Path) -> Path:
     """File contain violations from linter."""
-    violations_file = _test_repo / 'violations.txt'
+    violations_file = test_repo / 'violations.txt'
     violations_file.write_text(
         '\n'.join([
             'file.py:3:1: E302 expected 2 blank lines, found 1',
@@ -104,7 +118,7 @@ def file_with_violations(_test_repo: Path) -> Path:
     return violations_file
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 @pytest.mark.parametrize('version', [
     ('gitpython==2.1.15',),
     (_version_from_lock('gitpython'),),
@@ -125,10 +139,10 @@ def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> No
     assert got.returncode == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
-def test(run_shell: _RUN_SHELL_T) -> None:
+@pytest.mark.usefixtures('test_repo')
+def test(run_shell: _RUN_SHELL_T, revisions) -> None:
     """Test script with real git repo."""
-    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', '56faa56'])
+    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', revisions[-1]])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
         'file.py:3:1: E302 expected 2 blank lines, found 1',
@@ -138,7 +152,7 @@ def test(run_shell: _RUN_SHELL_T) -> None:
     assert got.returncode == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_baseline_default(run_shell: _RUN_SHELL_T) -> None:
     """Test baseline default."""
     got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi'])
@@ -147,7 +161,7 @@ def test_baseline_default(run_shell: _RUN_SHELL_T) -> None:
     assert got.returncode == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_ruff(run_shell: _RUN_SHELL_T) -> None:
     """Test ruff."""
     got = run_shell(
@@ -167,7 +181,7 @@ def test_ruff(run_shell: _RUN_SHELL_T) -> None:
     assert got.returncode == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_mypy(run_shell: _RUN_SHELL_T) -> None:
     """Test mypy."""
     got = run_shell(['venv/bin/mypy', 'file.py'], ['venv/bin/ondivi'])
@@ -179,7 +193,7 @@ def test_mypy(run_shell: _RUN_SHELL_T) -> None:
     assert got.returncode == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_without_violations(run_shell: _RUN_SHELL_T) -> None:
     """Test exit without violations."""
     got = run_shell(['echo', ''], ['venv/bin/ondivi'])
@@ -187,7 +201,7 @@ def test_without_violations(run_shell: _RUN_SHELL_T) -> None:
     assert got.returncode == 0
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_info_message(run_shell: _RUN_SHELL_T) -> None:
     """Test exit with info message."""
     got = run_shell(['echo', 'All files correct!'], ['venv/bin/ondivi'])
@@ -196,7 +210,7 @@ def test_info_message(run_shell: _RUN_SHELL_T) -> None:
     assert got.returncode == 0
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_format(run_shell: _RUN_SHELL_T) -> None:
     """Test with custom format."""
     got = run_shell(
@@ -208,7 +222,7 @@ def test_format(run_shell: _RUN_SHELL_T) -> None:
     assert got.returncode == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_click_app() -> None:
     """Test click app."""
     got = CliRunner().invoke(main, input='\n'.join([
@@ -247,7 +261,7 @@ def test_handle_exception() -> None:
     assert got.stdout.strip().splitlines()[-1] == 'ValueError: Fail'
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_only_violations(run_shell: _RUN_SHELL_T) -> None:
     """Test only violations."""
     got = run_shell(
@@ -265,7 +279,7 @@ def test_only_violations(run_shell: _RUN_SHELL_T) -> None:
     assert got.returncode == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_fromfile(file_with_violations: Path) -> None:
     """Test script with violations from file."""
     got = subprocess.run(
@@ -278,7 +292,7 @@ def test_fromfile(file_with_violations: Path) -> None:
     assert got.returncode == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_fromfile_via_cli_runner(file_with_violations: Path) -> None:
     """Test script with violations from file via CliRunner."""
     got = CliRunner().invoke(main, ['--fromfile', str(file_with_violations)], input='')
@@ -287,7 +301,7 @@ def test_fromfile_via_cli_runner(file_with_violations: Path) -> None:
     assert got.exit_code == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_fromfile_not_found() -> None:
     """Test script with violations from file."""
     got = subprocess.run(
@@ -300,7 +314,7 @@ def test_fromfile_not_found() -> None:
     assert got.returncode == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_fromfile_not_found_via_cli_runner() -> None:
     """Test script with violations from file via CliRunner."""
     got = CliRunner().invoke(main, ['--fromfile', 'undefined.txt'], input='')
@@ -309,7 +323,7 @@ def test_fromfile_not_found_via_cli_runner() -> None:
     assert got.exit_code == 1
 
 
-@pytest.mark.usefixtures('_test_repo')
+@pytest.mark.usefixtures('test_repo')
 def test_commit_not_found() -> None:
     """Test commit not found."""
     got = CliRunner().invoke(main, ['--baseline', 'fakeHash'], input='')

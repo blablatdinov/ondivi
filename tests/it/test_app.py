@@ -38,6 +38,7 @@ from git import Repo
 from typing_extensions import TypeAlias
 
 from ondivi.entry import main
+from tests.helpers.define_repo import define_repo
 
 _RUN_SHELL_T: TypeAlias = Callable[[list[str], list[str]], subprocess.CompletedProcess[bytes]]
 
@@ -73,17 +74,9 @@ def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Pat
     """Real git repository."""
     tmp_path = tmpdir_factory.mktemp('test')
     repo_path = tmp_path / 'ondivi-test-repo'
-    changes_definition = yaml.safe_load(Path('tests/fixtures/test-repo.yaml').read_text())
     repo_path.mkdir()
-    repo = Repo.init(repo_path)
+    define_repo(Path('tests/fixtures/test-repo.yaml').read_text(), repo_path)
     os.chdir(repo_path)
-    for change in changes_definition['changes']:
-        file_path = Path(change['path'])
-        file_path.parents[0].mkdir(exist_ok=True)
-        Path(change['path']).write_text(change['content'])
-        if change.get('commit'):
-            repo.index.add([change['path']])
-            repo.index.commit(change['commit']['message'])
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
     is_windows = os.name == 'nt'
     pip_path = Path('venv/Scripts/pip') if is_windows else Path('venv/bin/pip')
@@ -157,12 +150,12 @@ def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> No
 @pytest.mark.usefixtures('test_repo')
 def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...], bin_dir: Path) -> None:
     """Test script with real git repo."""
-    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', revisions[-1]])
+    got = run_shell([str(bin_dir / 'flake8'), 'inner/file.py'], [str(bin_dir / 'ondivi'), '--baseline', revisions[-1]])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
-        f'{Path("inner/file.py")}:3:1: E302 expected 2 blank lines, found 1',
-        f'{Path("inner/file.py")}:9:1: E302 expected 2 blank lines, found 1',
-        f'{Path("inner/file.py")}:12:80: E501 line too long (119 > 79 characters)',
+        '{0}:3:1: E302 expected 2 blank lines, found 1'.format(Path("inner/file.py")),
+        '{0}:9:1: E302 expected 2 blank lines, found 1'.format(Path("inner/file.py")),
+        '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path("inner/file.py")),
     ]
     assert got.returncode == 1
 

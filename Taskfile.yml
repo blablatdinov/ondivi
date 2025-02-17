@@ -78,6 +78,10 @@ tasks:
     cmds:
       - git ls-files | xargs ec
 
+  test-repo:
+    cmds:
+      - poetry run python tests/helpers/define_repo.py
+
   clean:
     desc: "Clean caches"
     cmds:

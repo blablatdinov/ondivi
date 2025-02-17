@@ -31,7 +31,6 @@ from unittest.mock import patch
 
 import pytest
 import tomli
-import yaml
 from _pytest.legacypath import TempdirFactory
 from click.testing import CliRunner
 from git import Repo
@@ -61,7 +60,8 @@ def _version_from_lock(package_name: str) -> str:
 
 
 @pytest.fixture
-def bin_dir():
+def bin_dir() -> Path:
+    """Directory with binaries for run."""
     if os.name == 'nt':
         return Path('venv/Scripts')
     else:
@@ -81,9 +81,9 @@ def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Pat
     is_windows = os.name == 'nt'
     pip_path = Path('venv/Scripts/pip') if is_windows else Path('venv/bin/pip')
     if is_windows:
-        got = subprocess.run([str(Path('venv/Scripts/python')), '-m', 'pip', 'install', 'pip', '-U'], check=True)
+        subprocess.run([str(Path('venv/Scripts/python')), '-m', 'pip', 'install', 'pip', '-U'], check=True)
     else:
-        got = subprocess.run([str(pip_path), 'install', 'pip', '-U'], check=True)
+        subprocess.run([str(pip_path), 'install', 'pip', '-U'], check=True)
     subprocess.run([str(pip_path), 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
     yield tmp_path
     os.chdir(current_dir)
@@ -153,9 +153,9 @@ def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...], bin_dir: Path) -> 
     got = run_shell([str(bin_dir / 'flake8'), 'inner/file.py'], [str(bin_dir / 'ondivi'), '--baseline', revisions[-1]])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
-        '{0}:3:1: E302 expected 2 blank lines, found 1'.format(Path("inner/file.py")),
-        '{0}:9:1: E302 expected 2 blank lines, found 1'.format(Path("inner/file.py")),
-        '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path("inner/file.py")),
+        '{0}:3:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
+        '{0}:9:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
+        '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py')),
     ]
     assert got.returncode == 1
 

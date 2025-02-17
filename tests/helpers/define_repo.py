@@ -20,12 +20,16 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-import yaml
+"""Define repo from spec file."""
+
 from pathlib import Path
+
+import yaml
 from git import Repo
 
 
-def define_repo(spec: str, repo_path: Path):
+def define_repo(spec: str, repo_path: Path) -> None:
+    """Define repo from spec file."""
     repo = Repo.init(repo_path)
     changes_definition = yaml.safe_load(Path('tests/fixtures/test-repo.yaml').read_text())
     for change in changes_definition['changes']:

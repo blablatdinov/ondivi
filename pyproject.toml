@@ -59,6 +59,7 @@ select = ["ALL"]
 fixable = [
   "F401",   # Unused import
   "I001",   # sort imports
+  "Q000",   # quotes
 ]
 ignore = [
   "ARG001",  # Unused function argument

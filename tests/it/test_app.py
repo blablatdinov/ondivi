@@ -224,11 +224,11 @@ def test_info_message(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 def test_format(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test with custom format."""
     got = run_shell(
-        ['echo', 'line=12 file=file.py message=`print` found'],
+        ['echo', 'line=12 file={0} message=`print` found'.format(Path('inner/file.py'))],
         [str(bin_dir / 'ondivi'), '--format', 'line={line_num:d} file={filename} {other}'],
     )
 
-    assert got.stdout.decode('utf-8').strip() == 'line=12 file=file.py message=`print` found'
+    assert got.stdout.decode('utf-8').strip() == 'line=12 file={0} message=`print` found'.format(Path('inner/file.py'))
     assert got.returncode == 1
 
 
@@ -236,11 +236,11 @@ def test_format(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 def test_click_app() -> None:
     """Test click app."""
     got = CliRunner().invoke(main, input='\n'.join([
-        '{0}:3:1: E302 expected 2 blank lines, found 1',
-        '{0}:9:1: E302 expected 2 blank lines, found 1',
-        '{0}:10:80: E501 line too long (123 > 79 characters)',
-        '{0}:12:80: E501 line too long (119 > 79 characters)',
-        '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+        '{0}:3:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
+        '{0}:9:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
+        '{0}:10:80: E501 line too long (123 > 79 characters)'.format(Path('inner/file.py')),
+        '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py')),
+        '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1'.format(Path('inner/file.py')),
     ]))
 
     assert got.exit_code == 1

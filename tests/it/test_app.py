@@ -24,19 +24,18 @@
 
 import os
 import subprocess
-import zipfile
 from collections.abc import Generator
 from pathlib import Path
 from typing import Callable
 from unittest.mock import patch
-import yaml
 
 import pytest
 import tomli
+import yaml
 from _pytest.legacypath import TempdirFactory
 from click.testing import CliRunner
-from typing_extensions import TypeAlias
 from git import Repo
+from typing_extensions import TypeAlias
 
 from ondivi.entry import main
 
@@ -83,7 +82,8 @@ def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Pat
 
 
 @pytest.fixture
-def revisions(test_repo) -> tuple[str]:
+def revisions(test_repo: Path) -> tuple[str, ...]:
+    """List of commit hashes."""
     return tuple(str(commit) for commit in Repo(test_repo / 'ondivi-test-repo').iter_commits())
 
 
@@ -140,7 +140,7 @@ def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> No
 
 
 @pytest.mark.usefixtures('test_repo')
-def test(run_shell: _RUN_SHELL_T, revisions) -> None:
+def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...]) -> None:
     """Test script with real git repo."""
     got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', revisions[-1]])
 

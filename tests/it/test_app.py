@@ -141,7 +141,10 @@ def file_with_violations(test_repo: Path) -> Path:
 def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test script with different dependency versions."""
     subprocess.run([str(bin_dir / 'pip'), 'install', *version], check=True)
-    got = run_shell([str(bin_dir / 'flake8'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')])
+    got = run_shell(
+        [str(bin_dir / 'flake8'),
+        str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')],
+    )
 
     assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
         Path('inner/file.py'),

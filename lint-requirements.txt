@@ -22,7 +22,7 @@
 
 attrs==25.1.0
     # via wemake-python-styleguide
-flake8==7.1.1
+flake8==7.1.2
     # via wemake-python-styleguide
 mccabe==0.7.0
     # via flake8

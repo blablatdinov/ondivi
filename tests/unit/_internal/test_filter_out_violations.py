@@ -92,3 +92,16 @@ def test_only_violations() -> None:
 
     assert violations == ['file.py:3:1: line too long']
     assert found
+
+
+def test_path_starts_with_dot() -> None:
+    """Test path starts with dot."""
+    violations, found = filter_out_violations(
+        {'file.py': [3]},
+        ['./file.py:3:1: line too long'],
+        '{filename}:{line_num:d}:{col_num:d}: {message}',
+        only_violations=False,
+    )
+
+    assert violations == ['./file.py:3:1: line too long']
+    assert found

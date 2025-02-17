@@ -22,6 +22,8 @@
 
 """Define changed lines in file."""
 
+from pathlib import Path
+
 from ondivi._internal.ondivi_types import DiffStr, FileNameStr  # noqa: WPS436. _internal allow into ondivi app
 
 
@@ -47,11 +49,12 @@ def define_changed_lines(diff: DiffStr) -> dict[FileNameStr, list[int]]:
     :param diff: DiffStr
     :return: dict[FileNameStr, list[int]]
     """
+    # print(diff)
     changed_lines: dict[FileNameStr, list[int]] = {}
     current_file = ''
     for line in diff.splitlines():
         if _line_contain_filename(line):
-            current_file = line.split(' b/')[-1].strip()
+            current_file = str(Path(line.split(' b/')[-1].strip()))
             changed_lines[current_file] = []
         elif _diff_line_contain_changed_lines(line):
             changed_lines[current_file].extend(_changed_lines(line))

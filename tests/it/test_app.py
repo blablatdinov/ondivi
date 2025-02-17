@@ -152,29 +152,15 @@ def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> No
     assert got.returncode == 1
 
 
-<<<<<<< HEAD
 @pytest.mark.usefixtures('test_repo')
-def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...]) -> None:
-||||||| parent of 5d4e922 (Testing on windows)
-@pytest.mark.usefixtures('_test_repo')
-def test(run_shell: _RUN_SHELL_T) -> None:
-=======
-@pytest.mark.usefixtures('_test_repo')
-def test(run_shell: _RUN_SHELL_T, bin_dir) -> None:
->>>>>>> 5d4e922 (Testing on windows)
+def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...], bin_dir: Path) -> None:
     """Test script with real git repo."""
-<<<<<<< HEAD
     got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', revisions[-1]])
-||||||| parent of 5d4e922 (Testing on windows)
-    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', '56faa56'])
-=======
-    got = run_shell([str(bin_dir / 'flake8'), 'file.py'], [str(bin_dir / 'ondivi'), '--baseline', '56faa56'])
->>>>>>> 5d4e922 (Testing on windows)
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
-        'file.py:3:1: E302 expected 2 blank lines, found 1',
-        'file.py:9:1: E302 expected 2 blank lines, found 1',
-        'file.py:12:80: E501 line too long (119 > 79 characters)',
+        f'{Path("inner/file.py")}:3:1: E302 expected 2 blank lines, found 1',
+        f'{Path("inner/file.py")}:9:1: E302 expected 2 blank lines, found 1',
+        f'{Path("inner/file.py")}:12:80: E501 line too long (119 > 79 characters)',
     ]
     assert got.returncode == 1
 

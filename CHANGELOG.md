@@ -42,6 +42,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated dev dependencies
 - Replace zip archive for integration test to create repo from `yaml` file (#174)
 
+### Fixed
+
+- Bug with filtering violations starts with "./" (#175)
+
 ### Removed
 
 - isort

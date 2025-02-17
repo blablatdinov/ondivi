@@ -115,12 +115,12 @@ def file_with_violations(test_repo: Path) -> Path:
     violations_file = test_repo / 'violations.txt'
     violations_file.write_text(
         '\n'.join([
-            '{0}:3:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
-            '{0}:9:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
-            '{0}:10:80: E501 line too long (123 > 79 characters)'.format(Path('inner/file.py')),
-            '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py')),
-            '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1'.format(Path('inner/file.py')),
-        ]),
+            '{0}:3:1: E302 expected 2 blank lines, found 1',
+            '{0}:9:1: E302 expected 2 blank lines, found 1',
+            '{0}:10:80: E501 line too long (123 > 79 characters)',
+            '{0}:12:80: E501 line too long (119 > 79 characters)',
+            '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+        ]).format(Path('inner/file.py')),
         encoding='utf-8',
     )
     return violations_file
@@ -152,7 +152,10 @@ def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T, bin_d
 @pytest.mark.usefixtures('test_repo')
 def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...], bin_dir: Path) -> None:
     """Test script with real git repo."""
-    got = run_shell([str(bin_dir / 'flake8'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi'), '--baseline', revisions[-1]])
+    got = run_shell(
+        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
+        [str(bin_dir / 'ondivi'), '--baseline', revisions[-1]],
+    )
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
         '{0}:3:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
@@ -167,7 +170,9 @@ def test_baseline_default(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test baseline default."""
     got = run_shell([str(bin_dir / 'flake8'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')])
 
-    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
+    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
+        Path('inner/file.py'),
+    )
     assert got.returncode == 1
 
 
@@ -197,7 +202,9 @@ def test_mypy(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     got = run_shell([str(bin_dir / 'mypy'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
-        '{0}:16: error: Argument 2 to "User" has incompatible type "str"; expected "int"  [arg-type]'.format(Path('inner/file.py')),
+        '{0}:16: error: Argument 2 to "User" has incompatible type "str"; expected "int"  [arg-type]'.format(
+            Path('inner/file.py'),
+        ),
         'Found 2 errors in 1 file (checked 1 source file)',
     ]
     assert got.returncode == 1
@@ -235,13 +242,16 @@ def test_format(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 @pytest.mark.usefixtures('test_repo')
 def test_click_app() -> None:
     """Test click app."""
-    got = CliRunner().invoke(main, input='\n'.join([
-        '{0}:3:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
-        '{0}:9:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
-        '{0}:10:80: E501 line too long (123 > 79 characters)'.format(Path('inner/file.py')),
-        '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py')),
-        '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1'.format(Path('inner/file.py')),
-    ]))
+    got = CliRunner().invoke(
+        main,
+        input='\n'.join([
+            '{0}:3:1: E302 expected 2 blank lines, found 1',
+            '{0}:9:1: E302 expected 2 blank lines, found 1',
+            '{0}:10:80: E501 line too long (123 > 79 characters)',
+            '{0}:12:80: E501 line too long (119 > 79 characters)',
+            '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+        ]).format(Path('inner/file.py')),
+    )
 
     assert got.exit_code == 1
     assert got.stdout.strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
@@ -298,7 +308,9 @@ def test_fromfile(file_with_violations: Path, bin_dir: Path) -> None:
         check=False,
     )
 
-    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
+    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
+        Path('inner/file.py'),
+    )
     assert got.returncode == 1
 
 

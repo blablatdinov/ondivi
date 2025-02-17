@@ -60,7 +60,7 @@ tasks:
   fmt:
     desc: "Run formatters"
     cmds:
-      - poetry run ruff check ondivi tests --fix
+      - poetry run ruff check ondivi tests --fix --fix-only
 
   lint:
     desc: "Run linters"

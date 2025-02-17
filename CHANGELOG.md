@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `Dockerfile` for development (#145)
+- Windows support (#173)
 
 ### Changed
 

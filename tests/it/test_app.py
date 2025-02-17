@@ -115,11 +115,11 @@ def file_with_violations(test_repo: Path) -> Path:
     violations_file = test_repo / 'violations.txt'
     violations_file.write_text(
         '\n'.join([
-            'file.py:3:1: E302 expected 2 blank lines, found 1',
-            'file.py:9:1: E302 expected 2 blank lines, found 1',
-            'file.py:10:80: E501 line too long (123 > 79 characters)',
-            'file.py:12:80: E501 line too long (119 > 79 characters)',
-            'file.py:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+            '{0}:3:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
+            '{0}:9:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
+            '{0}:10:80: E501 line too long (123 > 79 characters)'.format(Path('inner/file.py')),
+            '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py')),
+            '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1'.format(Path('inner/file.py')),
         ]),
         encoding='utf-8',
     )
@@ -138,19 +138,21 @@ def file_with_violations(test_repo: Path) -> Path:
     (_version_from_lock('click'),),
     ('click', '-U'),
 ])
-def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> None:
+def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test script with different dependency versions."""
-    subprocess.run(['venv/bin/pip', 'install', *version], check=True)
-    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi'])
+    subprocess.run([str(bin_dir / 'pip'), 'install', *version], check=True)
+    got = run_shell([str(bin_dir / 'flake8'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')])
 
-    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
+        Path('inner/file.py'),
+    )
     assert got.returncode == 1
 
 
 @pytest.mark.usefixtures('test_repo')
 def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...], bin_dir: Path) -> None:
     """Test script with real git repo."""
-    got = run_shell([str(bin_dir / 'flake8'), 'inner/file.py'], [str(bin_dir / 'ondivi'), '--baseline', revisions[-1]])
+    got = run_shell([str(bin_dir / 'flake8'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi'), '--baseline', revisions[-1]])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
         '{0}:3:1: E302 expected 2 blank lines, found 1'.format(Path('inner/file.py')),
@@ -161,28 +163,28 @@ def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...], bin_dir: Path) -> 
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_baseline_default(run_shell: _RUN_SHELL_T) -> None:
+def test_baseline_default(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test baseline default."""
-    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi'])
+    got = run_shell([str(bin_dir / 'flake8'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')])
 
-    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
     assert got.returncode == 1
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_ruff(run_shell: _RUN_SHELL_T) -> None:
+def test_ruff(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test ruff."""
     got = run_shell(
-        ['venv/bin/ruff', 'check', '--select=ALL', 'file.py', '--output-format=concise'],
-        ['venv/bin/ondivi'],
+        [str(bin_dir / 'ruff'), 'check', '--select=ALL', str(Path('inner/file.py')), '--output-format=concise'],
+        [str(bin_dir / 'ondivi')],
     )
 
     assert got.stdout.decode('utf-8').strip() == '\n'.join([
-        'file.py:12:5: T201 `print` found',
-        'file.py:12:11: Q000 [*] Single quotes found but double quotes preferred',
-        'file.py:12:89: E501 Line too long (119 > 88)',
-        'file.py:16:16: Q000 [*] Single quotes found but double quotes preferred',
-        'file.py:16:23: Q000 [*] Single quotes found but double quotes preferred',
+        '{0}:12:5: T201 `print` found'.format(Path('inner/file.py')),
+        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:12:89: E501 Line too long (119 > 88)'.format(Path('inner/file.py')),
+        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
         'Found 17 errors.',
         '[*] 8 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
     ])
@@ -190,40 +192,40 @@ def test_ruff(run_shell: _RUN_SHELL_T) -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_mypy(run_shell: _RUN_SHELL_T) -> None:
+def test_mypy(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test mypy."""
-    got = run_shell(['venv/bin/mypy', 'file.py'], ['venv/bin/ondivi'])
+    got = run_shell([str(bin_dir / 'mypy'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')])
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
-        'file.py:16: error: Argument 2 to "User" has incompatible type "str"; expected "int"  [arg-type]',
+        '{0}:16: error: Argument 2 to "User" has incompatible type "str"; expected "int"  [arg-type]'.format(Path('inner/file.py')),
         'Found 2 errors in 1 file (checked 1 source file)',
     ]
     assert got.returncode == 1
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_without_violations(run_shell: _RUN_SHELL_T) -> None:
+def test_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test exit without violations."""
-    got = run_shell(['echo', ''], ['venv/bin/ondivi'])
+    got = run_shell(['echo', ''], [str(bin_dir / 'ondivi')])
 
     assert got.returncode == 0
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_info_message(run_shell: _RUN_SHELL_T) -> None:
+def test_info_message(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test exit with info message."""
-    got = run_shell(['echo', 'All files correct!'], ['venv/bin/ondivi'])
+    got = run_shell(['echo', 'All files correct!'], [str(bin_dir / 'ondivi')])
 
     assert got.stdout.decode('utf-8').strip() == 'All files correct!'
     assert got.returncode == 0
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_format(run_shell: _RUN_SHELL_T) -> None:
+def test_format(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test with custom format."""
     got = run_shell(
         ['echo', 'line=12 file=file.py message=`print` found'],
-        ['venv/bin/ondivi', '--format', 'line={line_num:d} file={filename} {other}'],
+        [str(bin_dir / 'ondivi'), '--format', 'line={line_num:d} file={filename} {other}'],
     )
 
     assert got.stdout.decode('utf-8').strip() == 'line=12 file=file.py message=`print` found'
@@ -234,15 +236,15 @@ def test_format(run_shell: _RUN_SHELL_T) -> None:
 def test_click_app() -> None:
     """Test click app."""
     got = CliRunner().invoke(main, input='\n'.join([
-        'file.py:3:1: E302 expected 2 blank lines, found 1',
-        'file.py:9:1: E302 expected 2 blank lines, found 1',
-        'file.py:10:80: E501 line too long (123 > 79 characters)',
-        'file.py:12:80: E501 line too long (119 > 79 characters)',
-        'file.py:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+        '{0}:3:1: E302 expected 2 blank lines, found 1',
+        '{0}:9:1: E302 expected 2 blank lines, found 1',
+        '{0}:10:80: E501 line too long (123 > 79 characters)',
+        '{0}:12:80: E501 line too long (119 > 79 characters)',
+        '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1',
     ]))
 
     assert got.exit_code == 1
-    assert got.stdout.strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
 
 
 @pytest.fixture
@@ -270,33 +272,33 @@ def test_handle_exception() -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_only_violations(run_shell: _RUN_SHELL_T) -> None:
+def test_only_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test only violations."""
     got = run_shell(
-        ['venv/bin/ruff', 'check', '--select=ALL', 'file.py', '--output-format=concise'],
-        ['venv/bin/ondivi', '--only-violations'],
+        [str(bin_dir / 'ruff'), 'check', '--select=ALL', str(Path('inner/file.py')), '--output-format=concise'],
+        [str(bin_dir / 'ondivi'), '--only-violations'],
     )
 
     assert got.stdout.decode('utf-8').strip() == '\n'.join([
-        'file.py:12:5: T201 `print` found',
-        'file.py:12:11: Q000 [*] Single quotes found but double quotes preferred',
-        'file.py:12:89: E501 Line too long (119 > 88)',
-        'file.py:16:16: Q000 [*] Single quotes found but double quotes preferred',
-        'file.py:16:23: Q000 [*] Single quotes found but double quotes preferred',
+        '{0}:12:5: T201 `print` found'.format(Path('inner/file.py')),
+        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:12:89: E501 Line too long (119 > 88)'.format(Path('inner/file.py')),
+        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
     ])
     assert got.returncode == 1
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_fromfile(file_with_violations: Path) -> None:
+def test_fromfile(file_with_violations: Path, bin_dir: Path) -> None:
     """Test script with violations from file."""
     got = subprocess.run(
-        ['venv/bin/ondivi', '--fromfile', str(file_with_violations)],
+        [str(bin_dir / 'ondivi'), '--fromfile', str(file_with_violations)],
         stdout=subprocess.PIPE,
         check=False,
     )
 
-    assert got.stdout.decode('utf-8').strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
     assert got.returncode == 1
 
 
@@ -305,7 +307,7 @@ def test_fromfile_via_cli_runner(file_with_violations: Path) -> None:
     """Test script with violations from file via CliRunner."""
     got = CliRunner().invoke(main, ['--fromfile', str(file_with_violations)], input='')
 
-    assert got.stdout.strip() == 'file.py:12:80: E501 line too long (119 > 79 characters)'
+    assert got.stdout.strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
     assert got.exit_code == 1
 
 

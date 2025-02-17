@@ -185,7 +185,7 @@ def test_ruff(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
         '{0}:12:89: E501 Line too long (119 > 88)'.format(Path('inner/file.py')),
         '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
         '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
-        'Found 17 errors.',
+        'Found 18 errors.',
         '[*] 8 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
     ])
     assert got.returncode == 1

@@ -78,6 +78,8 @@ def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Pat
     repo = Repo.init(repo_path)
     os.chdir(repo_path)
     for change in changes_definition['changes']:
+        file_path = Path(change['path'])
+        file_path.parents[0].mkdir(exist_ok=True)
         Path(change['path']).write_text(change['content'])
         if change.get('commit'):
             repo.index.add([change['path']])

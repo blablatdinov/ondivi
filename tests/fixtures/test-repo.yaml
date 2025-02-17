@@ -22,7 +22,7 @@
 ---
 changes:
 
-  - path: file.py
+  - path: inner/file.py
     commit:
       message: Initial commit
     content: |
@@ -33,7 +33,7 @@ changes:
       if __name__ == '__main__':
           greet(input())
 
-  - path: file.py
+  - path: inner/file.py
     commit:
       message: Second commit
     content: |
@@ -52,7 +52,7 @@ changes:
       if __name__ == '__main__':
           greet(User(345, 23))
 
-  - path: file.py
+  - path: inner/file.py
     content: |
       from dataclasses import dataclass
 

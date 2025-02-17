@@ -59,6 +59,14 @@ def _version_from_lock(package_name: str) -> str:
     )
 
 
+@pytest.fixture
+def bin_dir():
+    if os.name == 'nt':
+        return Path('venv/Scripts')
+    else:
+        return Path('venv/bin')
+
+
 # flake8: noqa: S603, S607. Not a production code
 @pytest.fixture(scope='module')
 def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Path, None, None]:
@@ -75,8 +83,13 @@ def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Pat
             repo.index.add([change['path']])
             repo.index.commit(change['commit']['message'])
     subprocess.run(['python', '-m', 'venv', 'venv'], check=True)
-    subprocess.run(['venv/bin/pip', 'install', 'pip', '-U'], check=True)
-    subprocess.run(['venv/bin/pip', 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
+    is_windows = os.name == 'nt'
+    pip_path = Path('venv/Scripts/pip') if is_windows else Path('venv/bin/pip')
+    if is_windows:
+        got = subprocess.run([str(Path('venv/Scripts/python')), '-m', 'pip', 'install', 'pip', '-U'], check=True)
+    else:
+        got = subprocess.run([str(pip_path), 'install', 'pip', '-U'], check=True)
+    subprocess.run([str(pip_path), 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
     yield tmp_path
     os.chdir(current_dir)
 
@@ -139,10 +152,24 @@ def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T) -> No
     assert got.returncode == 1
 
 
+<<<<<<< HEAD
 @pytest.mark.usefixtures('test_repo')
 def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...]) -> None:
+||||||| parent of 5d4e922 (Testing on windows)
+@pytest.mark.usefixtures('_test_repo')
+def test(run_shell: _RUN_SHELL_T) -> None:
+=======
+@pytest.mark.usefixtures('_test_repo')
+def test(run_shell: _RUN_SHELL_T, bin_dir) -> None:
+>>>>>>> 5d4e922 (Testing on windows)
     """Test script with real git repo."""
+<<<<<<< HEAD
     got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', revisions[-1]])
+||||||| parent of 5d4e922 (Testing on windows)
+    got = run_shell(['venv/bin/flake8', 'file.py'], ['venv/bin/ondivi', '--baseline', '56faa56'])
+=======
+    got = run_shell([str(bin_dir / 'flake8'), 'file.py'], [str(bin_dir / 'ondivi'), '--baseline', '56faa56'])
+>>>>>>> 5d4e922 (Testing on windows)
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
         'file.py:3:1: E302 expected 2 blank lines, found 1',

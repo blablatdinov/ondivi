@@ -22,10 +22,12 @@
 
 """Tests for ondivi."""
 
+from typing import Callable
+
 from ondivi.entry import controller
 
 
-def test_controller() -> None:
+def test_controller(localize_violation_path: Callable[[str], str]) -> None:
     """Testing script output with diff and violations list."""
     got, found = controller(
         '\n'.join([
@@ -36,10 +38,10 @@ def test_controller() -> None:
             '@@ -26,0 +27,1 @@ from git import Repo',
             '+Diff = str',
         ]),
-        ['ondivi/__main__.py:27:1: Error message'],
+        [localize_violation_path('ondivi/__main__.py:27:1: Error message')],
         '{filename}:{line_num:d}:{col_num:d}: {message}',
         only_violations=False,
     )
 
-    assert got == ['ondivi/__main__.py:27:1: Error message']
+    assert got == [localize_violation_path('ondivi/__main__.py:27:1: Error message')]
     assert found

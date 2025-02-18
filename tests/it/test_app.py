@@ -24,6 +24,7 @@
 
 import os
 import subprocess
+import sys
 from collections.abc import Generator
 from pathlib import Path
 from typing import Callable
@@ -187,15 +188,15 @@ def test_ruff(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
         [str(bin_dir / 'ondivi')],
     )
 
-    assert got.stdout.decode('utf-8').strip() == '\n'.join([
-        '{0}:12:5: T201 `print` found',
-        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred',
-        '{0}:12:89: E501 Line too long (119 > 88)',
-        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred',
-        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred',
+    assert got.stdout.decode('utf-8').strip().splitlines() == [
+        '{0}:12:5: T201 `print` found'.format(Path('inner/file.py')),
+        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:12:89: E501 Line too long (119 > 88)'.format(Path('inner/file.py')),
+        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
         'Found 18 errors.',
         '[*] 8 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
-    ]).format(Path('inner/file.py'))
+    ]
     assert got.returncode == 1
 
 
@@ -214,6 +215,7 @@ def test_mypy(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='win not support "echo"')
 def test_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test exit without violations."""
     got = run_shell(['echo', ''], [str(bin_dir / 'ondivi')])
@@ -222,6 +224,7 @@ def test_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='win not support "echo"')
 def test_info_message(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test exit with info message."""
     got = run_shell(['echo', 'All files correct!'], [str(bin_dir / 'ondivi')])
@@ -231,6 +234,7 @@ def test_info_message(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='win not support "echo"')
 def test_format(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test with custom format."""
     got = run_shell(
@@ -285,20 +289,20 @@ def test_handle_exception() -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_only_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
+def test_only_violations(run_shell: _RUN_SHELL_T, bin_dir: Path, localize_violation_path: Callable[[str], str]) -> None:
     """Test only violations."""
     got = run_shell(
         [str(bin_dir / 'ruff'), 'check', '--select=ALL', str(Path('inner/file.py')), '--output-format=concise'],
         [str(bin_dir / 'ondivi'), '--only-violations'],
     )
 
-    assert got.stdout.decode('utf-8').strip() == '\n'.join([
-        '{0}:12:5: T201 `print` found',
-        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred',
-        '{0}:12:89: E501 Line too long (119 > 88)',
-        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred',
-        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred',
-    ]).format(Path('inner/file.py'))
+    assert got.stdout.decode('utf-8').strip().splitlines() == [
+        localize_violation_path('inner/file.py:12:5: T201 `print` found'),
+        localize_violation_path('inner/file.py:12:11: Q000 [*] Single quotes found but double quotes preferred'),
+        localize_violation_path('inner/file.py:12:89: E501 Line too long (119 > 88)'),
+        localize_violation_path('inner/file.py:16:16: Q000 [*] Single quotes found but double quotes preferred'),
+        localize_violation_path('inner/file.py:16:23: Q000 [*] Single quotes found but double quotes preferred'),
+    ]
     assert got.returncode == 1
 
 
@@ -327,15 +331,15 @@ def test_fromfile_via_cli_runner(file_with_violations: Path) -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_fromfile_not_found() -> None:
+def test_fromfile_not_found(bin_dir: Path) -> None:
     """Test script with violations from file."""
     got = subprocess.run(
-        ['venv/bin/ondivi', '--fromfile', 'undefined.txt'],
+        [str(bin_dir / 'ondivi'), '--fromfile', 'undefined.txt'],
         stdout=subprocess.PIPE,
         check=False,
     )
 
-    assert got.stdout.decode('utf-8') == 'File with violations "undefined.txt" not found\n'
+    assert got.stdout.decode('utf-8').strip() == 'File with violations "undefined.txt" not found'
     assert got.returncode == 1
 
 

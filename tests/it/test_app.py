@@ -289,7 +289,7 @@ def test_handle_exception() -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_only_violations(run_shell: _RUN_SHELL_T, bin_dir: Path, localize_violation_path) -> None:
+def test_only_violations(run_shell: _RUN_SHELL_T, bin_dir: Path, localize_violation_path: Callable[[str], str]) -> None:
     """Test only violations."""
     got = run_shell(
         [str(bin_dir / 'ruff'), 'check', '--select=ALL', str(Path('inner/file.py')), '--output-format=concise'],

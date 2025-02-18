@@ -23,6 +23,7 @@
 """Integration test with installing and check on real git repo."""
 
 import os
+import sys
 import subprocess
 from collections.abc import Generator
 from pathlib import Path
@@ -214,6 +215,7 @@ def test_mypy(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='win not support "echo"')
 def test_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test exit without violations."""
     got = run_shell(['echo', ''], [str(bin_dir / 'ondivi')])
@@ -222,6 +224,7 @@ def test_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='win not support "echo"')
 def test_info_message(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test exit with info message."""
     got = run_shell(['echo', 'All files correct!'], [str(bin_dir / 'ondivi')])
@@ -231,6 +234,7 @@ def test_info_message(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='win not support "echo"')
 def test_format(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test with custom format."""
     got = run_shell(
@@ -327,15 +331,15 @@ def test_fromfile_via_cli_runner(file_with_violations: Path) -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_fromfile_not_found() -> None:
+def test_fromfile_not_found(bin_dir: Path) -> None:
     """Test script with violations from file."""
     got = subprocess.run(
-        ['venv/bin/ondivi', '--fromfile', 'undefined.txt'],
+        [str(bin_dir / 'ondivi'), '--fromfile', 'undefined.txt'],
         stdout=subprocess.PIPE,
         check=False,
     )
 
-    assert got.stdout.decode('utf-8') == 'File with violations "undefined.txt" not found\n'
+    assert got.stdout.decode('utf-8').strip() == 'File with violations "undefined.txt" not found'
     assert got.returncode == 1
 
 

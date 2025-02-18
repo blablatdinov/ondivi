@@ -22,22 +22,28 @@
 
 """Tests for ondivi."""
 
-import pytest
 from pathlib import Path
+from typing import Callable
+
+import pytest
 
 from ondivi.entry import controller
 
 
 @pytest.fixture
-def localize_violation_path():
-    def _localize_violation_path(violation: str):
+def localize_violation_path() -> Callable[[str], str]:
+    """Localize violation path.
+
+    Violation files contain strings with unix paths, but we need to convert them to windows paths.
+    """
+    def _localize_violation_path(violation: str) -> str:  # noqa: WPS430
         parts = violation.split(':')
         parts[0] = str(Path(parts[0]))
         return ':'.join(parts)
     return _localize_violation_path
 
 
-def test_controller(localize_violation_path) -> None:
+def test_controller(localize_violation_path: Callable[[str], str]) -> None:
     """Testing script output with diff and violations list."""
     got, found = controller(
         Path('tests/fixtures/diff.patch').read_text(encoding='utf-8'),

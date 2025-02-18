@@ -23,8 +23,8 @@
 """Integration test with installing and check on real git repo."""
 
 import os
-import sys
 import subprocess
+import sys
 from collections.abc import Generator
 from pathlib import Path
 from typing import Callable

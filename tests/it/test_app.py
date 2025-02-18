@@ -289,7 +289,7 @@ def test_handle_exception() -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_only_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
+def test_only_violations(run_shell: _RUN_SHELL_T, bin_dir: Path, localize_violation_path) -> None:
     """Test only violations."""
     got = run_shell(
         [str(bin_dir / 'ruff'), 'check', '--select=ALL', str(Path('inner/file.py')), '--output-format=concise'],
@@ -297,11 +297,11 @@ def test_only_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     )
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
-        '{0}:12:5: T201 `print` found'.format(Path('inner/file.py')),
-        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
-        '{0}:12:89: E501 Line too long (119 > 88)'.format(Path('inner/file.py')),
-        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
-        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        localize_violation_path('inner/file.py:12:5: T201 `print` found'),
+        localize_violation_path('inner/file.py:12:11: Q000 [*] Single quotes found but double quotes preferred'),
+        localize_violation_path('inner/file.py:12:89: E501 Line too long (119 > 88)'),
+        localize_violation_path('inner/file.py:16:16: Q000 [*] Single quotes found but double quotes preferred'),
+        localize_violation_path('inner/file.py:16:23: Q000 [*] Single quotes found but double quotes preferred'),
     ]
     assert got.returncode == 1
 

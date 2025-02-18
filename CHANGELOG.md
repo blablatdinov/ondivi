@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Bug with filtering violations starts with "./" (#175)
+- Tests for windows (#176)
 
 ### Removed
 

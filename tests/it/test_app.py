@@ -187,15 +187,15 @@ def test_ruff(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
         [str(bin_dir / 'ondivi')],
     )
 
-    assert got.stdout.decode('utf-8').strip() == '\n'.join([
-        '{0}:12:5: T201 `print` found',
-        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred',
-        '{0}:12:89: E501 Line too long (119 > 88)',
-        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred',
-        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred',
+    assert got.stdout.decode('utf-8').strip().splitlines() == [
+        '{0}:12:5: T201 `print` found'.format(Path('inner/file.py')),
+        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:12:89: E501 Line too long (119 > 88)'.format(Path('inner/file.py')),
+        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
         'Found 18 errors.',
         '[*] 8 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).',
-    ]).format(Path('inner/file.py'))
+    ]
     assert got.returncode == 1
 
 
@@ -292,13 +292,13 @@ def test_only_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
         [str(bin_dir / 'ondivi'), '--only-violations'],
     )
 
-    assert got.stdout.decode('utf-8').strip() == '\n'.join([
-        '{0}:12:5: T201 `print` found',
-        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred',
-        '{0}:12:89: E501 Line too long (119 > 88)',
-        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred',
-        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred',
-    ]).format(Path('inner/file.py'))
+    assert got.stdout.decode('utf-8').strip().splitlines() == [
+        '{0}:12:5: T201 `print` found'.format(Path('inner/file.py')),
+        '{0}:12:11: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:12:89: E501 Line too long (119 > 88)'.format(Path('inner/file.py')),
+        '{0}:16:16: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+        '{0}:16:23: Q000 [*] Single quotes found but double quotes preferred'.format(Path('inner/file.py')),
+    ]
     assert got.returncode == 1
 
 

@@ -363,6 +363,7 @@ def test_commit_not_found() -> None:
 
 @pytest.mark.usefixtures('test_repo')
 def test_last_symbol(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
+    """Test last symbol with violations."""
     got = run_shell(
         [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
         [str(bin_dir / 'ondivi')],
@@ -374,6 +375,14 @@ def test_last_symbol(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 
 @pytest.mark.usefixtures('test_repo')
 def test_last_symbol_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
+    """Test last symbol without violations.
+
+    Before fix:
+
+    bash-3.2$ echo '' | ondivi
+
+    bash-3.2$
+    """
     got = run_shell(
         ['echo', ''],
         [str(bin_dir / 'ondivi')],

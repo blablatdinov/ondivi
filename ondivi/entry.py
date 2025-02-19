@@ -107,8 +107,12 @@ def cli(
         violation_format,
         only_violations,
     )
-    sys.stdout.write('\n'.join(filtered_lines))
-    sys.stdout.write('\n')
+    if filtered_lines:
+        sys.stdout.write(
+            '{0}\n'.format(
+                '\n'.join(filtered_lines),
+            ),
+        )
     if violation_found:
         sys.exit(1)
 

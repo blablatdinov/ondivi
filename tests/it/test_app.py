@@ -359,3 +359,25 @@ def test_commit_not_found() -> None:
 
     assert got.stdout == 'Revision "fakeHash" not found'
     assert got.exit_code == 1
+
+
+@pytest.mark.usefixtures('test_repo')
+def test_last_symbol(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
+    got = run_shell(
+        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
+        [str(bin_dir / 'ondivi')],
+    )
+
+    assert got.returncode == 1
+    assert got.stdout.decode('utf-8').count('\n') == 1
+
+
+@pytest.mark.usefixtures('test_repo')
+def test_last_symbol_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
+    got = run_shell(
+        ['echo', ''],
+        [str(bin_dir / 'ondivi')],
+    )
+
+    assert got.returncode == 0
+    assert got.stdout.decode('utf-8').count('\n') == 0

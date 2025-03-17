@@ -169,7 +169,7 @@ def main(baseline: str, fromfile: str | None, violation_format: str, only_violat
     """
     try:
         cli(baseline, fromfile, violation_format, only_violations)
-    except Exception as err:  # noqa: BLE001. Application entrypoint
+    except Exception as err:  # noqa: BLE001 . Application entrypoint
         sys.stdout.write('\n'.join([
             'Ondivi fail with: "{0}"'.format(err),
             'Please submit it to https://github.com/blablatdinov/ondivi/issues',

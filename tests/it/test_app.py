@@ -40,7 +40,10 @@ from typing_extensions import TypeAlias
 from ondivi.entry import main
 from tests.helpers.define_repo import define_repo
 
-_RUN_SHELL_T: TypeAlias = Callable[[list[str], list[str]], subprocess.CompletedProcess[bytes]]
+_RUN_SHELL_T: TypeAlias = Callable[
+    [list[str], list[str]],
+    subprocess.CompletedProcess[bytes],
+]
 
 
 @pytest.fixture(scope='module')
@@ -69,9 +72,12 @@ def bin_dir() -> Path:
         return Path('venv/bin')
 
 
-# ruff: noqa: S603, S607 . Not a production code
+# ruff: noqa: S603, S607 Not a production code
 @pytest.fixture(scope='module')
-def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Path, None, None]:
+def test_repo(  # noqa: WPS213
+    tmpdir_factory: TempdirFactory,
+    current_dir: str,
+) -> Generator[Path, None, None]:
     """Real git repository."""
     tmp_path = tmpdir_factory.mktemp('test')
     repo_path = tmp_path / 'ondivi-test-repo'
@@ -82,10 +88,16 @@ def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Pat
     is_windows = os.name == 'nt'
     pip_path = Path('venv/Scripts/pip') if is_windows else Path('venv/bin/pip')
     if is_windows:
-        subprocess.run([str(Path('venv/Scripts/python')), '-m', 'pip', 'install', 'pip', '-U'], check=True)
+        subprocess.run(
+            [str(Path('venv/Scripts/python')), '-m', 'pip', 'install', 'pip', '-U'],
+            check=True,
+        )
     else:
         subprocess.run([str(pip_path), 'install', 'pip', '-U'], check=True)
-    subprocess.run([str(pip_path), 'install', 'flake8', 'ruff', 'mypy', str(current_dir)], check=True)
+    subprocess.run(
+        [str(pip_path), 'install', 'flake8', 'ruff', 'mypy', str(current_dir)],
+        check=True,
+    )
     yield tmp_path
     os.chdir(current_dir)
 
@@ -93,13 +105,15 @@ def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Pat
 @pytest.fixture
 def revisions(test_repo: Path) -> tuple[str, ...]:
     """List of commit hashes."""
-    return tuple(str(commit) for commit in Repo(test_repo / 'ondivi-test-repo').iter_commits())
+    return tuple(
+        str(commit) for commit in Repo(test_repo / 'ondivi-test-repo').iter_commits()
+    )
 
 
 @pytest.fixture
 def run_shell() -> _RUN_SHELL_T:
     """Run commands with pipe in shell."""
-    def _exec(lint_cmd: list[str], ondivi_cmd: list[str]) -> subprocess.CompletedProcess[bytes]:
+    def _exec(lint_cmd: list[str], ondivi_cmd: list[str]) -> subprocess.CompletedProcess[bytes]:  # noqa: WPS430
         with subprocess.Popen(lint_cmd, stdout=subprocess.PIPE) as lint_proc:
             return subprocess.run(
                 ondivi_cmd,
@@ -141,10 +155,13 @@ def file_with_violations(test_repo: Path) -> Path:
 ])
 def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test script with different dependency versions."""
-    subprocess.run([str(bin_dir / 'pip'), 'install', *version], check=True)
+    subprocess.run(
+        [str(bin_dir / 'pip'), 'install', *version],
+        check=True,
+    )
     got = run_shell(
-        [str(bin_dir / 'flake8'),
-        str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')],
+        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
+        [str(bin_dir / 'ondivi')],
     )
 
     assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
@@ -172,7 +189,10 @@ def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...], bin_dir: Path) -> 
 @pytest.mark.usefixtures('test_repo')
 def test_baseline_default(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test baseline default."""
-    got = run_shell([str(bin_dir / 'flake8'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')])
+    got = run_shell(
+        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
+        [str(bin_dir / 'ondivi')],
+    )
 
     assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
         Path('inner/file.py'),
@@ -203,7 +223,10 @@ def test_ruff(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
 @pytest.mark.usefixtures('test_repo')
 def test_mypy(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
     """Test mypy."""
-    got = run_shell([str(bin_dir / 'mypy'), str(Path('inner/file.py'))], [str(bin_dir / 'ondivi')])
+    got = run_shell(
+        [str(bin_dir / 'mypy'), str(Path('inner/file.py'))],
+        [str(bin_dir / 'ondivi')],
+    )
 
     assert got.stdout.decode('utf-8').strip().splitlines() == [
         '{0}:16: error: Argument 2 to "User" has incompatible type "str"; expected "int"  [arg-type]'.format(
@@ -242,7 +265,9 @@ def test_format(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
         [str(bin_dir / 'ondivi'), '--format', 'line={line_num:d} file={filename} {other}'],
     )
 
-    assert got.stdout.decode('utf-8').strip() == 'line=12 file={0} message=`print` found'.format(Path('inner/file.py'))
+    assert got.stdout.decode('utf-8').strip() == 'line=12 file={0} message=`print` found'.format(
+        Path('inner/file.py'),
+    )
     assert got.returncode == 1
 
 

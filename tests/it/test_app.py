@@ -69,7 +69,7 @@ def bin_dir() -> Path:
         return Path('venv/bin')
 
 
-# flake8: noqa: S603, S607. Not a production code
+# ruff: noqa: S603, S607 . Not a production code
 @pytest.fixture(scope='module')
 def test_repo(tmpdir_factory: TempdirFactory, current_dir: str) -> Generator[Path, None, None]:
     """Real git repository."""

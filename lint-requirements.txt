@@ -32,4 +32,4 @@ pyflakes==3.2.0
     # via flake8
 pygments==2.19.1
     # via wemake-python-styleguide
-wemake-python-styleguide==1.0.0
+wemake-python-styleguide==1.1.0

@@ -234,3 +234,5 @@ tags
 .mutmut-cache
 
 ondivi-test-repo
+
+lint-venv

@@ -22,13 +22,13 @@
 
 attrs==25.3.0
     # via wemake-python-styleguide
-flake8==7.1.2
+flake8==7.2.0
     # via wemake-python-styleguide
 mccabe==0.7.0
     # via flake8
-pycodestyle==2.12.1
+pycodestyle==2.13.0
     # via flake8
-pyflakes==3.2.0
+pyflakes==3.3.2
     # via flake8
 pygments==2.19.1
     # via wemake-python-styleguide

@@ -199,8 +199,9 @@ def test_baseline_default(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
         [str(bin_dir / 'ondivi')],
     )
 
-    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
-        Path('inner/file.py'),
+    assert (
+        got.stdout.decode('utf-8').strip()
+        == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
     )
     assert got.returncode == 1
 

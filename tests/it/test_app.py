@@ -162,7 +162,10 @@ def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T, bin_d
         check=True,
     )
     got = run_shell(
-        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
+        [
+            str(bin_dir / 'flake8'),
+            str(Path('inner/file.py')),
+        ],
         [str(bin_dir / 'ondivi')],
     )
 

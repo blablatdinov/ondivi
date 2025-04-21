@@ -77,7 +77,7 @@ def _is_line_for_out(
 
 
 def _is_target_violation(changed_lines: dict[FileNameStr, list[int]], parsed_violation: ParsedViolation) -> bool:
-    violation_file = parsed_violation['filename'].replace('./', '')
+    violation_file = parsed_violation['filename'].replace('./', '').replace('\\', '/')
     is_target_file = violation_file in changed_lines
     try:
         violation_on_changed_line = parsed_violation['line_num'] in changed_lines[violation_file]

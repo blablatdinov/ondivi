@@ -43,11 +43,20 @@ class LinterOutLine:
     _raw_line: ViolationStr | LinterAdditionalMessageStr
     _violation_format: ViolationFormatStr
 
+    def line_num(self) -> int:
+        return int(self._parse()['line_num'])
+
     def filename(self) -> str:
-        return parse_from_pattern(self._violation_format, self._raw_line)['filename']
+        return str(
+            self._parse()['filename'],
+        ).replace('./', '')
 
     def violation_exist(self) -> bool:
-        return bool(parse_from_pattern(self._violation_format, self._raw_line))
+        return bool(self._parse())
+
+    def _parse(self) -> ParsedViolation:
+        prsd: ParsedViolation = parse_from_pattern(self._violation_format, self._raw_line)
+        return prsd
 
 
 def filter_out_violations(
@@ -69,8 +78,7 @@ def filter_out_violations(
     for linter_out_line in linter_out:
         line_for_out, is_violation = _is_line_for_out(
             changed_lines,
-            LinterOutLine(linter_out_line),
-            violation_format,
+            LinterOutLine(linter_out_line, violation_format),
         )
         violation_found = violation_found or is_violation
         if is_violation or (line_for_out and not only_violations):
@@ -81,9 +89,7 @@ def filter_out_violations(
 def _is_line_for_out(
     changed_lines: dict[FileNameStr, list[int]],
     linter_out_line: LinterOutLine,
-    violation_format: ViolationFormatStr,
 ) -> tuple[bool, bool]:
-    # parsed_violation = parse_from_pattern(violation_format, linter_out_line)
     line_for_out, is_violation = True, True
     if not linter_out_line.violation_exist():
         line_for_out = True
@@ -98,7 +104,7 @@ def _is_target_violation(changed_lines: dict[FileNameStr, list[int]], linter_out
     violation_file = linter_out_line.filename()
     is_target_file = violation_file in changed_lines
     try:
-        violation_on_changed_line = parsed_violation['line_num'] in changed_lines[violation_file]
+        violation_on_changed_line = linter_out_line.line_num() in changed_lines[violation_file]
     except KeyError:
         violation_on_changed_line = False
     return is_target_file and violation_on_changed_line

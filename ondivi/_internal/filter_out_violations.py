@@ -48,11 +48,11 @@ class LinterOutLine:
         return self._parse()['line_num']
 
     def filename(self) -> str:
-        return (
+        return str(Path(
             self._parse()['filename']
             .replace('./', '')
             .replace('\\', '/')
-        )
+        ))
 
     def violation_exist(self) -> bool:
         return bool(self._parse())

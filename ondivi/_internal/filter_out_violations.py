@@ -25,6 +25,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 from parse import parse as parse_from_pattern  # type: ignore [import-untyped]
 
@@ -51,7 +52,7 @@ class LinterOutLine:
         return str(Path(
             self._parse()['filename']
             .replace('./', '')
-            .replace('\\', '/')
+            .replace('\\', '/'),
         ))
 
     def violation_exist(self) -> bool:

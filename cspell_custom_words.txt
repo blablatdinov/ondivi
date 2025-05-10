@@ -18,6 +18,7 @@ flakehell
 foreignobject
 fromfile
 fseventsd
+gotemir
 htmlcov
 icns
 Ilaletdinov
@@ -35,6 +36,7 @@ ondivi
 optimised
 outerref
 pnorton
+prsd
 pybuilder
 pyflow
 pypa

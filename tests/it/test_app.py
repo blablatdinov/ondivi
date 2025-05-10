@@ -421,3 +421,23 @@ def test_last_symbol_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) 
 
     assert got.returncode == 0
     assert got.stdout.decode('utf-8').count('\n') == 0
+
+
+@pytest.mark.usefixtures('test_repo')
+def test_git_with_external_diff_tool(
+    run_shell: _RUN_SHELL_T,
+    bin_dir: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that script works correctly when user has custom diff tool configured."""
+    monkeypatch.setenv('GIT_EXTERNAL_DIFF', str(Path('tests/fixtures/fake_diff_out.sh')))
+
+    got = run_shell(
+        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
+        [str(bin_dir / 'ondivi')],
+    )
+
+    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
+        Path('inner/file.py'),
+    )
+    assert got.returncode == 1

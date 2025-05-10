@@ -47,6 +47,19 @@ tasks:
     cmds:
       - poetry install
 
+  syntax-check:
+    cmds:
+    - poetry run ruff check ondivi tests --select=F --ignore=F401,F841
+
+  type-check:
+    cmds:
+      - poetry run mypy ondivi tests --strict
+
+  test:
+    deps: [syntax-check,type-check]
+    cmds:
+      - poetry run pytest {{.CLI_ARGS}} -s -vv
+
   unit-tests:
     desc: "Run unit tests"
     cmds:

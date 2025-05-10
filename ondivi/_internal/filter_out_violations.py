@@ -23,6 +23,7 @@
 """Collect target violations."""
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 
 from parse import parse as parse_from_pattern  # type: ignore [import-untyped]
@@ -44,12 +45,14 @@ class LinterOutLine:
     _violation_format: ViolationFormatStr
 
     def line_num(self) -> int:
-        return int(self._parse()['line_num'])
+        return self._parse()['line_num']
 
     def filename(self) -> str:
-        return str(
-            self._parse()['filename'],
-        ).replace('./', '')
+        return (
+            self._parse()['filename']
+            .replace('./', '')
+            .replace('\\', '/')
+        )
 
     def violation_exist(self) -> bool:
         return bool(self._parse())

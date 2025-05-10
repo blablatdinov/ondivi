@@ -30,10 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.1] - 2025-05-10
+
 ### Fixed
 
 - Remove new line without violation case (#179)
-- Fix issues when user has custom diff tool installe (#203)
+- Fix issues when user has custom diff tool installed (#203)
 
 ## [0.7.0] - 2025-02-18
 
@@ -163,7 +165,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial version
 
-[unreleased]: https://github.com/blablatdinov/ondivi/compare/0.7.0...HEAD
+[unreleased]: https://github.com/blablatdinov/ondivi/compare/0.7.1...HEAD
+[0.7.1]: https://github.com/blablatdinov/ondivi/compare/0.7.0...0.7.1
 [0.7.0]: https://github.com/blablatdinov/ondivi/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/blablatdinov/ondivi/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/blablatdinov/ondivi/compare/0.4.1...0.5.0

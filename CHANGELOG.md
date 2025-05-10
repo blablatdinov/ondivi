@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Remove new line without violation case (#179)
+- Fix issues when user has custom diff tool installe (#203)
 
 ## [0.7.0] - 2025-02-18
 

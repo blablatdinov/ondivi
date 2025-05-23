@@ -37,7 +37,7 @@ click = "*"
 ondivi = "ondivi.entry:main"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "0.11.10"
+ruff = "0.11.11"
 pytest = "8.3.5"
 pytest-cov = "6.1.1"
 mypy = "1.15.0"

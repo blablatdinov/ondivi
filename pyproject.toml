@@ -21,19 +21,23 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
 [tool.poetry]
-name = "ondivi"
 version = "0.7.2"
+requires-poetry = ">=2.0"
+
+[project]
+name = "ondivi"
 description = ""
-authors = ["Almaz Ilaletdinov <a.ilaletdinov@yandex.ru>"]
+dynamic = ["version"]
 readme = "README.md"
+authors = [{name = "Almaz Ilaletdinov", email = "a.ilaletdinov@yandex.ru"}]
+requires-python = ">=3.9,<4.0"
+dependencies = [
+  "gitpython (>=2.1.15)",
+  "parse (>=1.4,<2.0)",
+  "click",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-gitpython = ">=2.1.15"
-parse = "^1.4"
-click = "*"
-
-[tool.poetry.scripts]
+[project.scripts]
 ondivi = "ondivi.entry:main"
 
 [tool.poetry.group.dev.dependencies]
@@ -104,7 +108,7 @@ multiline-quotes = "double"
 ]
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core (>=2.0)"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]

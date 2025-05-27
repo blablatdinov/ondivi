@@ -27,7 +27,7 @@ ENV EC_VERSION="v3.0.3"
 ENV PATH="/root/.local/bin:$PATH"
 WORKDIR /app
 RUN cd /app
-RUN pip install poetry==1.8.4
+RUN pip install poetry==2.1.3
 RUN apt-get update && apt-get install curl git -y
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin
 RUN curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker/releases/download/$EC_VERSION/ec-linux-amd64.tar.gz && \

@@ -28,7 +28,7 @@ mccabe==0.7.0
     # via flake8
 pycodestyle==2.13.0
     # via flake8
-pyflakes==3.3.2
+pyflakes==3.4.0
     # via flake8
 pygments==2.19.2
     # via wemake-python-styleguide

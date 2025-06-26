@@ -38,5 +38,5 @@ COPY poetry.lock pyproject.toml /app/
 COPY lint-requirements.txt /app/
 RUN python3 -m venv lint-venv
 RUN ./lint-venv/bin/pip install -r lint-requirements.txt
-RUN poetry install
 COPY . .
+RUN poetry install

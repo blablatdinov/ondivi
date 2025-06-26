@@ -22,14 +22,15 @@
 
 attrs==25.3.0
     # via wemake-python-styleguide
-flake8==7.2.0
+flake8==7.3.0
     # via wemake-python-styleguide
 mccabe==0.7.0
     # via flake8
-pycodestyle==2.13.0
+pycodestyle==2.14.0
     # via flake8
-pyflakes==3.3.2
+pyflakes==3.4.0
     # via flake8
 pygments==2.19.2
     # via wemake-python-styleguide
 wemake-python-styleguide==1.1.0
+    # via -r lint-requirements.txt

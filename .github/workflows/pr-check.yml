@@ -28,8 +28,7 @@ on:
   push:
     branches: [ "master" ]
 
-permissions:
-  contents: read
+permissions: read-all
 
 jobs:
   tests:

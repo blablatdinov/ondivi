@@ -33,7 +33,7 @@ jobs:
         python_version: ["3.9", "3.12"]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -60,7 +60,7 @@ jobs:
     needs: tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: |
           git fetch --tags --force && \
           latest=$(git tag --sort=creatordate | tail -1) && \

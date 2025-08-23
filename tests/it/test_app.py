@@ -151,7 +151,7 @@ def file_with_violations(test_repo: Path) -> Path:
     ('parse==1.4',),
     (_version_from_lock('parse'),),
     ('parse', '-U'),
-    ('click==0.1',),
+    ('click==0.2',),
     (_version_from_lock('click'),),
     ('click', '-U'),
 ])

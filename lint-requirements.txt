@@ -20,7 +20,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
-attrs==25.3.0
+attrs==25.4.0
     # via wemake-python-styleguide
 flake8==7.3.0
     # via wemake-python-styleguide

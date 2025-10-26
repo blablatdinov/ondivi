@@ -30,7 +30,7 @@ description = ""
 dynamic = ["version"]
 readme = "README.md"
 authors = [{name = "Almaz Ilaletdinov", email = "a.ilaletdinov@yandex.ru"}]
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.10,<4.0"
 dependencies = [
   "gitpython (>=2.1.15)",
   "parse (>=1.4,<2.0)",
@@ -45,7 +45,7 @@ ruff = "0.14.2"
 pytest = "8.4.2"
 pytest-cov = "7.0.0"
 mypy = "1.18.2"
-deltaver = "0.2.3"
+deltaver = "1.0.0"
 mutmut = "2.5.1"
 junit-xml = "1.9" # lock for mutmut
 pytest-randomly = "4.0.1"

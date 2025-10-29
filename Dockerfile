@@ -40,13 +40,9 @@ RUN curl -O -L -C - https://github.com/editorconfig-checker/editorconfig-checker
 WORKDIR /app
 
 COPY poetry.lock pyproject.toml README.md ./
-COPY lint-requirements.txt ./
 
 COPY . .
 RUN poetry install
-
-RUN python3 -m venv /app/lint-venv
-RUN /app/lint-venv/bin/pip install -r lint-requirements.txt
 
 RUN ln -sf /app/.venv/bin/python /usr/local/bin/poetry-python && \
     ln -sf /app/.venv/bin/pip /usr/local/bin/poetry-pip && \

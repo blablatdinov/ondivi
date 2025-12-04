@@ -42,7 +42,7 @@ jobs:
           # - pypy3.10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -62,7 +62,7 @@ jobs:
   dependency-relevance:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -83,7 +83,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -104,7 +104,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -136,7 +136,7 @@ jobs:
     name: Check duplicated code
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/setup-node@v6
       - name: Install jscpd
         run: npm i jscpd@4.0.5 -g
@@ -148,7 +148,7 @@ jobs:
     name: Check spelling
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/setup-node@v6
       - name: Install cspell
         run: npm i cspell@8.15.4 @cspell/dict-ru_ru@2.2.4 -g
@@ -160,7 +160,7 @@ jobs:
     name: Src and tests structure check
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Run gotemir
         run: |
           VERSION="0.0.3"

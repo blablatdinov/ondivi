@@ -441,3 +441,26 @@ def test_git_with_external_diff_tool(
         Path('inner/file.py'),
     )
     assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('test_repo')
+def test_git_with_mnemonic_prefix(
+    run_shell: _RUN_SHELL_T,
+    bin_dir: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that script works correctly when user has custom source and destination prefixes configured."""
+    # Same as "git config diff.mnemonicPrefix true"
+    monkeypatch.setenv('GIT_CONFIG_COUNT', '1')
+    monkeypatch.setenv('GIT_CONFIG_KEY_0', 'diff.mnemonicPrefix')
+    monkeypatch.setenv('GIT_CONFIG_VALUE_0', 'true')
+
+    got = run_shell(
+        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
+        [str(bin_dir / 'ondivi')],
+    )
+
+    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
+        Path('inner/file.py'),
+    )
+    assert got.returncode == 1

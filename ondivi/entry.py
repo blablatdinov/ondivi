@@ -97,7 +97,7 @@ def cli(
         else sys.stdin.read().strip().splitlines()
     )
     try:
-        diff = Repo('.').git.diff('--unified=0', '--no-ext-diff', baseline)
+        diff = Repo('.').git.diff('--unified=0', '--no-ext-diff', '--src-prefix=a/', '--dst-prefix=b/', baseline)
     except GitCommandError:
         sys.stdout.write('Revision "{0}" not found'.format(baseline))
         sys.exit(1)

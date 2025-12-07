@@ -424,36 +424,21 @@ def test_last_symbol_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) 
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_git_with_external_diff_tool(
+@pytest.mark.parametrize('git_config', [
+    pytest.param({'diff.external': str(Path('tests/fixtures/fake_diff_out.sh'))}, id='diff.external'),
+    pytest.param({'diff.mnemonicPrefix': 'true'}, id='diff.mnemonicPrefix'),
+])
+def test_git_with_custom_user_config(
     run_shell: _RUN_SHELL_T,
     bin_dir: Path,
+    git_config: dict[str, str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test that script works correctly when user has custom diff tool configured."""
-    monkeypatch.setenv('GIT_EXTERNAL_DIFF', str(Path('tests/fixtures/fake_diff_out.sh')))
-
-    got = run_shell(
-        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
-        [str(bin_dir / 'ondivi')],
-    )
-
-    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
-        Path('inner/file.py'),
-    )
-    assert got.returncode == 1
-
-
-@pytest.mark.usefixtures('test_repo')
-def test_git_with_mnemonic_prefix(
-    run_shell: _RUN_SHELL_T,
-    bin_dir: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Test that script works correctly when user has custom source and destination prefixes configured."""
-    # Same as "git config diff.mnemonicPrefix true"
-    monkeypatch.setenv('GIT_CONFIG_COUNT', '1')
-    monkeypatch.setenv('GIT_CONFIG_KEY_0', 'diff.mnemonicPrefix')
-    monkeypatch.setenv('GIT_CONFIG_VALUE_0', 'true')
+    """Test that script works correctly when user has custom config for git."""
+    monkeypatch.setenv('GIT_CONFIG_COUNT', str(len(git_config)))
+    for i, (k, v) in enumerate(git_config.items()):
+        monkeypatch.setenv(f'GIT_CONFIG_KEY_{i}', k)
+        monkeypatch.setenv(f'GIT_CONFIG_VALUE_{i}', v)
 
     got = run_shell(
         [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],

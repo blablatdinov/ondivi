@@ -6,7 +6,9 @@
 [![Lines of code](https://tokei.rs/b1/github/blablatdinov/ondivi)](https://github.com/XAMPPRocky/tokei_rs)
 [![Hits-of-Code](https://hitsofcode.com/github/blablatdinov/ondivi)](https://hitsofcode.com/github/blablatdinov/quranbot-aiogram/view)
 
-This is a simple Python script designed to filter coding violations (likely identified by a static analyzer) for only the lines that have been changed in a Git repository.
+Tired of 10,000 lint errors blocking your team from adopting code quality tools?
+Ondivi lets you enforce coding standards ONLY on new changes, 
+making linter adoption possible in any legacy project.
 
 This tool works with any linter or static code analyzer, including but not limited to:
 
@@ -17,6 +19,21 @@ This tool works with any linter or static code analyzer, including but not limit
 - [Eslint](https://github.com/eslint/eslint)
 - [Rubocop](https://github.com/rubocop/rubocop)
 - [Stylelint](https://github.com/stylelint/stylelint)
+
+## Adopting Linters in Legacy Code
+
+**The Problem**: 
+- Your 200K LOC project has 5,000+ lint violations
+- Enforcing linters would block all development
+- Technical debt keeps accumulating
+
+**The Solution with Ondivi**:
+1. Run your linter as usual: `flake8 .`
+2. Pipe to ondivi: `flake8 . | ondivi --baseline=main`
+3. CI fails ONLY if new changes introduce violations
+4. Old violations are ignored (for now)
+
+**Result**: Clean new code, legacy gradually refactored.
 
 ## Prerequisites:
 

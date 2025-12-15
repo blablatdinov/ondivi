@@ -42,7 +42,7 @@ ondivi = "ondivi.entry:main"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "0.14.7"
-pytest = "9.0.1"
+pytest = "9.0.2"
 pytest-cov = "7.0.0"
 mypy = "1.19.1"
 deltaver = "1.0.0"

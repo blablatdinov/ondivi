@@ -424,13 +424,21 @@ def test_last_symbol_without_violations(run_shell: _RUN_SHELL_T, bin_dir: Path) 
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_git_with_external_diff_tool(
+@pytest.mark.parametrize('git_config', [
+    pytest.param({'diff.external': str(Path('tests/fixtures/fake_diff_out.sh'))}, id='diff.external'),
+    pytest.param({'diff.mnemonicPrefix': 'true'}, id='diff.mnemonicPrefix'),
+])
+def test_git_with_custom_user_config(
     run_shell: _RUN_SHELL_T,
     bin_dir: Path,
+    git_config: dict[str, str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test that script works correctly when user has custom diff tool configured."""
-    monkeypatch.setenv('GIT_EXTERNAL_DIFF', str(Path('tests/fixtures/fake_diff_out.sh')))
+    """Test that script works correctly when user has custom config for git."""
+    monkeypatch.setenv('GIT_CONFIG_COUNT', str(len(git_config)))
+    for i, (k, v) in enumerate(git_config.items()):
+        monkeypatch.setenv(f'GIT_CONFIG_KEY_{i}', k)
+        monkeypatch.setenv(f'GIT_CONFIG_VALUE_{i}', v)
 
     got = run_shell(
         [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],

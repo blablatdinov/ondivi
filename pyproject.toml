@@ -21,7 +21,7 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
 [tool.poetry]
-version = "0.7.2"
+version = "0.7.3"
 requires-poetry = ">=2.0"
 
 [project]

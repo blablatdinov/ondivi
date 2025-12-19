@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Ensure ondivi works correctly when users have diff.mnemonicPrefix or diff.noprefix set in their Git config. (#294)
+
 ## [0.7.2] - 2025-05-12
 
 ### Fixed

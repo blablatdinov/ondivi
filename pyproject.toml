@@ -52,7 +52,7 @@ pytest-randomly = "4.0.1"
 tomli = "2.3.0"
 pyyaml = "6.0.3"
 types-pyyaml = "6.0.12.20250915"
-wemake-python-styleguide = "1.4.0"
+wemake-python-styleguide = "1.5.0"
 
 [tool.isort]
 line_length = 120

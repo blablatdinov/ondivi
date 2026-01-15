@@ -22,7 +22,7 @@ dependencies = [
 ondivi = "ondivi.entry:main"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "0.14.10"
+ruff = "0.14.13"
 pytest = "9.0.2"
 pytest-cov = "7.0.0"
 mypy = "1.19.1"

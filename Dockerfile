@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024-2026 Almaz Ilaletdinov <a.ilaletdinov@yandex.ru>
 # SPDX-License-Identifier: MIT
 
-FROM python:3.14.2
+FROM python:3.14.3
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 ENV EC_VERSION="v3.0.3"

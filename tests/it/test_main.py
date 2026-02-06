@@ -3,8 +3,8 @@
 
 """Tests for ondivi."""
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from ondivi.entry import controller
 

@@ -8,9 +8,9 @@
 import os
 import subprocess
 import sys
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from pathlib import Path
-from typing import Callable
+from typing import TypeAlias
 from unittest.mock import patch
 
 import pytest
@@ -18,7 +18,6 @@ import tomli
 from _pytest.legacypath import TempdirFactory
 from click.testing import CliRunner
 from git import Repo
-from typing_extensions import TypeAlias
 
 from ondivi.entry import main
 from tests.helpers.define_repo import define_repo

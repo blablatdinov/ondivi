@@ -3,8 +3,8 @@
 
 """Tests for ondivi."""
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 # _internal allow into ondivi app
 from ondivi._internal.define_changed_lines import define_changed_lines  # noqa: WPS436

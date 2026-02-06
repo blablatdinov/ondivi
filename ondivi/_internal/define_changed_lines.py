@@ -5,7 +5,8 @@
 
 from pathlib import Path
 
-from ondivi._internal.ondivi_types import DiffStr, FileNameStr  # noqa: WPS436. _internal allow into ondivi app
+# _internal allow into ondivi app
+from ondivi._internal.ondivi_types import DiffStr, FileNameStr  # noqa: WPS436
 
 
 def define_changed_lines(diff: DiffStr) -> dict[FileNameStr, list[int]]:

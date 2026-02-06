@@ -3,7 +3,7 @@
 
 """Tests for ondivi."""
 
-from typing import Callable
+from collections.abc import Callable
 
 from ondivi.entry import controller
 

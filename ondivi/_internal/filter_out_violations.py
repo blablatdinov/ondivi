@@ -10,7 +10,8 @@ from pathlib import Path
 
 from parse import parse as parse_from_pattern  # type: ignore [import-untyped]
 
-from ondivi._internal.ondivi_types import (  # noqa: WPS436. _internal allow into ondivi app
+# _internal allow into ondivi app
+from ondivi._internal.ondivi_types import (  # noqa: WPS436
     ActualViolationsListStr,
     FileNameStr,
     LinterAdditionalMessageStr,

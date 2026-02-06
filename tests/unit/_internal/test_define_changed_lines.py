@@ -3,10 +3,11 @@
 
 """Tests for ondivi."""
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
-from ondivi._internal.define_changed_lines import define_changed_lines  # noqa: WPS436. _internal allow into ondivi app
+# _internal allow into ondivi app
+from ondivi._internal.define_changed_lines import define_changed_lines  # noqa: WPS436
 
 
 def test_define_changed_files(localize_violation_path: Callable[[str], str]) -> None:

@@ -3,10 +3,13 @@
 
 name: Mutation coverage
 
+# on:
+#   schedule:
+#     - cron: '17 13 * * 3'
+#   workflow_dispatch:
 on:
-  schedule:
-    - cron: '17 13 * * 3'
-  workflow_dispatch:
+  pull_request:
+    branches: [ "master" ]
 
 permissions:
   contents: read

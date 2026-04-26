@@ -19,6 +19,7 @@ from git.exc import GitCommandError
 
 from ondivi._internal.define_changed_lines import define_changed_lines
 from ondivi._internal.filter_out_violations import filter_out_violations
+from ondivi._internal.define_additional import define_additional
 from ondivi._internal.ondivi_types import (
     ActualViolationsListStr,
     BaselineStr,
@@ -64,6 +65,7 @@ def cli(
     fromfile: FromFilePathStr | None,
     violation_format: ViolationFormatStr,
     only_violations: bool,
+    random_additional: int | None,
 ) -> None:
     """Controller with CLI side effects.
 
@@ -71,6 +73,7 @@ def cli(
     :param fromfile: FromFilePathStr | None
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
+    :param random_additional: int
     """
     linter_output = (
         _linter_output_from_file(fromfile)
@@ -88,6 +91,12 @@ def cli(
         violation_format,
         only_violations,
     )
+    if random_additional:
+        filtered_lines.extend(define_additional(
+            linter_output,
+            filtered_lines,
+            random_additional,
+        ))
     if filtered_lines:
         sys.stdout.write(
             '{0}\n'.format(
@@ -139,7 +148,18 @@ def cli(
     help='Show only violations',
     is_flag=True,
 )
-def main(baseline: str, fromfile: str | None, violation_format: str, only_violations: bool) -> None:
+@click.option(
+    '--random-additional',
+    default=None,
+    help='TODO',
+)
+def main(
+    baseline: str,
+    fromfile: str | None,
+    violation_format: str,
+    only_violations: bool,
+    random_additional: int | None,
+) -> None:
     """Ondivi (Only diff violations).
 
     Python script filtering coding violations, identified by static analysis,
@@ -149,7 +169,7 @@ def main(baseline: str, fromfile: str | None, violation_format: str, only_violat
     flake8 script.py | ondivi
     """
     try:
-        cli(baseline, fromfile, violation_format, only_violations)
+        cli(baseline, fromfile, violation_format, only_violations, random_additional)
     except Exception as err:  # noqa: BLE001 . Application entrypoint
         sys.stdout.write('\n'.join([
             'Ondivi fail with: "{0}"'.format(err),

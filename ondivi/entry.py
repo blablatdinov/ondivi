@@ -37,6 +37,7 @@ def controller(
     linter_out: list[ViolationStr | LinterAdditionalMessageStr],
     violation_format: ViolationFormatStr,
     only_violations: bool,
+    random_additional: str | None,
 ) -> tuple[ActualViolationsListStr, bool]:
     """Entrypoint.
 
@@ -44,14 +45,22 @@ def controller(
     :param linter_out: list[str]
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
+    :param random_additional: str | None
     :return: tuple[ActualViolationsListStr, bool]
     """
-    return filter_out_violations(
+    filtered_lines, violation_found = filter_out_violations(
         define_changed_lines(diff),
         linter_out,
         violation_format,
         only_violations,
     )
+    if random_additional:
+        filtered_lines.extend(define_additional(
+            linter_out,
+            filtered_lines,
+            valid_size(random_additional),
+        ))
+    return filtered_lines, violation_found
 
 
 def _linter_output_from_file(file_path: FromFilePathStr) -> list[str]:
@@ -74,7 +83,7 @@ def cli(
     :param fromfile: FromFilePathStr | None
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
-    :param random_additional: int
+    :param random_additional: str | None
     """
     linter_output = (
         _linter_output_from_file(fromfile)
@@ -86,22 +95,17 @@ def cli(
     except GitCommandError:
         sys.stdout.write('Revision "{0}" not found'.format(baseline))
         sys.exit(1)
-    filtered_lines, violation_found = controller(
-        diff,
-        linter_output,
-        violation_format,
-        only_violations,
-    )
-    if random_additional:
-        try:
-            filtered_lines.extend(define_additional(
-                linter_output,
-                filtered_lines,
-                valid_size(random_additional),
-            ))
-        except InvalidSizeError:
-            sys.stdout.write('Invalid "size" value. Expected integer got: "{0}"'.format(random_additional))
-            sys.exit(1)
+    try:
+        filtered_lines, violation_found = controller(
+            diff,
+            linter_output,
+            violation_format,
+            only_violations,
+            random_additional,
+        )
+    except InvalidSizeError:
+        sys.stdout.write('Invalid "size" value. Expected integer got: "{0}"'.format(random_additional))
+        sys.exit(1)
     if filtered_lines:
         sys.stdout.write(
             '{0}\n'.format(

@@ -432,21 +432,25 @@ def test_git_with_custom_user_config(
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_random_additional(file_with_violations: Path, bin_dir: Path, run_shell: _RUN_SHELL_T) -> None:
+def test_random_additional() -> None:
     """Test random additional."""
-    got = run_shell(
-        [
-            str(bin_dir / 'flake8'),
-            str(Path('inner/file.py')),
-        ],
-        [str(bin_dir / 'ondivi'), '--random-additional', '1'],
+    got = CliRunner().invoke(
+        main,
+        ['--random-additional', '1'],
+        input='\n'.join([
+            '{0}:3:1: E302 expected 2 blank lines, found 1',
+            '{0}:9:1: E302 expected 2 blank lines, found 1',
+            '{0}:10:80: E501 line too long (123 > 79 characters)',
+            '{0}:12:80: E501 line too long (119 > 79 characters)',
+            '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+        ]).format(Path('inner/file.py')),
     )
 
-    assert got.stdout.decode('utf-8').strip() == '\n'.join([
+    assert got.stdout.strip() == '\n'.join([
         '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py')),
         '{0}:10:80: E501 line too long (123 > 79 characters)'.format(Path('inner/file.py')),
     ])
-    assert got.returncode == 1
+    assert got.exit_code == 1
 
 
 @pytest.mark.usefixtures('test_repo')
@@ -456,15 +460,19 @@ def test_random_additional(file_with_violations: Path, bin_dir: Path, run_shell:
     '-1',
     'asdf',
 ])
-def test_invalid_additional(file_with_violations: Path, bin_dir: Path, run_shell: _RUN_SHELL_T, size: str) -> None:
-    """Test random additional."""
-    got = run_shell(
-        [
-            str(bin_dir / 'flake8'),
-            str(Path('inner/file.py')),
-        ],
-        [str(bin_dir / 'ondivi'), '--random-additional', size],
+def test_invalid_additional(size: str) -> None:
+    """Test random additional invalid size."""
+    got = CliRunner().invoke(
+        main,
+        ['--random-additional', size],
+        input='\n'.join([
+            '{0}:3:1: E302 expected 2 blank lines, found 1',
+            '{0}:9:1: E302 expected 2 blank lines, found 1',
+            '{0}:10:80: E501 line too long (123 > 79 characters)',
+            '{0}:12:80: E501 line too long (119 > 79 characters)',
+            '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+        ]).format(Path('inner/file.py')),
     )
 
-    assert got.stdout.decode('utf-8').strip() == 'Invalid "size" value. Expected integer got: "{0}"'.format(size)
-    assert got.returncode == 1
+    assert got.stdout.strip() == 'Invalid "size" value. Expected integer got: "{0}"'.format(size)
+    assert got.exit_code == 1

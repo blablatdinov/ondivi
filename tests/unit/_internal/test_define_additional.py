@@ -44,6 +44,13 @@ def test() -> None:
     ]
 
 
+def test_valid_size():
+    """Test valid size."""
+    got = valid_size('17')
+
+    assert got == 17
+
+
 @pytest.mark.parametrize('size', [
     '-1',
     '0',

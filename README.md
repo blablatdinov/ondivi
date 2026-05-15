@@ -7,10 +7,11 @@
 [![Hits-of-Code](https://hitsofcode.com/github/blablatdinov/ondivi)](https://hitsofcode.com/github/blablatdinov/quranbot-aiogram/view)
 
 Tired of 10,000 lint errors blocking your team from adopting code quality tools?
-Ondivi lets you enforce coding standards ONLY on new changes, 
+Ondivi lets you enforce coding standards ONLY on new changes,
 making linter adoption possible in any legacy project.
 
-This tool works with any linter or static code analyzer, including but not limited to:
+This tool works with any linter or static code analyzer,
+including but not limited to:
 
 - [Flake8](https://github.com/PyCQA/flake8)
 - [Ruff](https://github.com/astral-sh/ruff)
@@ -22,12 +23,14 @@ This tool works with any linter or static code analyzer, including but not limit
 
 ## Adopting Linters in Legacy Code
 
-**The Problem**: 
+**The Problem**:
+
 - Your 200K LOC project has 5,000+ lint violations
 - Enforcing linters would block all development
 - Technical debt keeps accumulating
 
 **The Solution with Ondivi**:
+
 1. Run your linter as usual: `flake8 .`
 2. Pipe to ondivi: `flake8 . | ondivi --baseline=main`
 3. CI fails ONLY if new changes introduce violations
@@ -35,9 +38,9 @@ This tool works with any linter or static code analyzer, including but not limit
 
 **Result**: Clean new code, legacy gradually refactored.
 
-## Prerequisites:
+## Prerequisites
 
-- [Python](https://python.org) 3.9 or higher
+- [Python](https://python.org) 3.10 or higher
 - [Git](https://git-scm.com/)
 
 ## Installation
@@ -115,12 +118,14 @@ Options:
 
 The script parses the Git diff output to identify the changed lines in each file.
 
-It then filters the given coding violations to include only those violations that correspond to the changed lines.
+It then filters the given coding violations to include only those violations
+that correspond to the changed lines.
 
 [flakeheaven](https://github.com/flakeheaven/flakeheaven) and [flakehell](https://github.com/flakehell/flakehell)
-are not supported because they rely on internal flake8 API, which can lead to compatibility issues as flake8
-evolves. In contrast, ondivi uses only the text output of violations and the state of Git repository, making
-it more robust and easier to maintain.
+are not supported because they rely on internal flake8 API, which can lead to
+compatibility issues as flake8 evolves. In contrast, ondivi uses only the text
+output of violations and the state of Git repository, making it more robust and
+easier to maintain.
 
 Flake8 on file:
 
@@ -164,4 +169,5 @@ file.py:12:80: E501 line too long (119 > 79 characters)
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE)
+file for details.

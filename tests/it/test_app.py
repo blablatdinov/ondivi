@@ -417,6 +417,7 @@ def test_git_with_custom_user_config(
     bin_dir: Path,
     git_config: dict[str, str],
     monkeypatch: pytest.MonkeyPatch,
+    assert_ondivi: Callable,
 ) -> None:
     """Test that script works correctly when user has custom config for git."""
     monkeypatch.setenv('GIT_CONFIG_COUNT', str(len(git_config)))

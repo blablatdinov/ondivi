@@ -17,9 +17,9 @@ import click
 from git import Repo
 from git.exc import GitCommandError
 
+from ondivi._internal.define_additional import define_additional
 from ondivi._internal.define_changed_lines import define_changed_lines
 from ondivi._internal.filter_out_violations import filter_out_violations
-from ondivi._internal.define_additional import define_additional
 from ondivi._internal.ondivi_types import (
     ActualViolationsListStr,
     BaselineStr,

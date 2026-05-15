@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024-2026 Almaz Ilaletdinov <a.ilaletdinov@yandex.ru>
 # SPDX-License-Identifier: MIT
 
-from random import Random
 import hashlib
 from pprint import pformat
+from random import Random
 
 
 def define_additional(linter_output: list[str], filtered_lines: list[str], size: int) -> list[str]:

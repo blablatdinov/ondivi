@@ -1,13 +1,13 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024-2026 Almaz Ilaletdinov <a.ilaletdinov@yandex.ru>
 # SPDX-License-Identifier: MIT
 
-"""Test define additional violaitons."""
+"""Test define additional violations."""
 
 from ondivi._internal.define_additional import define_additional
 
 
 def test() -> None:
-    """Test define additional violaitons."""
+    """Test define additional violations."""
     got = define_additional(
         [
             'django/db/models/sql/query.py:1:1: D212 [*] Multi-line docstring summary should start at the first line',

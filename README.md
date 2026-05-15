@@ -4,7 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/ondivi.svg)](https://badge.fury.io/py/ondivi)
 ![CI status](https://github.com/blablatdinov/ondivi/actions/workflows/pr-check.yml/badge.svg?branch=master)
 [![Lines of code](https://tokei.rs/b1/github/blablatdinov/ondivi)](https://github.com/XAMPPRocky/tokei_rs)
-[![Hits-of-Code](https://hitsofcode.com/github/blablatdinov/ondivi)](https://hitsofcode.com/github/blablatdinov/quranbot-aiogram/view)
+[![Hits-of-Code](https://hitsofcode.com/github/blablatdinov/ondivi)](https://hitsofcode.com/github/blablatdinov/ondivi/view)
 
 Tired of 10,000 lint errors blocking your team from adopting code quality tools?
 Ondivi lets you enforce coding standards ONLY on new changes,

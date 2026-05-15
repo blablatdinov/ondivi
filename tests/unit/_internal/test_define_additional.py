@@ -21,5 +21,6 @@ def test() -> None:
 
     assert len(got) == 2
     assert got == [
-        'django/db/models/sql/query.py:60:5: ANN202 Missing return type annotation for private function `get_field_names_from_opts`', 'django/db/models/sql/query.py:60:5: ANN202 Missing return type annotation for private function `get_field_names_from_opts`'
+        'django/db/models/sql/query.py:60:5: ANN202 Missing return type annotation for private function `get_field_names_from_opts`',
+        'django/db/models/sql/query.py:60:5: ANN202 Missing return type annotation for private function `get_field_names_from_opts`'
     ]

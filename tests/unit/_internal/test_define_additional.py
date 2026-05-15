@@ -46,18 +46,16 @@ def test() -> None:
 
 def test_valid_size() -> None:
     """Test valid size."""
-    got = valid_size('17')
+    got = valid_size(17)
 
     assert got == 17
 
 
 @pytest.mark.parametrize('size', [
-    '-1',
-    '0',
-    'asdf',
-    '1.5',
+    -1,
+    0,
 ])
-def test_invalid_size(size: str) -> None:
+def test_invalid_size(size: int) -> None:
     """Test invalid size."""
     with pytest.raises(InvalidSizeError):
         valid_size(size)

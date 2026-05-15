@@ -54,7 +54,7 @@ def controller(
         violation_format,
         only_violations,
     )
-    if random_additional:
+    if random_additional is not None:
         filtered_lines.extend(define_additional(
             linter_out,
             filtered_lines,
@@ -104,8 +104,8 @@ def cli(
             random_additional,
         )
     except InvalidSizeError:
-        sys.stdout.write('Invalid "size" value. Expected integer got: "{0}"'.format(random_additional))
-        sys.exit(1)
+        sys.stderr.write('Invalid "size" value. Expected positive integer got: "{0}"'.format(random_additional))
+        sys.exit(2)
     if filtered_lines:
         sys.stdout.write(
             '{0}\n'.format(
@@ -160,7 +160,13 @@ def cli(
 @click.option(
     '--random-additional',
     default=None,
-    help='TODO',
+    type=int,
+    help=' '.join([
+        'Randomly add N additional violations from the linter output that are not present in the diff.',
+        'Useful for testing or when you want to see a sample of other violations in the changed files.',
+        'If N exceeds the number of available violations, all available violations will be added.',
+        'Requires a positive integer value.',
+    ]),
 )
 # click API based on decorators
 def main(  # noqa: WPS216

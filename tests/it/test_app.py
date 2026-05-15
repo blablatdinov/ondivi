@@ -454,13 +454,29 @@ def test_random_additional() -> None:
 
 
 @pytest.mark.usefixtures('test_repo')
-@pytest.mark.parametrize('size', [
-    '0',
-    '0.5',
-    '-1',
-    'asdf',
+@pytest.mark.parametrize(('size', 'err_text'), [
+    ('0', 'Invalid "size" value. Expected positive integer got: "0"'),
+    (
+        '0.5',
+        '\n'.join([
+            'Usage: main [OPTIONS]',
+            "Try 'main --help' for help.",
+            '',
+            "Error: Invalid value for '--random-additional': '0.5' is not a valid integer.",
+        ]),
+    ),
+    ('-1', 'Invalid "size" value. Expected positive integer got: "-1"'),
+    (
+        'asdf',
+        '\n'.join([
+            'Usage: main [OPTIONS]',
+            "Try 'main --help' for help.",
+            '',
+            "Error: Invalid value for '--random-additional': 'asdf' is not a valid integer.",
+        ]),
+    ),
 ])
-def test_invalid_additional(size: str) -> None:
+def test_invalid_additional(size: str, err_text: str) -> None:
     """Test random additional invalid size."""
     got = CliRunner().invoke(
         main,
@@ -474,5 +490,5 @@ def test_invalid_additional(size: str) -> None:
         ]).format(Path('inner/file.py')),
     )
 
-    assert got.stdout.strip() == 'Invalid "size" value. Expected integer got: "{0}"'.format(size)
-    assert got.exit_code == 1
+    assert got.exit_code == 2
+    assert got.stderr.strip() == err_text

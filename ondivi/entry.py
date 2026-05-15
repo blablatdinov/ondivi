@@ -37,7 +37,7 @@ def controller(
     linter_out: list[ViolationStr | LinterAdditionalMessageStr],
     violation_format: ViolationFormatStr,
     only_violations: bool,
-    random_additional: str | None,
+    random_additional: int | None,
 ) -> tuple[ActualViolationsListStr, bool]:
     """Entrypoint.
 
@@ -45,7 +45,7 @@ def controller(
     :param linter_out: list[str]
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
-    :param random_additional: str | None
+    :param random_additional: int | None
     :return: tuple[ActualViolationsListStr, bool]
     """
     filtered_lines, violation_found = filter_out_violations(
@@ -75,7 +75,7 @@ def cli(
     fromfile: FromFilePathStr | None,
     violation_format: ViolationFormatStr,
     only_violations: bool,
-    random_additional: str | None,
+    random_additional: int | None,
 ) -> None:
     """Controller with CLI side effects.
 
@@ -83,7 +83,7 @@ def cli(
     :param fromfile: FromFilePathStr | None
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
-    :param random_additional: str | None
+    :param random_additional: int | None
     """
     linter_output = (
         _linter_output_from_file(fromfile)
@@ -174,7 +174,7 @@ def main(  # noqa: WPS216
     fromfile: str | None,
     violation_format: str,
     only_violations: bool,
-    random_additional: str | None,
+    random_additional: int | None,
 ) -> None:
     """Ondivi (Only diff violations).
 

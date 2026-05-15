@@ -429,3 +429,42 @@ def test_git_with_custom_user_config(
         Path('inner/file.py'),
     )
     assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('test_repo')
+def test_random_additional(file_with_violations: Path, bin_dir: Path, run_shell: _RUN_SHELL_T) -> None:
+    """Test random additional."""
+    got = run_shell(
+        [
+            str(bin_dir / 'flake8'),
+            str(Path('inner/file.py')),
+        ],
+        [str(bin_dir / 'ondivi'), '--random-additional', '1'],
+    )
+
+    assert got.stdout.decode('utf-8').strip() == '\n'.join([
+        '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py')),
+        '{0}:10:80: E501 line too long (123 > 79 characters)'.format(Path('inner/file.py')),
+    ])
+    assert got.returncode == 1
+
+
+@pytest.mark.usefixtures('test_repo')
+@pytest.mark.parametrize('size', [
+    '0',
+    '0.5',
+    '-1',
+    'asdf',
+])
+def test_invalid_additional(file_with_violations: Path, bin_dir: Path, run_shell: _RUN_SHELL_T, size: str) -> None:
+    """Test random additional."""
+    got = run_shell(
+        [
+            str(bin_dir / 'flake8'),
+            str(Path('inner/file.py')),
+        ],
+        [str(bin_dir / 'ondivi'), '--random-additional', size],
+    )
+
+    assert got.stdout.decode('utf-8').strip() == 'Invdalid "size" value. Expected integer got: "{0}"'.format(size)
+    assert got.returncode == 1

@@ -19,6 +19,7 @@ from git.exc import GitCommandError
 
 from ondivi._internal.define_additional import define_additional
 from ondivi._internal.define_changed_lines import define_changed_lines
+from ondivi._internal.exceptions import InvalidSizeError
 from ondivi._internal.filter_out_violations import filter_out_violations
 from ondivi._internal.ondivi_types import (
     ActualViolationsListStr,
@@ -65,7 +66,7 @@ def cli(
     fromfile: FromFilePathStr | None,
     violation_format: ViolationFormatStr,
     only_violations: bool,
-    random_additional: int | None,
+    random_additional: str | None,
 ) -> None:
     """Controller with CLI side effects.
 
@@ -92,11 +93,15 @@ def cli(
         only_violations,
     )
     if random_additional:
-        filtered_lines.extend(define_additional(
-            linter_output,
-            filtered_lines,
-            random_additional,
-        ))
+        try:
+            filtered_lines.extend(define_additional(
+                linter_output,
+                filtered_lines,
+                int(random_additional),
+            ))
+        except (InvalidSizeError, ValueError):
+            sys.stdout.write('Invdalid "size" value. Expected integer got: "{0}"'.format(random_additional))  # TODO
+            sys.exit(1)
     if filtered_lines:
         sys.stdout.write(
             '{0}\n'.format(
@@ -159,7 +164,7 @@ def main(  # noqa: WPS216
     fromfile: str | None,
     violation_format: str,
     only_violations: bool,
-    random_additional: int | None,
+    random_additional: str | None,
 ) -> None:
     """Ondivi (Only diff violations).
 
@@ -170,7 +175,13 @@ def main(  # noqa: WPS216
     flake8 script.py | ondivi
     """
     try:
-        cli(baseline, fromfile, violation_format, only_violations, random_additional)
+        cli(
+            baseline,
+            fromfile,
+            violation_format,
+            only_violations,
+            random_additional,
+        )
     except Exception as err:  # noqa: BLE001 . Application entrypoint
         sys.stdout.write('\n'.join([
             'Ondivi fail with: "{0}"'.format(err),

@@ -188,18 +188,9 @@ def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...], bin_dir: Path) -> 
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_baseline_default(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
+def test_baseline_default(run_shell: _RUN_SHELL_T, bin_dir: Path, assert_ondivi: Callable[[], None]) -> None:
     """Test baseline default."""
-    got = run_shell(
-        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
-        [str(bin_dir / 'ondivi')],
-    )
-
-    assert (
-        got.stdout.decode('utf-8').strip()
-        == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
-    )
-    assert got.returncode == 1
+    assert_ondivi()
 
 
 @pytest.mark.usefixtures('test_repo')

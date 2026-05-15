@@ -153,7 +153,8 @@ def cli(
     default=None,
     help='TODO',
 )
-def main(
+# click API based on decorators
+def main(  # noqa: WPS216
     baseline: str,
     fromfile: str | None,
     violation_format: str,

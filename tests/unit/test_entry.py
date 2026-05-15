@@ -22,6 +22,7 @@ def test_controller(localize_violation_path: Callable[[str], str]) -> None:
         [localize_violation_path('ondivi/__main__.py:27:1: Error message')],
         '{filename}:{line_num:d}:{col_num:d}: {message}',
         only_violations=False,
+        random_additional=None,
     )
 
     assert got == [localize_violation_path('ondivi/__main__.py:27:1: Error message')]

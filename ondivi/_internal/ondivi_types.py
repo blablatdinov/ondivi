@@ -52,6 +52,8 @@ BaselineStr = str
 FromFilePathStr = str
 # Path to file with violations in utf-8 encoding
 
+ValidAdditionalSize = int
+
 
 class ParsedViolation(TypedDict):
     """Parsed violation.

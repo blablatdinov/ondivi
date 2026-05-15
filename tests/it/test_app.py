@@ -123,6 +123,27 @@ def file_with_violations(test_repo: Path) -> Path:
     return violations_file
 
 
+@pytest.fixture
+def assert_ondivi(bin_dir: Path, run_shell: _RUN_SHELL_T) -> Callable[[], None]:
+    """Assert ondivi working.
+
+    Run in subprocess
+    """
+    def _assert_ondivi() -> None:
+        got = run_shell(
+            [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
+            [str(bin_dir / 'ondivi')],
+        )
+        assert (
+            got.stdout.decode('utf-8').strip()
+            == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
+                Path('inner/file.py'),
+            )
+        )
+        assert got.returncode == 1
+    return _assert_ondivi
+
+
 @pytest.mark.usefixtures('test_repo')
 @pytest.mark.parametrize('version', [
     ('gitpython==2.1.15',),
@@ -135,24 +156,19 @@ def file_with_violations(test_repo: Path) -> Path:
     (_version_from_lock('click'),),
     ('click', '-U'),
 ])
-def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
+def test_dependency_versions(
+    version: tuple[str],
+    run_shell: _RUN_SHELL_T,
+    bin_dir: Path,
+    assert_ondivi: Callable[[], None],
+) -> None:
     """Test script with different dependency versions."""
     subprocess.run(
         [str(bin_dir / 'pip'), 'install', *version],
         check=True,
     )
-    got = run_shell(
-        [
-            str(bin_dir / 'flake8'),
-            str(Path('inner/file.py')),
-        ],
-        [str(bin_dir / 'ondivi')],
-    )
 
-    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
-        Path('inner/file.py'),
-    )
-    assert got.returncode == 1
+    assert_ondivi()
 
 
 @pytest.mark.usefixtures('test_repo')
@@ -172,18 +188,9 @@ def test(run_shell: _RUN_SHELL_T, revisions: tuple[str, ...], bin_dir: Path) -> 
 
 
 @pytest.mark.usefixtures('test_repo')
-def test_baseline_default(run_shell: _RUN_SHELL_T, bin_dir: Path) -> None:
+def test_baseline_default(run_shell: _RUN_SHELL_T, bin_dir: Path, assert_ondivi: Callable[[], None]) -> None:
     """Test baseline default."""
-    got = run_shell(
-        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
-        [str(bin_dir / 'ondivi')],
-    )
-
-    assert (
-        got.stdout.decode('utf-8').strip()
-        == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py'))
-    )
-    assert got.returncode == 1
+    assert_ondivi()
 
 
 @pytest.mark.usefixtures('test_repo')
@@ -413,6 +420,7 @@ def test_git_with_custom_user_config(
     bin_dir: Path,
     git_config: dict[str, str],
     monkeypatch: pytest.MonkeyPatch,
+    assert_ondivi: Callable[[], None],
 ) -> None:
     """Test that script works correctly when user has custom config for git."""
     monkeypatch.setenv('GIT_CONFIG_COUNT', str(len(git_config)))
@@ -420,12 +428,67 @@ def test_git_with_custom_user_config(
         monkeypatch.setenv(f'GIT_CONFIG_KEY_{i}', k)
         monkeypatch.setenv(f'GIT_CONFIG_VALUE_{i}', v)
 
-    got = run_shell(
-        [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
-        [str(bin_dir / 'ondivi')],
+    assert_ondivi()
+
+
+@pytest.mark.usefixtures('test_repo')
+def test_random_additional() -> None:
+    """Test random additional."""
+    got = CliRunner().invoke(
+        main,
+        ['--random-additional', '1'],
+        input='\n'.join([
+            '{0}:3:1: E302 expected 2 blank lines, found 1',
+            '{0}:9:1: E302 expected 2 blank lines, found 1',
+            '{0}:10:80: E501 line too long (123 > 79 characters)',
+            '{0}:12:80: E501 line too long (119 > 79 characters)',
+            '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+        ]).format(Path('inner/file.py')),
     )
 
-    assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
-        Path('inner/file.py'),
+    assert got.stdout.strip() == '\n'.join([
+        '{0}:12:80: E501 line too long (119 > 79 characters)'.format(Path('inner/file.py')),
+        '{0}:10:80: E501 line too long (123 > 79 characters)'.format(Path('inner/file.py')),
+    ])
+    assert got.exit_code == 1
+
+
+@pytest.mark.usefixtures('test_repo')
+@pytest.mark.parametrize(('size', 'err_text'), [
+    ('0', 'Invalid "size" value. Expected positive integer got: "0"'),
+    (
+        '0.5',
+        '\n'.join([
+            'Usage: main [OPTIONS]',
+            "Try 'main --help' for help.",
+            '',
+            "Error: Invalid value for '--random-additional': '0.5' is not a valid integer.",
+        ]),
+    ),
+    ('-1', 'Invalid "size" value. Expected positive integer got: "-1"'),
+    (
+        'asdf',
+        '\n'.join([
+            'Usage: main [OPTIONS]',
+            "Try 'main --help' for help.",
+            '',
+            "Error: Invalid value for '--random-additional': 'asdf' is not a valid integer.",
+        ]),
+    ),
+])
+def test_invalid_additional(size: str, err_text: str) -> None:
+    """Test random additional invalid size."""
+    got = CliRunner().invoke(
+        main,
+        ['--random-additional', size],
+        input='\n'.join([
+            '{0}:3:1: E302 expected 2 blank lines, found 1',
+            '{0}:9:1: E302 expected 2 blank lines, found 1',
+            '{0}:10:80: E501 line too long (123 > 79 characters)',
+            '{0}:12:80: E501 line too long (119 > 79 characters)',
+            '{0}:14:1: E305 expected 2 blank lines after class or function definition, found 1',
+        ]).format(Path('inner/file.py')),
     )
-    assert got.returncode == 1
+
+    assert got.exit_code == 2
+    assert got.stderr.strip() == err_text

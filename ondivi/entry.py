@@ -17,7 +17,9 @@ import click
 from git import Repo
 from git.exc import GitCommandError
 
+from ondivi._internal.define_additional import define_additional, valid_size
 from ondivi._internal.define_changed_lines import define_changed_lines
+from ondivi._internal.exceptions import InvalidSizeError
 from ondivi._internal.filter_out_violations import filter_out_violations
 from ondivi._internal.ondivi_types import (
     ActualViolationsListStr,
@@ -35,6 +37,7 @@ def controller(
     linter_out: list[ViolationStr | LinterAdditionalMessageStr],
     violation_format: ViolationFormatStr,
     only_violations: bool,
+    random_additional: int | None,
 ) -> tuple[ActualViolationsListStr, bool]:
     """Entrypoint.
 
@@ -42,14 +45,22 @@ def controller(
     :param linter_out: list[str]
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
+    :param random_additional: int | None
     :return: tuple[ActualViolationsListStr, bool]
     """
-    return filter_out_violations(
+    filtered_lines, violation_found = filter_out_violations(
         define_changed_lines(diff),
         linter_out,
         violation_format,
         only_violations,
     )
+    if random_additional is not None:
+        filtered_lines.extend(define_additional(
+            linter_out,
+            filtered_lines,
+            valid_size(random_additional),
+        ))
+    return filtered_lines, violation_found
 
 
 def _linter_output_from_file(file_path: FromFilePathStr) -> list[str]:
@@ -64,6 +75,7 @@ def cli(
     fromfile: FromFilePathStr | None,
     violation_format: ViolationFormatStr,
     only_violations: bool,
+    random_additional: int | None,
 ) -> None:
     """Controller with CLI side effects.
 
@@ -71,6 +83,7 @@ def cli(
     :param fromfile: FromFilePathStr | None
     :param violation_format: ViolationFormatStr
     :param only_violations: bool
+    :param random_additional: int | None
     """
     linter_output = (
         _linter_output_from_file(fromfile)
@@ -82,12 +95,17 @@ def cli(
     except GitCommandError:
         sys.stdout.write('Revision "{0}" not found'.format(baseline))
         sys.exit(1)
-    filtered_lines, violation_found = controller(
-        diff,
-        linter_output,
-        violation_format,
-        only_violations,
-    )
+    try:
+        filtered_lines, violation_found = controller(
+            diff,
+            linter_output,
+            violation_format,
+            only_violations,
+            random_additional,
+        )
+    except InvalidSizeError:
+        sys.stderr.write('Invalid "size" value. Expected positive integer got: "{0}"'.format(random_additional))
+        sys.exit(2)
     if filtered_lines:
         sys.stdout.write(
             '{0}\n'.format(
@@ -139,7 +157,25 @@ def cli(
     help='Show only violations',
     is_flag=True,
 )
-def main(baseline: str, fromfile: str | None, violation_format: str, only_violations: bool) -> None:
+@click.option(
+    '--random-additional',
+    default=None,
+    type=int,
+    help=' '.join([
+        'Randomly add N additional violations from the linter output that are not present in the diff.',
+        'Useful for testing or when you want to see a sample of other violations in the changed files.',
+        'If N exceeds the number of available violations, all available violations will be added.',
+        'Requires a positive integer value.',
+    ]),
+)
+# click API based on decorators
+def main(  # noqa: WPS216
+    baseline: str,
+    fromfile: str | None,
+    violation_format: str,
+    only_violations: bool,
+    random_additional: int | None,
+) -> None:
     """Ondivi (Only diff violations).
 
     Python script filtering coding violations, identified by static analysis,
@@ -149,7 +185,13 @@ def main(baseline: str, fromfile: str | None, violation_format: str, only_violat
     flake8 script.py | ondivi
     """
     try:
-        cli(baseline, fromfile, violation_format, only_violations)
+        cli(
+            baseline,
+            fromfile,
+            violation_format,
+            only_violations,
+            random_additional,
+        )
     except Exception as err:  # noqa: BLE001 . Application entrypoint
         sys.stdout.write('\n'.join([
             'Ondivi fail with: "{0}"'.format(err),

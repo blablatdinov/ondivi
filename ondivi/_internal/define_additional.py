@@ -11,10 +11,10 @@ from ondivi._internal.ondivi_types import ValidAdditionalSize
 def valid_size(size: str) -> ValidAdditionalSize:
     if not size.isdigit():
         raise InvalidSizeError
-    isize = int(size)
-    if isize < 1:
+    int_size = int(size)
+    if int_size < 1:
         raise InvalidSizeError
-    return isize
+    return int_size
 
 
 def define_additional(linter_output: list[str], filtered_lines: list[str], size: ValidAdditionalSize) -> list[str]:

@@ -5,7 +5,7 @@
 
 import pytest
 
-from ondivi._internal.define_additional import define_additional
+from ondivi._internal.define_additional import define_additional, valid_size
 from ondivi._internal.exceptions import InvalidSizeError
 
 
@@ -45,13 +45,15 @@ def test() -> None:
 
 
 @pytest.mark.parametrize('size', [
-    -1,
-    0,
+    '-1',
+    '0',
+    'asdf',
+    '1.5',
 ])
-def test_invalid_size(size: int) -> None:
+def test_invalid_size(size: str) -> None:
     """Test invalid size."""
     with pytest.raises(InvalidSizeError):
-        define_additional(['1:1 violation'], ['1:1 violation'], size)
+        valid_size(size)
 
 
 def test_size_greater_than_violations_count() -> None:

@@ -17,7 +17,7 @@ import click
 from git import Repo
 from git.exc import GitCommandError
 
-from ondivi._internal.define_additional import define_additional
+from ondivi._internal.define_additional import define_additional, valid_size
 from ondivi._internal.define_changed_lines import define_changed_lines
 from ondivi._internal.exceptions import InvalidSizeError
 from ondivi._internal.filter_out_violations import filter_out_violations
@@ -93,16 +93,13 @@ def cli(
         only_violations,
     )
     if random_additional:
-        if not random_additional.isdigit():
-            sys.stdout.write('Invalid "size" value. Expected integer got: "{0}"'.format(random_additional))
-            sys.exit(1)
         try:
             filtered_lines.extend(define_additional(
                 linter_output,
                 filtered_lines,
-                int(random_additional),
+                valid_size(random_additional),
             ))
-        except (InvalidSizeError, ValueError):
+        except InvalidSizeError:
             sys.stdout.write('Invalid "size" value. Expected integer got: "{0}"'.format(random_additional))
             sys.exit(1)
     if filtered_lines:

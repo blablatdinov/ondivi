@@ -5,15 +5,23 @@ import hashlib
 from random import Random
 
 from ondivi._internal.exceptions import InvalidSizeError
+from ondivi._internal.ondivi_types import ValidAdditionalSize
 
 
-def define_additional(linter_output: list[str], filtered_lines: list[str], size: int) -> list[str]:
+def valid_size(size: str) -> ValidAdditionalSize:
+    if not size.isdigit():
+        raise InvalidSizeError
+    isize = int(size)
+    if isize < 1:
+        raise InvalidSizeError
+    return isize
+
+
+def define_additional(linter_output: list[str], filtered_lines: list[str], size: ValidAdditionalSize) -> list[str]:
     if not linter_output:
         return []
     not_actual = sorted(set(linter_output) - set(filtered_lines))
     size = min(size, len(not_actual))
-    if size < 1:
-        raise InvalidSizeError
     hsh = hashlib.md5(  # noqa: S324
         ''.join(not_actual).encode('utf-8'),
     ).digest()[:4]

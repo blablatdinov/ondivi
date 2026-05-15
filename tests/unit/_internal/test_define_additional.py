@@ -44,7 +44,7 @@ def test() -> None:
     ]
 
 
-def test_valid_size():
+def test_valid_size() -> None:
     """Test valid size."""
     got = valid_size('17')
 

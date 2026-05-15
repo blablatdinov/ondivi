@@ -124,14 +124,21 @@ def file_with_violations(test_repo: Path) -> Path:
 
 
 @pytest.fixture
-def assert_ondivi(bin_dir: Path, run_shell: _RUN_SHELL_T) -> Callable:
+def assert_ondivi(bin_dir: Path, run_shell: _RUN_SHELL_T) -> Callable[[], None]:
+    """Assert ondivi working.
+
+    Run in subprocess
+    """
     def _assert_ondivi() -> None:
         got = run_shell(
             [str(bin_dir / 'flake8'), str(Path('inner/file.py'))],
             [str(bin_dir / 'ondivi')],
         )
-        assert got.stdout.decode('utf-8').strip() == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
-            Path('inner/file.py'),
+        assert (
+            got.stdout.decode('utf-8').strip()
+            == '{0}:12:80: E501 line too long (119 > 79 characters)'.format(
+                Path('inner/file.py'),
+            )
         )
         assert got.returncode == 1
     return _assert_ondivi
@@ -149,7 +156,12 @@ def assert_ondivi(bin_dir: Path, run_shell: _RUN_SHELL_T) -> Callable:
     (_version_from_lock('click'),),
     ('click', '-U'),
 ])
-def test_dependency_versions(version: tuple[str], run_shell: _RUN_SHELL_T, bin_dir: Path, assert_ondivi: Callable) -> None:
+def test_dependency_versions(
+    version: tuple[str],
+    run_shell: _RUN_SHELL_T,
+    bin_dir: Path,
+    assert_ondivi: Callable[[], None],
+) -> None:
     """Test script with different dependency versions."""
     subprocess.run(
         [str(bin_dir / 'pip'), 'install', *version],
@@ -417,7 +429,7 @@ def test_git_with_custom_user_config(
     bin_dir: Path,
     git_config: dict[str, str],
     monkeypatch: pytest.MonkeyPatch,
-    assert_ondivi: Callable,
+    assert_ondivi: Callable[[], None],
 ) -> None:
     """Test that script works correctly when user has custom config for git."""
     monkeypatch.setenv('GIT_CONFIG_COUNT', str(len(git_config)))

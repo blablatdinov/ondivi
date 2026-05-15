@@ -8,3 +8,5 @@ test-free-files:
   - ondivi/_internal/ondivi_types.py
   # entry.py test by integration tests
   - ondivi/entry.py
+  # exceptions file
+  - ondivi/_internal/exceptions.py

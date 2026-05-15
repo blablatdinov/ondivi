@@ -93,6 +93,9 @@ def cli(
         only_violations,
     )
     if random_additional:
+        if not random_additional.isdigit():
+            sys.stdout.write('Invalid "size" value. Expected integer got: "{0}"'.format(random_additional))
+            sys.exit(1)
         try:
             filtered_lines.extend(define_additional(
                 linter_output,
@@ -100,7 +103,7 @@ def cli(
                 int(random_additional),
             ))
         except (InvalidSizeError, ValueError):
-            sys.stdout.write('Invdalid "size" value. Expected integer got: "{0}"'.format(random_additional))  # TODO
+            sys.stdout.write('Invalid "size" value. Expected integer got: "{0}"'.format(random_additional))
             sys.exit(1)
     if filtered_lines:
         sys.stdout.write(

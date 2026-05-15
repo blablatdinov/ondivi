@@ -466,5 +466,5 @@ def test_invalid_additional(file_with_violations: Path, bin_dir: Path, run_shell
         [str(bin_dir / 'ondivi'), '--random-additional', size],
     )
 
-    assert got.stdout.decode('utf-8').strip() == 'Invdalid "size" value. Expected integer got: "{0}"'.format(size)
+    assert got.stdout.decode('utf-8').strip() == 'Invalid "size" value. Expected integer got: "{0}"'.format(size)
     assert got.returncode == 1

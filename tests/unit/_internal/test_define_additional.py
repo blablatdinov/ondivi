@@ -45,11 +45,10 @@ def test() -> None:
 
 
 @pytest.mark.parametrize('size', [
-    1.5,
     -1,
     0,
 ])
-def test_invalid_size(size: float) -> None:
+def test_invalid_size(size: int) -> None:
     """Test invalid size."""
     with pytest.raises(InvalidSizeError):
         define_additional(['1:1 violation'], ['1:1 violation'], size)

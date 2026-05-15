@@ -12,7 +12,7 @@ def define_additional(linter_output: list[str], filtered_lines: list[str], size:
         return []
     not_actual = sorted(set(linter_output) - set(filtered_lines))
     size = min(size, len(not_actual))
-    if not isinstance(size, int) or size < 1:
+    if size < 1:
         raise InvalidSizeError
     hsh = hashlib.md5(  # noqa: S324
         ''.join(not_actual).encode('utf-8'),

@@ -68,7 +68,7 @@ flake8 script.py > violations.txt
 ondivi --fromfile=violations.txt
 ```
 
-```bash
+```
 $ ondivi --help
 Usage: ondivi [OPTIONS]
 

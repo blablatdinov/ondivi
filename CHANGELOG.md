@@ -78,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Availabe python version (#36)
+- Available python version (#36)
 
 ### Fixed
 

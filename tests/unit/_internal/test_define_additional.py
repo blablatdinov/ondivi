@@ -95,3 +95,30 @@ def test_empty_violations() -> None:
     )
 
     assert got == []
+
+
+def test_additional_after_fix() -> None:
+    """Test additional after fix."""
+    before_fix = define_additional(
+        [
+            'file.py:1:1: Error #1',
+            'file.py:3:1: Error #2',
+            'file.py:4:1: Error #3',
+            'file.py:10:1: Error #4',
+        ],
+        [
+            'file.py:3:1: Error #2',
+            'file.py:4:1: Error #3',
+        ],
+        1,
+    )
+    after_fix = define_additional(
+        [
+            'file.py:1:1: Error #1',
+            'file.py:10:1: Error #4',
+        ],
+        [],
+        1,
+    )
+
+    assert before_fix == after_fix

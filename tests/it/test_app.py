@@ -77,7 +77,7 @@ def test_repo(  # noqa: WPS213
     else:
         subprocess.run([str(pip_path), 'install', 'pip', '-U'], check=True)
     subprocess.run(
-        [str(pip_path), 'install', 'flake8', 'ruff', 'mypy', str(current_dir)],
+        [str(pip_path), 'install', 'flake8==7.3.0', 'ruff==0.15.22', 'mypy==2.3.0', str(current_dir)],
         check=True,
     )
     yield tmp_path

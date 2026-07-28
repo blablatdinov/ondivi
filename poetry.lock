@@ -883,6 +883,21 @@ files = [
 pytest = "*"
 
 [[package]]
+name = "pytest-test-radar"
+version = "0.0.1a2"
+description = "A pytest plugin to send test statistics to Test Radar."
+optional = false
+python-versions = ">=3.10"
+groups = ["dev"]
+files = [
+    {file = "pytest_test_radar-0.0.1a2-py3-none-any.whl", hash = "sha256:a5080a1a9fabe728611c8988a20d78f68363a1742721ac46ea2063126b2dfaf2"},
+    {file = "pytest_test_radar-0.0.1a2.tar.gz", hash = "sha256:1131a0f6a395d5d84ab691d5e14222291ed792356db0c23ed239998c14638904"},
+]
+
+[package.dependencies]
+httpx = ">=0.28.1"
+
+[[package]]
 name = "pytz"
 version = "2026.3.post1"
 description = "World timezone definitions, modern and historical"
@@ -1191,4 +1206,4 @@ pygments = ">=2.19,<3.0"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "46fb9cc0fac21fd0f59e5b2b4bea9ff35b2388b78408f94f0713a8fd9b08776a"
+content-hash = "e9b9a3e31243d0922771cd97148e5e747ed8fd2960a7b78ee7349a3d0836846b"

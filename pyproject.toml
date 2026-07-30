@@ -34,6 +34,7 @@ tomli = "2.4.1"
 pyyaml = "6.0.3"
 types-pyyaml = "6.0.12.20260724"
 wemake-python-styleguide = "1.7.0"
+pytest-test-radar = "0.0.1a5"
 
 [tool.isort]
 line_length = 120
@@ -99,6 +100,7 @@ build-backend = "poetry.core.masonry.api"
 testpaths = [
   "tests/*",
 ]
+radar_endpoint = "https://test-radar.ilaletdinov.ru"
 
 [tool.deltaver]
 fail_on_avg = 50

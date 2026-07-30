@@ -38,7 +38,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
       - name: Run tests via pytest
-        run: poetry run pytest --cov=ondivi --cov-report=term-missing:skip-covered -s -vv --cov-fail-under=100 --radar-token=${{ secrets.TEST_RADAR_TOKEN }} --log-cli-level=INFO
+        run: poetry run pytest --cov=ondivi --cov-report=term-missing:skip-covered -s -vv --cov-fail-under=100 --radar-token=${{ secrets.TEST_RADAR_TOKEN }}
 
   dependency-relevance:
     runs-on: ubuntu-latest
@@ -80,7 +80,7 @@ jobs:
           poetry install --no-interaction --no-root
       - name: Run tests
         run: |
-          poetry run pytest --radar-token=${{ secrets.TEST_RADAR_TOKEN }} --log-cli-level=INFO
+          poetry run pytest --radar-token=${{ secrets.TEST_RADAR_TOKEN }}
 
   lint:
     runs-on: ubuntu-latest

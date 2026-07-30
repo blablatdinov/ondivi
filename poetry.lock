@@ -884,14 +884,14 @@ pytest = "*"
 
 [[package]]
 name = "pytest-test-radar"
-version = "0.0.1a4"
+version = "0.0.1a5"
 description = "A pytest plugin to send test statistics to Test Radar."
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "pytest_test_radar-0.0.1a4-py3-none-any.whl", hash = "sha256:aaca7968f66d0cb9ee255d932a47fde352f10e31c55293038f85d18ccdbd34e0"},
-    {file = "pytest_test_radar-0.0.1a4.tar.gz", hash = "sha256:dc7c61b6827ee568b20a39b36fa47f5b07cedbf3d430af3b07845f6c5b4a3573"},
+    {file = "pytest_test_radar-0.0.1a5-py3-none-any.whl", hash = "sha256:85e19c2bace648163036d7ea849000857f1b20b1a57f3bf6f62d738331393bb7"},
+    {file = "pytest_test_radar-0.0.1a5.tar.gz", hash = "sha256:400ac319c9f99766c3bf4241d714b02532379a1faf63333add5204fb3eb090c9"},
 ]
 
 [package.dependencies]
@@ -1206,4 +1206,4 @@ pygments = ">=2.19,<3.0"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "8c3c23dc1ec1991769da0458a508c054f1e1e666b2037b73a39296e265bbc952"
+content-hash = "a558c9950dde638a1b7f0acf8cd3c091e4eedb6c98246c5436dd09a6425ff9ab"

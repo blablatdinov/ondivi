@@ -237,14 +237,14 @@ toml = ["tomli ; python_full_version <= \"3.11.0a6\""]
 
 [[package]]
 name = "deltaver"
-version = "1.0.1"
+version = "1.0.2"
 description = ""
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["dev"]
 files = [
-    {file = "deltaver-1.0.1-py3-none-any.whl", hash = "sha256:d0d1809dff041a53cc8c3b2a01b6f6dc2bd1fcf21a3e128aeee26ee873171c4d"},
-    {file = "deltaver-1.0.1.tar.gz", hash = "sha256:f9fa0d74e32d87e5b015f463455c2e6775a32cc4e11570ed75cd2e85cdd19459"},
+    {file = "deltaver-1.0.2-py3-none-any.whl", hash = "sha256:67d3d807ea7e35d0f93d8cf77f3e796c3e7bd3149f3a3efdd8c975d853ccf6d2"},
+    {file = "deltaver-1.0.2.tar.gz", hash = "sha256:e0235401213bf939cd307b1f94039dd51725d9c5ac545bde9e839caf18ac3ad8"},
 ]
 
 [package.dependencies]
@@ -1191,4 +1191,4 @@ pygments = ">=2.19,<3.0"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "129260715a078de586a8a1d46c7f023b1f46893f8fba319de5f722457dcc4fc7"
+content-hash = "46fb9cc0fac21fd0f59e5b2b4bea9ff35b2388b78408f94f0713a8fd9b08776a"

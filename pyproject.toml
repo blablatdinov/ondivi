@@ -33,7 +33,7 @@ pytest-randomly = "4.1.0"
 tomli = "2.4.1"
 pyyaml = "6.0.3"
 types-pyyaml = "6.0.12.20260724"
-wemake-python-styleguide = "1.7.0"
+wemake-python-styleguide = "1.7.1"
 pytest-test-radar = "0.0.1a5"
 
 [tool.isort]

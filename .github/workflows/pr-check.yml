@@ -113,7 +113,7 @@ jobs:
           git ls-files | xargs bin/ec-linux-amd64 -v
 
   check-duplicates:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: Check duplicated code
     steps:
       - name: Checkout
@@ -125,7 +125,7 @@ jobs:
         run: jscpd -p '**/*.py' -t 0
 
   check-spelling:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: Check spelling
     steps:
       - name: Checkout
@@ -137,7 +137,7 @@ jobs:
         run: cspell . no-progress --show-suggestions --show-context
 
   gotemir:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: Src and tests structure check
     steps:
       - name: Checkout

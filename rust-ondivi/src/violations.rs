@@ -1,5 +1,8 @@
 fn is_regex_meta(c: char) -> bool {
-    matches!(c, '.' | '^' | '$' | '*' | '+' | '?' | '(' | ')' | '[' | ']' | '{' | '}' | '|' | '\\' | '/')
+    matches!(
+        c,
+        '.' | '^' | '$' | '*' | '+' | '?' | '(' | ')' | '[' | ']' | '{' | '}' | '|' | '\\' | '/'
+    )
 }
 
 use regex::Regex;
@@ -16,7 +19,7 @@ fn template_to_regex(template: &str) -> Regex {
         if c == '{' {
             // Collect until matching '}'
             let mut field = String::new();
-            while let Some(fc) = chars.next() {
+            for fc in chars.by_ref() {
                 if fc == '}' {
                     break;
                 }
@@ -27,11 +30,7 @@ fn template_to_regex(template: &str) -> Regex {
                 Some((n, s)) => (n, Some(s)),
                 None => (field.as_str(), None),
             };
-            let name = if name.is_empty() {
-                "unnamed"
-            } else {
-                name
-            };
+            let name = if name.is_empty() { "unnamed" } else { name };
             if let Some(s) = spec {
                 if s.contains('d') {
                     pattern.push_str(&format!("(?P<{}>\\d+)", name));
@@ -132,7 +131,10 @@ mod tests {
             "line={line_num:d} file={filename} {other}",
             false,
         );
-        assert_eq!(violations, vec!["line=12 file=file.py message=`print` found".to_string()]);
+        assert_eq!(
+            violations,
+            vec!["line=12 file=file.py message=`print` found".to_string()]
+        );
         assert!(found);
     }
 

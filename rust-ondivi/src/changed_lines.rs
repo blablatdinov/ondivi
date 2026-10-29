@@ -24,7 +24,10 @@ pub fn define_changed_lines(diff: &str) -> ChangedLines {
             };
             let nums: Vec<u64> = (start..=start + num_lines).collect();
             if !current_file.is_empty() {
-                changed.entry(current_file.clone()).or_default().extend(nums);
+                changed
+                    .entry(current_file.clone())
+                    .or_default()
+                    .extend(nums);
             }
         }
     }

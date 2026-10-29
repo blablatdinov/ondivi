@@ -87,9 +87,7 @@ fn main() {
 
     if let Some(n) = cli.random_additional {
         if n < 1 {
-            eprintln!(
-                "Invalid \"size\" value. Expected positive integer got: \"{n}\""
-            );
+            eprintln!("Invalid \"size\" value. Expected positive integer got: \"{n}\"");
             exit(2);
         }
         eprintln!("--random-additional is not yet implemented in the Rust version");
@@ -107,12 +105,8 @@ fn main() {
     };
 
     let changed = define_changed_lines(&diff);
-    let (filtered, violation_found) = filter_out_violations(
-        &changed,
-        &linter_output,
-        &cli.format,
-        cli.only_violations,
-    );
+    let (filtered, violation_found) =
+        filter_out_violations(&changed, &linter_output, &cli.format, cli.only_violations);
 
     if !filtered.is_empty() {
         println!("{}", filtered.join("\n"));

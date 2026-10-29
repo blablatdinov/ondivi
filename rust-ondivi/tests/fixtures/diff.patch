@@ -1,0 +1,124 @@
+From 759abc4dafef6860edb830c30754e6364ed9ea11 Mon Sep 17 00:00:00 2001
+From: wookkl <wjddnr315@gmail.com>
+Date: Sun, 7 Jul 2024 16:17:58 +0900
+Subject: [PATCH] Fixed #35413 -- Made unsupported lookup error message more
+ specific.
+
+---
+ django/db/models/sql/query.py | 11 ++++++++---
+ tests/custom_lookups/tests.py |  4 ++++
+ tests/lookup/tests.py         | 34 +++++++++++++++++++++++++++++++++-
+ 3 files changed, 45 insertions(+), 4 deletions(-)
+
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 438bb5ddbd76..f00eb1e5a5ec 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -1367,7 +1367,7 @@ def build_lookup(self, lookups, lhs, rhs):
+         # __exact is the default lookup if one isn't given.
+         *transforms, lookup_name = lookups or ["exact"]
+         for name in transforms:
+-            lhs = self.try_transform(lhs, name)
++            lhs = self.try_transform(lhs, name, lookups)
+         # First try get_lookup() so that the lookup takes precedence if the lhs
+         # supports both transform and lookup for the name.
+         lookup_class = lhs.get_lookup(lookup_name)
+@@ -1401,7 +1401,7 @@ def build_lookup(self, lookups, lhs, rhs):
+ 
+         return lookup
+ 
+-    def try_transform(self, lhs, name):
++    def try_transform(self, lhs, name, lookups=None):
+         """
+         Helper method for build_lookup(). Try to fetch and initialize
+         a transform for name parameter from lhs.
+@@ -1418,9 +1418,14 @@ def try_transform(self, lhs, name):
+                 suggestion = ", perhaps you meant %s?" % " or ".join(suggested_lookups)
+             else:
+                 suggestion = "."
++            if lookups is not None:
++                name_index = lookups.index(name)
++                unsupported_lookup = LOOKUP_SEP.join(lookups[name_index:])
++            else:
++                unsupported_lookup = name
+             raise FieldError(
+                 "Unsupported lookup '%s' for %s or join on the field not "
+-                "permitted%s" % (name, output_field.__name__, suggestion)
++                "permitted%s" % (unsupported_lookup, output_field.__name__, suggestion)
+             )
+ 
+     def build_filter(
+diff --git a/tests/custom_lookups/tests.py b/tests/custom_lookups/tests.py
+index f107c5320a2a..2f4ea0a9a024 100644
+--- a/tests/custom_lookups/tests.py
++++ b/tests/custom_lookups/tests.py
+@@ -614,6 +614,10 @@ def test_call_order(self):
+             )
+             TrackCallsYearTransform.call_order = []
+             # junk transform - tries transform only, then fails
++            msg = (
++                "Unsupported lookup 'junk__more_junk' for IntegerField or join"
++                " on the field not permitted."
++            )
+             with self.assertRaisesMessage(FieldError, msg):
+                 Author.objects.filter(birthdate__testyear__junk__more_junk=2012)
+             self.assertEqual(TrackCallsYearTransform.call_order, ["transform"])
+diff --git a/tests/lookup/tests.py b/tests/lookup/tests.py
+index ebdaa21e3d31..28acd72874d1 100644
+--- a/tests/lookup/tests.py
++++ b/tests/lookup/tests.py
+@@ -812,6 +812,34 @@ def test_unsupported_lookups(self):
+         ):
+             Article.objects.filter(pub_date__gobbledygook="blahblah")
+ 
++        with self.assertRaisesMessage(
++            FieldError,
++            "Unsupported lookup 'gt__foo' for DateTimeField or join on the field "
++            "not permitted, perhaps you meant gt or gte?",
++        ):
++            Article.objects.filter(pub_date__gt__foo="blahblah")
++
++        with self.assertRaisesMessage(
++            FieldError,
++            "Unsupported lookup 'gt__' for DateTimeField or join on the field "
++            "not permitted, perhaps you meant gt or gte?",
++        ):
++            Article.objects.filter(pub_date__gt__="blahblah")
++
++        with self.assertRaisesMessage(
++            FieldError,
++            "Unsupported lookup 'gt__lt' for DateTimeField or join on the field "
++            "not permitted, perhaps you meant gt or gte?",
++        ):
++            Article.objects.filter(pub_date__gt__lt="blahblah")
++
++        with self.assertRaisesMessage(
++            FieldError,
++            "Unsupported lookup 'gt__lt__foo' for DateTimeField or join"
++            " on the field not permitted, perhaps you meant gt or gte?",
++        ):
++            Article.objects.filter(pub_date__gt__lt__foo="blahblah")
++
+     def test_unsupported_lookups_custom_lookups(self):
+         slug_field = Article._meta.get_field("slug")
+         msg = (
+@@ -825,7 +853,7 @@ def test_unsupported_lookups_custom_lookups(self):
+     def test_relation_nested_lookup_error(self):
+         # An invalid nested lookup on a related field raises a useful error.
+         msg = (
+-            "Unsupported lookup 'editor' for ForeignKey or join on the field not "
++            "Unsupported lookup 'editor__name' for ForeignKey or join on the field not "
+             "permitted."
+         )
+         with self.assertRaisesMessage(FieldError, msg):
+@@ -1059,6 +1087,10 @@ def test_nonfield_lookups(self):
+         )
+         with self.assertRaisesMessage(FieldError, msg):
+             Article.objects.filter(headline__blahblah=99)
++        msg = (
++            "Unsupported lookup 'blahblah__exact' for CharField or join "
++            "on the field not permitted."
++        )
+         with self.assertRaisesMessage(FieldError, msg):
+             Article.objects.filter(headline__blahblah__exact=99)
+         msg = (

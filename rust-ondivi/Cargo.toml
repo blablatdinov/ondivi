@@ -1,0 +1,11 @@
+[package]
+name = "ondivi"
+version = "0.7.3"
+edition = "2021"
+description = "Only diff violations — filter linter output to changed lines in a git repo"
+license = "MIT"
+repository = "https://github.com/blablatdinov/ondivi"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+regex = "1"

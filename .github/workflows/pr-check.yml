@@ -100,9 +100,9 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
       - name: Setup go-task
-        uses: pnorton5432/setup-task@v1
+        uses: go-task/setup-task@v2.2.0
         with:
-          task-version: 3.29.1
+          version: 3.29.1
       - name: Lint
         run: task lint
       - name: Checking files for compliance with editorconfig

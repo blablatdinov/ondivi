@@ -1,0 +1,72 @@
+# SPDX-FileCopyrightText: Copyright (c) 2024-2026 Almaz Ilaletdinov <a.ilaletdinov@yandex.ru>
+# SPDX-License-Identifier: MIT
+
+name: Rust CI
+
+on:
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - 'rust-ondivi/**'
+      - '.github/workflows/rust-pr-check.yml'
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'rust-ondivi/**'
+      - '.github/workflows/rust-pr-check.yml'
+
+permissions: read-all
+
+jobs:
+
+  test:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: rust-ondivi
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust-ondivi/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('rust-ondivi/Cargo.lock') }}
+      - name: Build
+        run: cargo build --verbose
+      - name: Run tests
+        run: cargo test --verbose
+
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust-ondivi
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Cache cargo registry
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust-ondivi/target
+          key: ${{ runner.os }}-cargo-lint-${{ hashFiles('rust-ondivi/Cargo.lock') }}
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings

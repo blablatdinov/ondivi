@@ -32,7 +32,7 @@ junit-xml = "1.9" # lock for mutmut
 pytest-randomly = "5.0.0"
 tomli = "2.5.0"
 pyyaml = "6.0.4"
-types-pyyaml = "6.0.12.20261113"
+types-pyyaml = "6.0.12.20261122"
 wemake-python-styleguide = "1.9.0"
 pytest-test-radar = "0.0.1a12"
 
